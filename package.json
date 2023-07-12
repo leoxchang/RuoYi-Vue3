@@ -27,9 +27,12 @@
     "jsencrypt": "3.3.1",
     "nprogress": "0.2.0",
     "pinia": "2.0.22",
+    "ts-loader": "^9.4.3",
+    "typescript": "^5.1.3",
     "vue": "3.2.45",
     "vue-cropper": "1.0.3",
-    "vue-router": "4.1.4"
+    "vue-router": "4.1.4",
+    "crypto-js": "4.1.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "3.1.0",
@@ -39,6 +42,8 @@
     "vite": "3.2.3",
     "vite-plugin-compression": "0.5.1",
     "vite-plugin-svg-icons": "2.0.1",
-    "unplugin-vue-setup-extend-plus": "0.4.9"
+    "unplugin-vue-setup-extend-plus": "0.4.9",
+    "@vue/tsconfig": "^0.1.3",
+    "typescript": "^5.1.3"
   }
 }

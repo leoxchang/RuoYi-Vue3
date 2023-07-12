@@ -1,6 +1,7 @@
 import { createWebHistory, createRouter } from 'vue-router'
 /* Layout */
 import Layout from '@/layout'
+import {stringifyQuery,parseQuery} from './query'
 
 /**
  * Note: 路由配置项
@@ -163,6 +164,8 @@ export const dynamicRoutes = [
 const router = createRouter({
   history: createWebHistory(),
   routes: constantRoutes,
+  stringifyQuery: stringifyQuery, // 序列化query参数
+  parseQuery: parseQuery, // 反序列化query参数
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition
