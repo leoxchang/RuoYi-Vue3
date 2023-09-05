@@ -419,8 +419,8 @@ function getList() {
   loading.value = true;
   listUser(proxy.addDateRange(queryParams.value, dateRange.value)).then(res => {
     loading.value = false;
-    userList.value = res.rows;
-    total.value = res.total;
+    userList.value = res.data.rows;
+    total.value = res.data.total;
   });
 };
 /** 节点单击事件 */
@@ -576,11 +576,11 @@ function handleUpdate(row) {
   reset();
   const userId = row.userId || ids.value;
   getUser(userId).then(response => {
-    form.value = response.data;
-    postOptions.value = response.posts;
-    roleOptions.value = response.roles;
-    form.value.postIds = response.postIds;
-    form.value.roleIds = response.roleIds;
+    form.value = response.data.user;
+    postOptions.value = response.data.posts;
+    roleOptions.value = response.data.roles;
+    form.value.postIds = response.data.postIds;
+    form.value.roleIds = response.data.roleIds;
     open.value = true;
     title.value = "修改用户";
     form.password = "";
