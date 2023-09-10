@@ -77,9 +77,9 @@ const state = reactive({
 
 function getUser() {
   getUserProfile().then(response => {
-    state.user = response.data;
-    state.roleGroup = response.roleGroup;
-    state.postGroup = response.postGroup;
+    state.user = response.data.user;
+    state.roleGroup = response.data.roleGroup;
+    state.postGroup = response.data.postGroup;
   });
 };
 
