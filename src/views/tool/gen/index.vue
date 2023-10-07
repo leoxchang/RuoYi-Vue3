@@ -19,16 +19,6 @@
           @keyup.enter="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="创建时间" style="width: 308px">
-        <el-date-picker
-          v-model="dateRange"
-          value-format="YYYY-MM-DD"
-          type="daterange"
-          range-separator="-"
-          start-placeholder="开始日期"
-          end-placeholder="结束日期"
-        ></el-date-picker>
-      </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
@@ -150,7 +140,7 @@
 </template>
 
 <script setup name="Gen">
-import { listTable, previewTable, delTable, genCode, synchDb } from "@/api/tool/gen";
+import { listTable, previewTable, delTable, genCode, syncDb } from "@/api/tool/gen";
 import router from "@/router";
 import importTable from "./importTable";
 
@@ -199,9 +189,9 @@ onActivated(() => {
 /** 查询表集合 */
 function getList() {
   loading.value = true;
-  listTable(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
-    tableList.value = response.rows;
-    total.value = response.total;
+  listTable(queryParams.value).then(response => {
+    tableList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
@@ -229,7 +219,7 @@ function handleGenTable(row) {
 function handleSynchDb(row) {
   const tableName = row.tableName;
   proxy.$modal.confirm('确认要强制同步"' + tableName + '"表结构吗？').then(function () {
-    return synchDb(tableName);
+    return syncDb(tableName);
   }).then(() => {
     proxy.$modal.msgSuccess("同步成功");
   }).catch(() => {});
