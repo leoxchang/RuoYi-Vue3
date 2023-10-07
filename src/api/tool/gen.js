@@ -68,9 +68,9 @@ export function genCode(tableName) {
 }
 
 // 同步数据库
-export function synchDb(tableName) {
+export function syncDb(tableName) {
   return request({
-    url: '/tool/gen/synchDb/' + tableName,
+    url: '/tool/gen/syncDb/' + tableName,
     method: 'get'
   })
 }
