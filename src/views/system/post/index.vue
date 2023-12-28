@@ -257,7 +257,7 @@ export default {
         },
         /** 提交按钮 */
         submitForm: function() {
-            this.$refs["postRef"].validate(valid => {
+            this.$refs["form"].validate(valid => {
                 if (valid) {
                     if (this.form.postId != undefined) {
                         updatePost(this.form).then(response => {
