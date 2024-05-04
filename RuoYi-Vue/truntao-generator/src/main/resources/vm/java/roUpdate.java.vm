@@ -1,0 +1,80 @@
+package ${packageName}.domain.ro;
+
+#foreach ($import in $importList)
+import ${import};
+#end
+import io.swagger.v3.oas.annotations.media.Schema;
+import ${packageName}.domain.po.${ClassName};
+import lombok.Data;
+import java.util.Date;
+
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonFormat;
+#if($table.crud || $table.sub)
+#elseif($table.tree)
+#end
+
+/**
+ * ${functionName}对象 ${tableName}
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+#if($table.crud || $table.sub)
+#set($Entity="BaseEntity")
+#elseif($table.tree)
+#set($Entity="TreeEntity")
+#end
+@Data
+@ToString
+@EqualsAndHashCode(callSuper = true)
+public class ${ClassName}UpdateParam extends ${ClassName}Param{
+
+#foreach ($column in $columns)
+#set($parentheseIndex=$column.columnComment.indexOf("（"))
+#if($parentheseIndex != -1)
+#set($comment=$column.columnComment.substring(0, $parentheseIndex))
+#else
+#set($comment=$column.columnComment)
+#end
+    #if($column.javaField == 'id' || $column.javaField == 'createTime'|| $column.javaField == 'updateTime'|| $column.javaField == 'createBy'|| $column.javaField == 'updateBy' || $column.javaField == 'delFlag')
+        /** $column.columnComment */
+        #if($column.javaField == 'createTime'|| $column.javaField == 'updateTime')
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        #end
+        @Schema(description = "$column.columnComment")
+        private $column.javaType $column.javaField;
+    #else
+    #end
+#end
+#if($table.sub)
+    /** $table.subTable.functionName信息 */
+    private List<${subClassName}> ${subclassName}List;
+
+#end
+
+#if($table.sub)
+    public List<${subClassName}> get${subClassName}List(){
+        return ${subclassName}List;
+    }
+
+    public void set${subClassName}List(List<${subClassName}> ${subclassName}List){
+        this.${subclassName}List = ${subclassName}List;
+    }
+
+#end
+    @Override
+    public ${ClassName} get${ClassName}(){
+        ${ClassName} ${className} = super.get${ClassName}();
+        #foreach ($column in $columns)
+            #if($column.javaField.length() > 2 && $column.javaField.substring(1,2).matches("[A-Z]"))
+                #set($AttrName=$column.javaField)
+            #else
+                #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+            #end
+                ${className}.set${AttrName}(get${AttrName}());
+        #end
+        return ${className};
+    }
+}
