@@ -1,14 +1,13 @@
 package com.truntao.system.mapper;
 
-import java.util.List;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.github.pagehelper.Page;
 import com.truntao.common.core.domain.dto.SysUserDTO;
-import com.truntao.system.domain.ro.SysUserParam;
+import com.truntao.common.core.domain.entity.SysUser;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import com.truntao.common.core.domain.entity.SysUser;
+
+import java.util.List;
 
 /**
  * 用户表 数据层
@@ -39,7 +38,7 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @param user 用户信息
      * @return 用户信息集合信息
      */
-    List<SysUserDTO> selectUnallocatedList(SysUser user);
+    List<SysUserDTO> selectUnallocatedList(@Param("user") SysUser user, @Param("roleId") Long roleId);
 
     /**
      * 通过用户名查询用户

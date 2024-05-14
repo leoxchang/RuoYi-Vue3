@@ -1,20 +1,21 @@
 package com.truntao.system.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import javax.annotation.Resource;
-import javax.validation.Validator;
-
 import com.github.pagehelper.Page;
+import com.truntao.common.annotation.DataScope;
+import com.truntao.common.constant.UserConstants;
 import com.truntao.common.core.domain.dto.SysUserDTO;
+import com.truntao.common.core.domain.entity.SysRole;
+import com.truntao.common.core.domain.entity.SysUser;
+import com.truntao.common.exception.ServiceException;
+import com.truntao.common.utils.SecurityUtils;
+import com.truntao.common.utils.bean.BeanValidators;
+import com.truntao.common.utils.spring.SpringUtils;
 import com.truntao.system.domain.po.SysPost;
 import com.truntao.system.domain.po.SysUserPost;
 import com.truntao.system.domain.po.SysUserRole;
 import com.truntao.system.domain.ro.SysUserParam;
 import com.truntao.system.domain.ro.SysUserUpdateParam;
+import com.truntao.system.mapper.*;
 import com.truntao.system.service.ISysConfigService;
 import com.truntao.system.service.ISysUserService;
 import org.apache.commons.lang3.ArrayUtils;
@@ -24,19 +25,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import com.truntao.common.annotation.DataScope;
-import com.truntao.common.constant.UserConstants;
-import com.truntao.common.core.domain.entity.SysRole;
-import com.truntao.common.core.domain.entity.SysUser;
-import com.truntao.common.exception.ServiceException;
-import com.truntao.common.utils.SecurityUtils;
-import com.truntao.common.utils.bean.BeanValidators;
-import com.truntao.common.utils.spring.SpringUtils;
-import com.truntao.system.mapper.SysPostMapper;
-import com.truntao.system.mapper.SysRoleMapper;
-import com.truntao.system.mapper.SysUserMapper;
-import com.truntao.system.mapper.SysUserPostMapper;
-import com.truntao.system.mapper.SysUserRoleMapper;
+
+import javax.annotation.Resource;
+import javax.validation.Validator;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 用户 业务层处理
@@ -106,7 +102,7 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     @DataScope(deptAlias = "d", userAlias = "u")
     public List<SysUserDTO> selectUnallocatedList(SysUserParam userParam) {
-        return userMapper.selectUnallocatedList(userParam.getSysUser());
+        return userMapper.selectUnallocatedList(userParam.getSysUser(), userParam.getRoleId());
     }
 
     /**
@@ -466,7 +462,7 @@ public class SysUserServiceImpl implements ISysUserService {
                     user.setCreateBy(operName);
                     userMapper.insert(user);
                     successNum++;
-                    successMsg.append(BR).append(successNum).append("、账号 ").append(user.getUserName()).append(" 导入成功");
+                    successMsg.append(SysUserServiceImpl.BR).append(successNum).append("、账号 ").append(user.getUserName()).append(" 导入成功");
                 } else if (Boolean.TRUE.equals(isUpdateSupport)) {
                     BeanValidators.validateWithException(validator, user);
                     checkUserAllowed(u.getUserId());
@@ -475,16 +471,16 @@ public class SysUserServiceImpl implements ISysUserService {
                     user.setUpdateBy(operName);
                     userMapper.updateById(user);
                     successNum++;
-                    successMsg.append(BR).append(successNum).append("、账号 ").append(user.getUserName()).append(" 更新成功");
+                    successMsg.append(SysUserServiceImpl.BR).append(successNum).append("、账号 ").append(user.getUserName()).append(" 更新成功");
                 } else {
                     failureNum++;
-                    failureMsg.append(BR).append(failureNum).append("、账号 ").append(user.getUserName()).append(" 已存在");
+                    failureMsg.append(SysUserServiceImpl.BR).append(failureNum).append("、账号 ").append(user.getUserName()).append(" 已存在");
                 }
             } catch (Exception e) {
                 failureNum++;
                 String msg = "BR" + failureNum + "、账号 " + user.getUserName() + " 导入失败：";
                 failureMsg.append(msg).append(e.getMessage());
-                log.error(msg, e);
+                SysUserServiceImpl.log.error(msg, e);
             }
         }
         if (failureNum > 0) {
@@ -496,6 +492,7 @@ public class SysUserServiceImpl implements ISysUserService {
         return successMsg.toString();
     }
 
+    @Override
     public boolean isAdmin(Long userId) {
         return userId != null && 1L == userId;
     }
