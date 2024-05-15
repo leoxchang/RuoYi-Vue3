@@ -12,7 +12,8 @@ import com.truntao.common.utils.DateUtils;
 import org.springframework.stereotype.Service;
 #if($table.sub)
 import java.util.ArrayList;
-import com.truntao.common.utils.StringUtils;
+import java.util.Objects;
+
 import org.springframework.transaction.annotation.Transactional;
 import ${packageName}.domain.po.${subClassName};
 #end
@@ -165,7 +166,7 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service {
         public void insert${subClassName}(${ClassName} ${className}) {
             List<${subClassName}> ${subclassName}List = ${className}.get${subClassName}List();
             ${pkColumn.javaType} ${pkColumn.javaField} = ${className}.get${pkColumn.capJavaField}();
-            if (StringUtils.isNotNull(${subclassName}List)) {
+            if (Objects.nonNull(${subclassName}List)) {
                 List<${subClassName}> list = new ArrayList<${subClassName}>();
                 for (${subClassName} ${subclassName} :${subclassName}List)
                 {
