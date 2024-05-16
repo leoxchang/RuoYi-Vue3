@@ -1,20 +1,23 @@
 package com.truntao.generator.service;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.github.pagehelper.Page;
+import com.truntao.common.constant.Constants;
+import com.truntao.common.constant.GenConstants;
+import com.truntao.common.exception.ServiceException;
+import com.truntao.common.utils.SecurityUtils;
+import com.truntao.common.utils.bean.BeanUtils;
 import com.truntao.generator.domain.dto.GenTableColumnDTO;
 import com.truntao.generator.domain.dto.GenTableDTO;
+import com.truntao.generator.domain.po.GenTable;
+import com.truntao.generator.domain.po.GenTableColumn;
 import com.truntao.generator.domain.ro.GenTableParam;
+import com.truntao.generator.mapper.GenTableColumnMapper;
+import com.truntao.generator.mapper.GenTableMapper;
+import com.truntao.generator.util.GenUtils;
+import com.truntao.generator.util.VelocityInitializer;
+import com.truntao.generator.util.VelocityUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -26,21 +29,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONObject;
-import com.truntao.common.constant.Constants;
-import com.truntao.common.constant.GenConstants;
-import com.truntao.common.exception.ServiceException;
-import com.truntao.common.utils.SecurityUtils;
-import com.truntao.generator.domain.po.GenTable;
-import com.truntao.generator.domain.po.GenTableColumn;
-import com.truntao.generator.mapper.GenTableColumnMapper;
-import com.truntao.generator.mapper.GenTableMapper;
-import com.truntao.generator.util.GenUtils;
-import com.truntao.generator.util.VelocityInitializer;
-import com.truntao.generator.util.VelocityUtils;
 
 import javax.annotation.Resource;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * 业务 服务层实现
@@ -118,9 +118,10 @@ public class GenTableServiceImpl implements IGenTableService {
      * @param genTableParam 业务信息
      */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateGenTable(GenTableParam genTableParam) {
         GenTable genTable = new GenTable();
+        BeanUtils.copyProperties(genTableParam, genTable);
         int row = genTableMapper.updateById(genTable);
         if (row > 0) {
             for (GenTableColumn cenTableColumn : genTableParam.getColumns()) {
@@ -243,7 +244,7 @@ public class GenTableServiceImpl implements IGenTableService {
                 Template tpl = Velocity.getTemplate(template, Constants.UTF8);
                 tpl.merge(context, sw);
                 try {
-                    String path = getGenPath(table, template);
+                    String path = GenTableServiceImpl.getGenPath(table, template);
                     FileUtils.writeStringToFile(new File(path), sw.toString(), StandardCharsets.UTF_8);
                 } catch (IOException e) {
                     throw new ServiceException("渲染模板失败，表名：" + table.getTableName());
@@ -349,7 +350,7 @@ public class GenTableServiceImpl implements IGenTableService {
                 zip.flush();
                 zip.closeEntry();
             } catch (IOException e) {
-                log.error("渲染模板失败，表名：" + table.getTableName(), e);
+                GenTableServiceImpl.log.error("渲染模板失败，表名：" + table.getTableName(), e);
             }
         }
     }

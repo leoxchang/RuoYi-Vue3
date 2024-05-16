@@ -44,12 +44,12 @@
 
     <div class="center-board">
       <div class="action-bar">
-        <!--        <el-button icon="el-icon-video-play" type="text" @click="run">
+                <el-button icon="el-icon-video-play" type="text" @click="run">
                   运行
                 </el-button>
                 <el-button icon="el-icon-view" type="text" @click="showJson">
                   查看json
-                </el-button>-->
+                </el-button>
         <el-button icon="el-icon-download" type="text" @click="download">
           导出vue文件
         </el-button>

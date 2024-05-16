@@ -5,6 +5,7 @@ function resolve(dir) {
   return path.join(__dirname, dir)
 }
 
+const TimeStamp = new Date().getTime()
 const CompressionPlugin = require('compression-webpack-plugin')
 
 const name = process.env.VUE_APP_TITLE || '若依管理系统' // 网页标题
@@ -69,6 +70,11 @@ module.exports = {
         deleteOriginalAssets: false                    // 压缩后删除原文件
       })
     ],
+    // 输出重构  打包编译后的 文件名称  【模块名称.hash.时间戳】
+    output: {
+      filename: `static/js/[name].[hash].${TimeStamp}.js`,
+      chunkFilename: `static/js/[name].[hash].${TimeStamp}.js`,
+    },
   },
   chainWebpack(config) {
     config.plugins.delete('preload') // TODO: need test
@@ -90,7 +96,19 @@ module.exports = {
         symbolId: 'icon-[name]'
       })
       .end()
-
+    config.optimization.minimizer("terser").tap((args) => {
+      // 注释console.*
+      args[0].terserOptions.compress.drop_console = true
+      // remove debugger
+      args[0].terserOptions.compress.drop_debugger = true
+      // 移除 console.log
+      args[0].terserOptions.compress.pure_funcs = ['console.log']
+      // 去掉注释 如果需要看chunk-vendors公共部分插件，可以注释掉就可以看到注释了
+      args[0].terserOptions.output = {
+        comments: false,
+      };
+      return args;
+    });
     config.when(process.env.NODE_ENV !== 'development', config => {
           config
             .plugin('ScriptExtHtmlWebpackPlugin')

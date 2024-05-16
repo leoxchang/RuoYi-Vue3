@@ -1,7 +1,6 @@
 package com.truntao.generator.util;
 
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.truntao.common.constant.GenConstants;
@@ -64,22 +63,22 @@ public class VelocityUtils {
         velocityContext.put("moduleName", genTable.getModuleName());
         velocityContext.put("BusinessName", StringUtils.capitalize(genTable.getBusinessName()));
         velocityContext.put("businessName", genTable.getBusinessName());
-        velocityContext.put("basePackage", getPackagePrefix(packageName));
+        velocityContext.put("basePackage", VelocityUtils.getPackagePrefix(packageName));
         velocityContext.put("packageName", packageName);
         velocityContext.put("author", genTable.getFunctionAuthor());
         velocityContext.put("datetime", DateUtils.getDate());
         velocityContext.put("pkColumn", genTable.getPkColumn());
-        velocityContext.put("importList", getImportList(genTable));
-        velocityContext.put("permissionPrefix", getPermissionPrefix(moduleName, businessName));
+        velocityContext.put("importList", VelocityUtils.getImportList(genTable));
+        velocityContext.put("permissionPrefix", VelocityUtils.getPermissionPrefix(moduleName, businessName));
         velocityContext.put("columns", genTable.getColumns());
         velocityContext.put("table", genTable);
-        velocityContext.put("dicts", getDicts(genTable));
-        setMenuVelocityContext(velocityContext, genTable);
+        velocityContext.put("dicts", VelocityUtils.getDicts(genTable));
+        VelocityUtils.setMenuVelocityContext(velocityContext, genTable);
         if (GenConstants.TPL_TREE.equals(tplCategory)) {
-            setTreeVelocityContext(velocityContext, genTable);
+            VelocityUtils.setTreeVelocityContext(velocityContext, genTable);
         }
         if (GenConstants.TPL_SUB.equals(tplCategory)) {
-            setSubVelocityContext(velocityContext, genTable);
+            VelocityUtils.setSubVelocityContext(velocityContext, genTable);
         }
         return velocityContext;
     }
@@ -87,21 +86,21 @@ public class VelocityUtils {
     public static void setMenuVelocityContext(VelocityContext context, GenTableDTO genTable) {
         String options = genTable.getOptions();
         JSONObject paramsObj = JSON.parseObject(options);
-        String parentMenuId = getParentMenuId(paramsObj);
+        String parentMenuId = VelocityUtils.getParentMenuId(paramsObj);
         context.put("parentMenuId", parentMenuId);
     }
 
     public static void setTreeVelocityContext(VelocityContext context, GenTableDTO genTable) {
         String options = genTable.getOptions();
         JSONObject paramsObj = JSON.parseObject(options);
-        String treeCode = getTreeCode(paramsObj);
-        String treeParentCode = getTreeParentCode(paramsObj);
-        String treeName = getTreeName(paramsObj);
+        String treeCode = VelocityUtils.getTreeCode(paramsObj);
+        String treeParentCode = VelocityUtils.getTreeParentCode(paramsObj);
+        String treeName = VelocityUtils.getTreeName(paramsObj);
 
         context.put("treeCode", treeCode);
         context.put("treeParentCode", treeParentCode);
         context.put("treeName", treeName);
-        context.put("expandColumn", getExpandColumn(genTable));
+        context.put("expandColumn", VelocityUtils.getExpandColumn(genTable));
         if (paramsObj.containsKey(GenConstants.TREE_PARENT_CODE)) {
             context.put("tree_parent_code", paramsObj.getString(GenConstants.TREE_PARENT_CODE));
         }
@@ -124,7 +123,7 @@ public class VelocityUtils {
         context.put("subTableFkclassName", StringUtils.uncapitalize(subTableFkClassName));
         context.put("subClassName", subClassName);
         context.put("subclassName", StringUtils.uncapitalize(subClassName));
-        context.put("subImportList", getImportList(genTable.getSubTable()));
+        context.put("subImportList", VelocityUtils.getImportList(genTable.getSubTable()));
     }
 
     /**
@@ -150,20 +149,20 @@ public class VelocityUtils {
         templates.add("vm/java/serviceImpl.java.vm");
         templates.add("vm/java/controller.java.vm");
         templates.add("vm/js/api.js.vm");
-        if (org.apache.commons.lang3.StringUtils.equalsIgnoreCase(GenConstants.ORACLE, dialect)) {
+        if (org.apache.commons.lang3.StringUtils.equalsIgnoreCase(GenConstants.ORACLE, VelocityUtils.dialect)) {
             templates.add("vm/xml/oracle/mapper.xml.vm");
             templates.add("vm/sql/oracle/sql.vm");
-        } else if (org.apache.commons.lang3.StringUtils.equalsIgnoreCase(GenConstants.MYSQL, dialect)) {
+        } else if (org.apache.commons.lang3.StringUtils.equalsIgnoreCase(GenConstants.MYSQL, VelocityUtils.dialect)) {
             templates.add("vm/xml/mysql/mapper.xml.vm");
             templates.add("vm/sql/mysql/sql.vm");
         }
 
         if (GenConstants.TPL_CRUD.equals(tplCategory)) {
-            templates.add(useWebType + "/v3/index.vue.vm");
+            templates.add(useWebType + "/index.vue.vm");
         } else if (GenConstants.TPL_TREE.equals(tplCategory)) {
-            templates.add(useWebType + "/v3/index-tree.vue.vm");
+            templates.add(useWebType + "/index-tree.vue.vm");
         } else if (GenConstants.TPL_SUB.equals(tplCategory)) {
-            templates.add(useWebType + "/v3/index.vue.vm");
+            templates.add(useWebType + "/index.vue.vm");
             templates.add("vm/java/sub-domain.java.vm");
         }
         return templates;
@@ -184,8 +183,8 @@ public class VelocityUtils {
         // 业务名称
         String businessName = genTable.getBusinessName();
 
-        String javaPath = PROJECT_PATH + "/" + StringUtils.replace(packageName, ".", "/");
-        String mybatisPath = MYBATIS_PATH + "/" + moduleName;
+        String javaPath = VelocityUtils.PROJECT_PATH + "/" + StringUtils.replace(packageName, ".", "/");
+        String mybatisPath = VelocityUtils.MYBATIS_PATH + "/" + moduleName;
         String vuePath = "vue";
 
         if (template.contains("domain.java.vm")) {
@@ -269,10 +268,10 @@ public class VelocityUtils {
     public static String getDicts(GenTableDTO genTable) {
         List<GenTableColumnDTO> columns = genTable.getColumns();
         Set<String> dicts = new HashSet<>();
-        addDicts(dicts, columns);
+        VelocityUtils.addDicts(dicts, columns);
         if (Objects.nonNull(genTable.getSubTable())) {
             List<GenTableColumnDTO> subColumns = genTable.getSubTable().getColumns();
-            addDicts(dicts, subColumns);
+            VelocityUtils.addDicts(dicts, subColumns);
         }
         return StringUtils.join(dicts, ", ");
     }
@@ -315,7 +314,7 @@ public class VelocityUtils {
                 && StringUtils.isNotEmpty(paramsObj.getString(GenConstants.PARENT_MENU_ID))) {
             return paramsObj.getString(GenConstants.PARENT_MENU_ID);
         }
-        return DEFAULT_PARENT_MENU_ID;
+        return VelocityUtils.DEFAULT_PARENT_MENU_ID;
     }
 
     /**
