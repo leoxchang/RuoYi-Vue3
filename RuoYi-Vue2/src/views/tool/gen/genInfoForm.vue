@@ -269,9 +269,7 @@ export default {
       this.setSubTableColumns(val);
     },
     'info.tplWebType': function(val) {
-      if (val === '') {
         this.info.tplWebType = "element-ui";
-      }
     }
   },
   methods: {
