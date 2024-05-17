@@ -43,6 +43,7 @@ public class ${ClassName}DTO{
     }
 
 #foreach ($column in $columns)
+#if($column.javaField != 'delFlag')
     /** $column.columnComment */
 #set($parentheseIndex=$column.columnComment.indexOf("（"))
 #if($parentheseIndex != -1)
@@ -58,8 +59,10 @@ public class ${ClassName}DTO{
     #else
     @Excel(name = "${comment}")
     #end
+
     @Schema(description = "$column.columnComment")
     private $column.javaType $column.javaField;
+#end
 #end
 #if($table.sub)
     /** $table.subTable.functionName信息 */

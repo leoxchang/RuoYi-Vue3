@@ -25,9 +25,9 @@ import java.io.Serial;
 #elseif($table.tree)
 #set($Entity="TreeEntity")
 #end
+@EqualsAndHashCode(callSuper = true)
 @Data
 @TableName("${tableName}")
-@EqualsAndHashCode(callSuper = true)
 @ToString
 public class ${ClassName} extends ${Entity}{
     @Serial

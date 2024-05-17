@@ -116,8 +116,7 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service {
             #end
         #end
         #if($table.sub)
-                ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${className}.get${pkColumn.capJavaField}())
-            ;
+                ${className}Mapper.delete${subClassName}By${subTableFkClassName}(${className}.get${pkColumn.capJavaField}());
             insert${subClassName}(${className});
         #end
         return ${className}Mapper.updateById(${className});
