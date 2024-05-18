@@ -1,16 +1,16 @@
 version: "3"
 services:
   #-------------------------------------后端-------------------------------------
-  chongdao-web:
-    container_name: chongdao-web
+  chongdao-web-vue2:
+    container_name: chongdao-web-vue2
     networks:
       - chongdao
-    image: ${REGISTRY_ADDR:-10.168.1.170/chongdao}/chongdao-web:${PROJECT_VERSION:-test}
+    image: ${REGISTRY_ADDR:-10.168.1.170/chongdao}/chongdao-web-vue2:${PROJECT_VERSION:-test}
     build:
       context: ./
       dockerfile: ./Dockerfile
     ports:
-      - 20103:80
+      - 10003:80
     environment:
       - TZ=Asia/Shanghai
     restart: always
