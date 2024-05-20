@@ -147,4 +147,5 @@ logback:
 springdoc:
   swagger-ui:
     enabled: true
+    disable-swagger-default-url: true
   packages-to-scan: com.truntao
