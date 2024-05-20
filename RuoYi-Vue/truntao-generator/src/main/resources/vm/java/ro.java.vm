@@ -51,6 +51,7 @@ public class ${ClassName}Param{
     }
 
 #end
+    @Schema(hidden = true)
     public ${ClassName} get${ClassName}(){
         ${ClassName} ${className} = new ${ClassName}();
 #foreach ($column in $columns)

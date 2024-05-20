@@ -65,6 +65,7 @@ public class ${ClassName}UpdateParam extends ${ClassName}Param{
 
 #end
     @Override
+    @Schema(hidden = true)
     public ${ClassName} get${ClassName}(){
         ${ClassName} ${className} = super.get${ClassName}();
         #foreach ($column in $columns)
