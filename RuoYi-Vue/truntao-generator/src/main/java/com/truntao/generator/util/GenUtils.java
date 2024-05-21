@@ -59,13 +59,15 @@ public class GenUtils {
             column.setHtmlType(GenConstants.HTML_DATETIME);
         } else if (arraysContains(GenConstants.COLUMN_TYPE_NUMBER, dataType)) {
             column.setHtmlType(GenConstants.HTML_INPUT);
-
             // 如果是浮点型 统一用BigDecimal
             String[] str = StringUtils.split(StringUtils.substringBetween(column.getColumnType(), "(", ")"), ",");
             if (str != null && str.length == 2 && Integer.parseInt(str[1]) > 0) {
                 column.setJavaType(GenConstants.TYPE_BIG_DECIMAL);
             } else if (str != null && str.length == 1 && Integer.parseInt(str[0]) <= 10) {
                 // 如果是整形
+                column.setJavaType(GenConstants.TYPE_INTEGER);
+            } else if (str == null && StringUtils.contains(column.getColumnType(), "tinyint")) {
+                // 长整形
                 column.setJavaType(GenConstants.TYPE_INTEGER);
             } else {
                 // 长整形
