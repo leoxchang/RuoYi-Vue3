@@ -1,8 +1,10 @@
+import {getStore,setStore} from "@/utils/tag-store.js";
+
 const useTagsViewStore = defineStore(
   'tags-view',
   {
     state: () => ({
-      visitedViews: [],
+      visitedViews: getStore({ name: 'visitedViews' }) || [],
       cachedViews: [],
       iframeViews: []
     }),
@@ -26,6 +28,7 @@ const useTagsViewStore = defineStore(
             title: view.meta.title || 'no-name'
           })
         )
+        setStore({ name: 'visitedViews', content: this.visitedViews, type: 'session' })
       },
       addCachedView(view) {
         if (this.cachedViews.includes(view.name)) return
@@ -41,6 +44,7 @@ const useTagsViewStore = defineStore(
             visitedViews: [...this.visitedViews],
             cachedViews: [...this.cachedViews]
           })
+          setStore({ name: 'visitedViews', content: this.visitedViews, type: 'session' })
         })
       },
       delVisitedView(view) {
@@ -53,6 +57,7 @@ const useTagsViewStore = defineStore(
           }
           this.iframeViews = this.iframeViews.filter(item => item.path !== view.path)
           resolve([...this.visitedViews])
+          setStore({ name: 'visitedViews', content: this.visitedViews, type: 'session' })
         })
       },
       delIframeView(view) {
@@ -76,6 +81,7 @@ const useTagsViewStore = defineStore(
             visitedViews: [...this.visitedViews],
             cachedViews: [...this.cachedViews]
           })
+          setStore({ name: 'visitedViews', content: this.visitedViews, type: 'session' })
         })
       },
       delOthersVisitedViews(view) {
@@ -85,6 +91,7 @@ const useTagsViewStore = defineStore(
           })
           this.iframeViews = this.iframeViews.filter(item => item.path === view.path)
           resolve([...this.visitedViews])
+          setStore({ name: 'visitedViews', content: this.visitedViews, type: 'session' })
         })
       },
       delOthersCachedViews(view) {
@@ -106,6 +113,7 @@ const useTagsViewStore = defineStore(
             visitedViews: [...this.visitedViews],
             cachedViews: [...this.cachedViews]
           })
+          setStore({ name: 'visitedViews', content: this.visitedViews, type: 'session' })
         })
       },
       delAllVisitedViews(view) {
@@ -114,6 +122,7 @@ const useTagsViewStore = defineStore(
           this.visitedViews = affixTags
           this.iframeViews = []
           resolve([...this.visitedViews])
+          setStore({ name: 'visitedViews', content: this.visitedViews, type: 'session' })
         })
       },
       delAllCachedViews(view) {
@@ -129,6 +138,7 @@ const useTagsViewStore = defineStore(
             break
           }
         }
+        setStore({ name: 'visitedViews', content: this.visitedViews, type: 'session' })
       },
       delRightTags(view) {
         return new Promise(resolve => {
@@ -151,6 +161,7 @@ const useTagsViewStore = defineStore(
             return false
           })
           resolve([...this.visitedViews])
+          setStore({ name: 'visitedViews', content: this.visitedViews, type: 'session' })
         })
       },
       delLeftTags(view) {
@@ -174,6 +185,7 @@ const useTagsViewStore = defineStore(
             return false
           })
           resolve([...this.visitedViews])
+          setStore({ name: 'visitedViews', content: this.visitedViews, type: 'session' })
         })
       }
     }
