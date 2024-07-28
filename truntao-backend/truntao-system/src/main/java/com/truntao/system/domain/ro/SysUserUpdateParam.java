@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import javax.validation.constraints.Pattern;
+
 /**
  * 用户信息对象 sys_user
  *
@@ -42,6 +44,9 @@ public class SysUserUpdateParam extends SysUserParam{
      * 更新时间
      */
     private Date updateTime;
+
+    @Pattern(regexp = "^$|(?![a-zA-z]+$)(?!\\d+$)(?![!@#$%^&*]+$)(?![a-zA-z\\d]+$)(?![a-zA-z!@#$%^&*]+$)(?![\\d!@#$%^&*]+$)[a-zA-Z\\d!@#$%^&*].{8,20}",message = "密码长度在12动20之间包含大/小写字母+数字+特殊字符")
+    private String password;
 
     @Override
     public SysUser getSysUser() {
