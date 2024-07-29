@@ -270,7 +270,7 @@ function handleExport() {
 
 (() => {
   const jobId = route.params && route.params.jobId;
-  if (jobId !== undefined && jobId != 0) {
+  if (jobId !== undefined && jobId !== 0) {
     getJob(jobId).then(response => {
       queryParams.value.jobName = response.data.jobName;
       queryParams.value.jobGroup = response.data.jobGroup;
@@ -280,6 +280,4 @@ function handleExport() {
     getList();
   }
 })();
-
-getList();
 </script>
