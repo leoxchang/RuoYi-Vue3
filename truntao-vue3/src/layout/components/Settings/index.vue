@@ -79,10 +79,6 @@
 </template>
 
 <script setup>
-import variables from '@/assets/styles/variables.module.scss'
-import axios from 'axios'
-import { ElLoading, ElMessage } from 'element-plus'
-import { useDynamicTitle } from '@/utils/dynamicTitle'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
@@ -110,10 +106,12 @@ function themeChange(val) {
   settingsStore.theme = val;
   handleThemeStyle(val);
 }
+
 function handleTheme(val) {
   settingsStore.sideTheme = val;
   sideTheme.value = val;
 }
+
 function saveSetting() {
   proxy.$modal.loading("正在保存到本地，请稍候...");
   let layoutSetting = {
@@ -126,13 +124,15 @@ function saveSetting() {
     "theme": storeSettings.value.theme
   };
   localStorage.setItem("layout-setting", JSON.stringify(layoutSetting));
-  setTimeout(proxy.$modal.closeLoading(), 1000)
+  setTimeout("proxy.$modal.closeLoading()", 1000)
 }
+
 function resetSetting() {
   proxy.$modal.loading("正在清除设置缓存并刷新，请稍候...");
   localStorage.removeItem("layout-setting")
   setTimeout("window.location.reload()", 1000)
 }
+
 function openSetting() {
   showSettings.value = true;
 }

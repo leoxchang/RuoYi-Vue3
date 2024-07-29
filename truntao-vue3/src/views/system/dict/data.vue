@@ -238,6 +238,7 @@ function getTypeList() {
     typeOptions.value = response.data;
   });
 }
+
 /** 查询字典数据列表 */
 function getList() {
   loading.value = true;
@@ -247,6 +248,7 @@ function getList() {
     loading.value = false;
   });
 }
+
 /** 取消按钮 */
 function cancel() {
   open.value = false;
