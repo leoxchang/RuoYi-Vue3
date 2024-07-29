@@ -3,6 +3,9 @@ package com.truntao.framework.web.exception;
 import javax.servlet.http.HttpServletRequest;
 
 import com.truntao.common.core.domain.R;
+import com.truntao.common.core.text.Convert;
+import com.truntao.common.utils.html.EscapeUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
@@ -43,7 +46,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public R<Void> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException e,
-                                                          HttpServletRequest request) {
+                                                       HttpServletRequest request) {
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',不支持'{}'请求", requestURI, e.getMethod());
         return R.fail(e.getMessage());
@@ -74,11 +77,15 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public R<Void> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e,
-                                                                HttpServletRequest request) {
+                                                             HttpServletRequest request) {
         String requestURI = request.getRequestURI();
+        String value = Convert.toStr(e.getValue());
+        if (StringUtils.isNotEmpty(value)) {
+            value = EscapeUtil.clean(value);
+        }
         log.error("请求参数类型不匹配'{}',发生系统异常.", requestURI, e);
         return R.fail(String.format("请求参数类型不匹配，参数[%s]要求类型为：'%s'，但输入值为：'%s'", e.getName(),
-                Objects.requireNonNull(e.getRequiredType()).getName(), e.getValue()));
+                Objects.requireNonNull(e.getRequiredType()).getName(), value));
     }
 
     /**
