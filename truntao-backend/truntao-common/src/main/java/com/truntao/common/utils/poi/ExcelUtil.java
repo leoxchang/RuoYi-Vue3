@@ -388,7 +388,12 @@ public class ExcelUtil<T> {
                     if (StringUtils.isNotEmpty(attr.readConverterExp())) {
                         val = reverseByExp(Convert.toStr(val), attr.readConverterExp(), attr.separator());
                     } else if (StringUtils.isNotEmpty(attr.dictType())) {
-                        val = reverseDictByExp(Convert.toStr(val), attr.dictType(), attr.separator());
+                        if (!sysDictMap.containsKey(attr.dictType() + val))
+                        {
+                            String dictValue = reverseDictByExp(Convert.toStr(val), attr.dictType(), attr.separator());
+                            sysDictMap.put(attr.dictType() + val, dictValue);
+                        }
+                        val = sysDictMap.get(attr.dictType() + val);
                     } else if (!attr.handler().equals(ExcelHandlerAdapter.class)) {
                         val = dataFormatHandlerAdapter(val, attr, null);
                     } else if (ColumnType.IMAGE == attr.cellType() && CollUtil.isNotEmpty(pictures)) {
