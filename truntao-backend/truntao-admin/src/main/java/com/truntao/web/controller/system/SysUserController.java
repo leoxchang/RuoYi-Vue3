@@ -125,6 +125,8 @@ public class SysUserController extends BaseController {
     @Log(title = "用户管理", businessType = BusinessType.INSERT)
     @PostMapping
     public R<Integer> add(@Validated @RequestBody SysUserParam userParam) {
+        deptService.checkDeptDataScope(userParam.getDeptId());
+        roleService.checkRoleDataScope(userParam.getRoleIds());
         Optional<R<Integer>> checkResult = checkUser(null, userParam.getUserName(), userParam.getPhoneNumber(),
                 userParam.getEmail());
         return checkResult.orElseGet(() -> R.ok(userService.insertUser(userParam)));
@@ -139,6 +141,8 @@ public class SysUserController extends BaseController {
     public R<Integer> edit(@Validated @RequestBody SysUserUpdateParam userUpdateParam) {
         userService.checkUserAllowed(userUpdateParam.getUserId());
         userService.checkUserDataScope(userUpdateParam.getUserId());
+        deptService.checkDeptDataScope(userUpdateParam.getDeptId());
+        roleService.checkRoleDataScope(userUpdateParam.getRoleIds());
         Optional<R<Integer>> checkResult = checkUser(userUpdateParam.getUserId(), userUpdateParam.getUserName(),
                 userUpdateParam.getPhoneNumber(), userUpdateParam.getEmail());
         return checkResult.orElseGet(() -> R.ok(userService.updateUser(userUpdateParam)));
@@ -217,6 +221,7 @@ public class SysUserController extends BaseController {
     @PutMapping("/authRole")
     public R<Void> insertAuthRole(Long userId, Long[] roleIds) {
         userService.checkUserDataScope(userId);
+        roleService.checkRoleDataScope(roleIds);
         userService.insertUserAuth(userId, roleIds);
         return R.ok();
     }

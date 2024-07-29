@@ -189,7 +189,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
      */
     @Override
     public void checkDeptDataScope(Long deptId) {
-        if (!userService.isAdmin(SecurityUtils.getUserId())) {
+        if (!userService.isAdmin(SecurityUtils.getUserId()) && Objects.nonNull(deptId)) {
             SysDept dept = new SysDept();
             dept.setDeptId(deptId);
             List<SysDept> deptList = deptMapper.selectDeptList(dept);

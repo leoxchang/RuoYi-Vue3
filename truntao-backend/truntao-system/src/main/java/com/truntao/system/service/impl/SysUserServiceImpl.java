@@ -17,6 +17,7 @@ import com.truntao.system.domain.ro.SysUserParam;
 import com.truntao.system.domain.ro.SysUserUpdateParam;
 import com.truntao.system.mapper.*;
 import com.truntao.system.service.ISysConfigService;
+import com.truntao.system.service.ISysDeptService;
 import com.truntao.system.service.ISysUserService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -63,6 +64,9 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Resource
     protected Validator validator;
+
+    @Resource
+    private ISysDeptService deptService;
 
     /**
      * 根据条件分页查询用户列表
@@ -451,13 +455,14 @@ public class SysUserServiceImpl implements ISysUserService {
         int failureNum = 0;
         StringBuilder successMsg = new StringBuilder();
         StringBuilder failureMsg = new StringBuilder();
-        String password = configService.selectConfigByKey("sys.user.initPassword");
         for (SysUser user : userList) {
             try {
                 // 验证是否存在这个用户
                 SysUserDTO u = userMapper.selectUserByUserName(user.getUserName());
                 if (Objects.isNull(u)) {
                     BeanValidators.validateWithException(validator, user);
+                    deptService.checkDeptDataScope(user.getDeptId());
+                    String password = configService.selectConfigByKey("sys.user.initPassword");
                     user.setPassword(SecurityUtils.encryptPassword(password));
                     user.setCreateBy(operName);
                     userMapper.insert(user);
@@ -467,6 +472,7 @@ public class SysUserServiceImpl implements ISysUserService {
                     BeanValidators.validateWithException(validator, user);
                     checkUserAllowed(u.getUserId());
                     checkUserDataScope(u.getUserId());
+                    deptService.checkDeptDataScope(user.getDeptId());
                     user.setUserId(u.getUserId());
                     user.setUpdateBy(operName);
                     userMapper.updateById(user);

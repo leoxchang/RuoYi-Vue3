@@ -186,16 +186,18 @@ public class SysRoleServiceImpl implements ISysRoleService {
     /**
      * 校验角色是否有数据权限
      *
-     * @param roleId 角色id
+     * @param roleIds 角色ids
      */
     @Override
-    public void checkRoleDataScope(Long roleId) {
+    public void checkRoleDataScope(Long... roleIds) {
         if (!userService.isAdmin(SecurityUtils.getUserId())) {
-            SysRole role = new SysRole();
-            role.setRoleId(roleId);
-            List<SysRole> roles = roleMapper.selectRoleList(role);
-            if (CollectionUtils.isEmpty(roles)) {
-                throw new ServiceException("没有权限访问角色数据！");
+            for (Long roleId : roleIds) {
+                SysRole role = new SysRole();
+                role.setRoleId(roleId);
+                List<SysRole> roles = roleMapper.selectRoleList(role);
+                if (CollectionUtils.isEmpty(roles)) {
+                    throw new ServiceException("没有权限访问角色数据！");
+                }
             }
         }
     }
