@@ -104,12 +104,12 @@ public class SysLoginService {
         if (captchaEnabled) {
             String verifyKey = CacheConstants.CAPTCHA_CODE_KEY + StringUtils.defaultIfEmpty(uuid, "");
             String captcha = redisCache.getCacheObject(verifyKey);
-            redisCache.deleteObject(verifyKey);
             if (captcha == null) {
                 AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, Constants.LOGIN_FAIL,
                         MessageUtils.message("user.jcaptcha.expire")));
                 throw new CaptchaExpireException();
             }
+            redisCache.deleteObject(verifyKey);
             if (!code.equalsIgnoreCase(captcha)) {
                 AsyncManager.me().execute(AsyncFactory.recordLoginInfo(username, Constants.LOGIN_FAIL,
                         MessageUtils.message("user.jcaptcha.error")));
