@@ -18,7 +18,7 @@ import javax.validation.constraints.Pattern;
 @EqualsAndHashCode(callSuper = true)
 @Data
 @ToString
-public class SysUserUpdateParam extends SysUserParam{
+public class SysUserUpdateParam extends SysUserParam {
 
     /**
      * 用户ID
@@ -45,7 +45,8 @@ public class SysUserUpdateParam extends SysUserParam{
      */
     private Date updateTime;
 
-    @Pattern(regexp = "^$|(?![a-zA-z]+$)(?!\\d+$)(?![!@#$%^&*]+$)(?![a-zA-z\\d]+$)(?![a-zA-z!@#$%^&*]+$)(?![\\d!@#$%^&*]+$)[a-zA-Z\\d!@#$%^&*].{8,20}",message = "密码长度在12动20之间包含大/小写字母+数字+特殊字符")
+    @Pattern(regexp = "^$|^(?![a-zA-z]+$)(?!\\d+$)(?![!@#$%^&*./]+$)(?![a-zA-z\\d]+$)(?![a-zA-z!@#$%^&*./]+$)" +
+            "(?![\\d!@#$%^&*./]+$)[a-zA-Z\\d!@#$%^&*./].{12,}$", message = "密码长度在12动20之间包含大/小写字母+数字+特殊字符")
     private String password;
 
     @Override
