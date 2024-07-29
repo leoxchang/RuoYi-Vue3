@@ -78,7 +78,7 @@ public class CacheController {
     @GetMapping("/getKeys/{cacheName}")
     public R<Set<String>> getCacheKeys(@PathVariable String cacheName) {
         Set<String> cacheKeys = redisTemplate.keys(cacheName + "*");
-        return R.ok(cacheKeys);
+        return R.ok(new TreeSet<>(cacheKeys));
     }
 
     @PreAuthorize("@ss.hasPermission('monitor:cache:list')")

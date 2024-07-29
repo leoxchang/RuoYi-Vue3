@@ -59,6 +59,9 @@ public class DictUtils {
      * @return 字典标签
      */
     public static String getDictLabel(String dictType, String dictValue) {
+        if(StringUtils.isEmpty(dictValue)){
+            return StringUtils.EMPTY;
+        }
         return getDictLabel(dictType, dictValue, SEPARATOR);
     }
 
@@ -70,6 +73,9 @@ public class DictUtils {
      * @return 字典值
      */
     public static String getDictValue(String dictType, String dictLabel) {
+        if(StringUtils.isEmpty(dictLabel)){
+            return StringUtils.EMPTY;
+        }
         return getDictValue(dictType, dictLabel, SEPARATOR);
     }
 
