@@ -10,6 +10,7 @@ import com.truntao.system.service.ISysOperLogService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * 操作日志 服务层处理
@@ -28,6 +29,7 @@ public class SysOperLogServiceImpl implements ISysOperLogService {
      */
     @Override
     public void insertOperLog(SysOperLog operLog) {
+        operLog.setOperTime(new Date());
         operLogMapper.insert(operLog);
     }
 

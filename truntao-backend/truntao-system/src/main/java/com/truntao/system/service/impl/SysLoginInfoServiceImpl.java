@@ -9,6 +9,7 @@ import com.truntao.system.service.ISysLoginInfoService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 /**
  * 系统访问日志情况信息 服务层处理
@@ -28,6 +29,7 @@ public class SysLoginInfoServiceImpl implements ISysLoginInfoService {
      */
     @Override
     public void insertLoginInfo(SysLoginInfo loginInfo) {
+        loginInfo.setLoginTime(new Date());
         loginInfoMapper.insert(loginInfo);
     }
 
