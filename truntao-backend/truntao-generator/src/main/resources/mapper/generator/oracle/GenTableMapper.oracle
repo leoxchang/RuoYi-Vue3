@@ -81,7 +81,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where dt.table_name = dtc.table_name
 		and dt.table_name = uo.object_name
 		and uo.object_type = 'TABLE'
-		AND dt.table_name NOT LIKE 'QRTZ_%' AND dt.table_name NOT LIKE 'GEN_%'
+		AND dt.table_name NOT LIKE 'QRTZ\_%' AND dt.table_name NOT LIKE 'GEN\_%'
 		AND lower(dt.table_name) NOT IN (select table_name from gen_table)
 		<if test="tableName != null and tableName != ''">
 			AND lower(dt.table_name)  like lower(concat(concat('%', #{tableName}), '%'))
@@ -98,7 +98,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		where dt.table_name = dtc.table_name
 		and dt.table_name = uo.object_name
 		and uo.object_type = 'TABLE'
-		AND dt.table_name NOT LIKE 'QRTZ_%' AND dt.table_name NOT LIKE 'GEN_%'
+		AND dt.table_name NOT LIKE 'QRTZ\_%' AND dt.table_name NOT LIKE 'GEN\_%'
 		AND dt.table_name NOT IN (select table_name from gen_table)
 		and lower(dt.table_name) in
 	    <foreach collection="array" item="name" open="(" separator="," close=")">
