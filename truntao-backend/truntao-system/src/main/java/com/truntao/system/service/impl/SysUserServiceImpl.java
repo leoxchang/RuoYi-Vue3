@@ -46,27 +46,22 @@ public class SysUserServiceImpl implements ISysUserService {
     private static final String BR = "<br/>";
     @Resource
     private SysUserMapper userMapper;
-
     @Resource
     private SysRoleMapper roleMapper;
-
     @Resource
     private SysPostMapper postMapper;
-
     @Resource
     private SysUserRoleMapper userRoleMapper;
-
     @Resource
     private SysUserPostMapper userPostMapper;
-
     @Resource
     private ISysConfigService configService;
-
     @Resource
     protected Validator validator;
-
     @Resource
     private ISysDeptService deptService;
+    @Resource
+    private AdminService adminService;
 
     /**
      * 根据条件分页查询用户列表
@@ -216,7 +211,7 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public void checkUserAllowed(Long userId) {
-        if (Objects.nonNull(userId) && isAdmin(userId)) {
+        if (Objects.nonNull(userId) && adminService.isAdmin(userId)) {
             throw new ServiceException("不允许操作超级管理员用户");
         }
     }
@@ -228,7 +223,7 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     public void checkUserDataScope(Long userId) {
-        if (!isAdmin(SecurityUtils.getUserId())) {
+        if (!adminService.isAdmin(SecurityUtils.getUserId())) {
             SysUser user = new SysUser();
             user.setUserId(userId);
             List<SysUserDTO> users = SpringUtils.getAopProxy(this).selectUserList(user);
@@ -496,10 +491,5 @@ public class SysUserServiceImpl implements ISysUserService {
             successMsg.insert(0, "恭喜您，数据已全部导入成功！共 " + successNum + " 条，数据如下：");
         }
         return successMsg.toString();
-    }
-
-    @Override
-    public boolean isAdmin(Long userId) {
-        return userId != null && 1L == userId;
     }
 }

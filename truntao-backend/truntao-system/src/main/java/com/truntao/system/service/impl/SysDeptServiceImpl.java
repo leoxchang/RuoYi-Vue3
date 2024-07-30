@@ -13,7 +13,6 @@ import com.truntao.system.domain.ro.SysDeptUpdateParam;
 import com.truntao.system.mapper.SysDeptMapper;
 import com.truntao.system.mapper.SysRoleMapper;
 import com.truntao.system.service.ISysDeptService;
-import com.truntao.system.service.ISysUserService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -42,7 +41,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
     @Resource
     private SysRoleMapper roleMapper;
     @Resource
-    private ISysUserService userService;
+    private AdminService adminService;
 
     /**
      * 查询部门管理数据
@@ -189,7 +188,7 @@ public class SysDeptServiceImpl implements ISysDeptService {
      */
     @Override
     public void checkDeptDataScope(Long deptId) {
-        if (!userService.isAdmin(SecurityUtils.getUserId()) && Objects.nonNull(deptId)) {
+        if (!adminService.isAdmin(SecurityUtils.getUserId()) && Objects.nonNull(deptId)) {
             SysDept dept = new SysDept();
             dept.setDeptId(deptId);
             List<SysDept> deptList = deptMapper.selectDeptList(dept);

@@ -17,6 +17,7 @@ import com.truntao.system.domain.dto.SysUserInfoDTO;
 import com.truntao.system.domain.ro.SysDeptParam;
 import com.truntao.system.domain.ro.SysUserParam;
 import com.truntao.system.domain.ro.SysUserUpdateParam;
+import com.truntao.system.service.impl.AdminService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -59,6 +60,9 @@ public class SysUserController extends BaseController {
 
     @Resource
     private ISysPostService postService;
+
+    @Resource
+    private AdminService adminService;
 
     /**
      * 获取用户列表
@@ -106,7 +110,7 @@ public class SysUserController extends BaseController {
         userService.checkUserDataScope(userId);
         SysUserInfoDTO userInfoDTO = new SysUserInfoDTO();
         List<SysRoleDTO> roles = roleService.selectRoleAll();
-        userInfoDTO.setRoles(userService.isAdmin(userId) ? roles :
+        userInfoDTO.setRoles(adminService.isAdmin(userId) ? roles :
                 roles.stream().filter(r -> !roleService.isAdmin(r.getRoleId())).toList());
         userInfoDTO.setPosts(postService.selectPostAll());
         if (Objects.nonNull(userId)) {
@@ -208,7 +212,7 @@ public class SysUserController extends BaseController {
         SysUserDTO user = userService.selectUserById(userId);
         List<SysRoleDTO> roles = roleService.selectRolesByUserId(userId);
         sysUserAuthRoleDTO.setUser(user);
-        sysUserAuthRoleDTO.setRoles(userService.isAdmin(userId) ? roles :
+        sysUserAuthRoleDTO.setRoles(adminService.isAdmin(userId) ? roles :
                 roles.stream().filter(r -> !roleService.isAdmin(r.getRoleId())).toList());
         return R.ok(sysUserAuthRoleDTO);
     }

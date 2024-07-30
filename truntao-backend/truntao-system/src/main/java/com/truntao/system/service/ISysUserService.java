@@ -202,6 +202,4 @@ public interface ISysUserService {
      * @return 结果
      */
     String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
-
-    boolean isAdmin(Long userId);
 }

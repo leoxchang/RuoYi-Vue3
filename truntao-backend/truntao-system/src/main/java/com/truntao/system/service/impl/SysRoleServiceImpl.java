@@ -7,7 +7,6 @@ import com.truntao.common.core.domain.dto.SysRoleDTO;
 import com.truntao.system.domain.ro.SysRoleParam;
 import com.truntao.system.domain.ro.SysRoleUpdateParam;
 import com.truntao.system.service.ISysRoleService;
-import com.truntao.system.service.ISysUserService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +42,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
     @Resource
     private SysRoleDeptMapper roleDeptMapper;
     @Resource
-    private ISysUserService userService;
+    private AdminService adminService;
 
     /**
      * 根据条件分页查询角色数据
@@ -190,7 +189,7 @@ public class SysRoleServiceImpl implements ISysRoleService {
      */
     @Override
     public void checkRoleDataScope(Long... roleIds) {
-        if (!userService.isAdmin(SecurityUtils.getUserId())) {
+        if (!adminService.isAdmin(SecurityUtils.getUserId())) {
             for (Long roleId : roleIds) {
                 SysRole role = new SysRole();
                 role.setRoleId(roleId);

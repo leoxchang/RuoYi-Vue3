@@ -12,7 +12,6 @@ import com.truntao.system.mapper.SysMenuMapper;
 import com.truntao.system.mapper.SysRoleMapper;
 import com.truntao.system.mapper.SysRoleMenuMapper;
 import com.truntao.system.service.ISysMenuService;
-import com.truntao.system.service.ISysUserService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -41,7 +40,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
     @Resource
     private SysRoleMenuMapper roleMenuMapper;
     @Resource
-    private ISysUserService userService;
+    private AdminService adminService;
 
     /**
      * 根据用户查询系统菜单列表
@@ -65,7 +64,7 @@ public class SysMenuServiceImpl implements ISysMenuService {
         SysMenu menu = menuParam.getSysMenu();
         List<SysMenu> menuList;
         // 管理员显示所有菜单信息
-        if (userService.isAdmin(userId)) {
+        if (adminService.isAdmin(userId)) {
             menuList = menuMapper.selectMenuList(menu);
         } else {
             menu.getParams().put("userId", userId);
