@@ -105,6 +105,10 @@ public class SysMenuDTO {
     @Excel(name = "菜单状态", readConverterExp = "0=显示,1=隐藏")
     private String visible;
     /**
+     * 路由名称，默认和路由地址相同的驼峰格式（注意：因为vue3版本的router会删除名称相同路由，为避免名字的冲突，特殊情况可以自定义）
+     */
+    private String routeName;
+    /**
      * 菜单状态（0正常 1停用）
      */
     @Excel(name = "菜单状态", readConverterExp = "0=正常,1=停用")
