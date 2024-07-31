@@ -278,3 +278,17 @@
 .top-right-btn {
 	margin-left: auto;
 }
+ .el-overlay {
+   position: absolute !important;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+ }
+ .el-overlay-dialog {
+   position: absolute !important;
+   top: 0;
+   left: 0;
+   right: 0;
+   bottom: 0;
+ }
