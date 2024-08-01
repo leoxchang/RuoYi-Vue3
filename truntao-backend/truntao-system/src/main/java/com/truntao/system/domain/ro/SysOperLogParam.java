@@ -1,7 +1,9 @@
 package com.truntao.system.domain.ro;
 
 import java.util.Date;
+import java.util.Map;
 
+import com.truntao.common.core.page.PageDomain;
 import lombok.Data;
 import com.truntao.system.domain.po.SysOperLog;
 import lombok.ToString;
@@ -14,7 +16,7 @@ import lombok.ToString;
  */
 @Data
 @ToString
-public class SysOperLogParam {
+public class SysOperLogParam extends PageDomain {
     /**
      * 模块标题
      */
@@ -79,6 +81,10 @@ public class SysOperLogParam {
      * 消耗时间
      */
     private Long costTime;
+    /**
+     * 时间范围
+     */
+    private Map<String, Object> params;
 
     public SysOperLog getSysOperLog() {
         SysOperLog sysOperLog = new SysOperLog();
@@ -98,6 +104,7 @@ public class SysOperLogParam {
         sysOperLog.setErrorMsg(getErrorMsg());
         sysOperLog.setOperTime(getOperTime());
         sysOperLog.setCostTime(getCostTime());
+        sysOperLog.setParams(getParams());
         return sysOperLog;
     }
 }
