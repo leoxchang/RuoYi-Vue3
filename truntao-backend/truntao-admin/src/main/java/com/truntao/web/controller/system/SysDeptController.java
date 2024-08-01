@@ -43,9 +43,8 @@ public class SysDeptController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('system:dept:list')")
     @GetMapping("/list")
-    public R<PageDTO<SysDeptDTO>> list(SysDeptParam deptParam) {
-        List<SysDeptDTO> depts = deptService.selectDeptList(deptParam);
-        return R.ok(new PageDTO<>(depts));
+    public R<List<SysDeptDTO>> list(SysDeptParam deptParam) {
+        return R.ok(deptService.selectDeptList(deptParam));
     }
 
     /**
