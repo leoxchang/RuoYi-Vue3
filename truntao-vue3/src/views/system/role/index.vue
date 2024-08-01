@@ -408,7 +408,7 @@ function getDeptAllCheckedKeys() {
 
 /** 重置新增的表单以及其他数据  */
 function reset() {
-  if (menuRef.value !== undefined) {
+  if (menuRef.value !== undefined && menuRef.value !== null) {
     menuRef.value.setCheckedKeys([]);
   }
   menuExpand.value = false;
@@ -524,7 +524,7 @@ function getMenuAllCheckedKeys() {
 function submitForm() {
   proxy.$refs["roleRef"].validate(valid => {
     if (valid) {
-      if (form.value.roleId != undefined) {
+      if (form.value.roleId !== undefined && form.value.roleId !== null) {
         form.value.menuIds = getMenuAllCheckedKeys();
         updateRole(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
