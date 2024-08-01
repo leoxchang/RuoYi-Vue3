@@ -88,7 +88,7 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     @DataScope(deptAlias = "d", userAlias = "u")
-    public List<SysUserDTO> selectAllocatedList(SysUserParam userParam) {
+    public Page<SysUserDTO> selectAllocatedList(SysUserParam userParam) {
         return userMapper.selectAllocatedList(userParam.getSysUser(), userParam.getRoleId());
     }
 
@@ -100,7 +100,7 @@ public class SysUserServiceImpl implements ISysUserService {
      */
     @Override
     @DataScope(deptAlias = "d", userAlias = "u")
-    public List<SysUserDTO> selectUnallocatedList(SysUserParam userParam) {
+    public Page<SysUserDTO> selectUnallocatedList(SysUserParam userParam) {
         return userMapper.selectUnallocatedList(userParam.getSysUser(), userParam.getRoleId());
     }
 

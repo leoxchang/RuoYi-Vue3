@@ -180,10 +180,10 @@ public class SysRoleController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('system:role:list')")
     @GetMapping("/authUser/allocatedList")
-    public R<List<SysUserDTO>> allocatedList(SysUserParam userParam) {
+    public R<PageDTO<SysUserDTO>> allocatedList(SysUserParam userParam) {
         startPage();
-        List<SysUserDTO> list = userService.selectAllocatedList(userParam);
-        return R.ok(list);
+        Page<SysUserDTO> page = userService.selectAllocatedList(userParam);
+        return R.ok(new PageDTO<>(page));
     }
 
     /**
@@ -191,10 +191,10 @@ public class SysRoleController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('system:role:list')")
     @GetMapping("/authUser/unallocatedList")
-    public R<List<SysUserDTO>> unallocatedList(SysUserParam userParam) {
+    public R<PageDTO<SysUserDTO>> unallocatedList(SysUserParam userParam) {
         startPage();
-        List<SysUserDTO> list = userService.selectUnallocatedList(userParam);
-        return R.ok(list);
+        Page<SysUserDTO> page = userService.selectUnallocatedList(userParam);
+        return R.ok(new PageDTO<>(page));
     }
 
     /**

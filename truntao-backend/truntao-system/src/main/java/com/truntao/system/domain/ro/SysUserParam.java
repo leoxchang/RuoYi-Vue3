@@ -3,9 +3,11 @@ package com.truntao.system.domain.ro;
 import java.util.Date;
 import java.util.Map;
 
+import com.truntao.common.core.page.PageDomain;
 import com.truntao.common.xss.Xss;
 import lombok.Data;
 import com.truntao.common.core.domain.entity.SysUser;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.validation.constraints.Email;
@@ -18,9 +20,10 @@ import javax.validation.constraints.Size;
  * @author truntao
  * @date 2023-08-30
  */
+@EqualsAndHashCode(callSuper = true)
 @Data
 @ToString
-public class SysUserParam {
+public class SysUserParam extends PageDomain {
     /**
      * 部门ID
      */
