@@ -198,7 +198,7 @@
     </el-dialog>
 
     <!-- 分配角色数据权限对话框 -->
-    <el-dialog :title="title" v-model="openDataScope" width="500px" append-to-body>
+    <el-dialog :title="title" v-model="openDataScope" width="500px" :modal-append-to-body="false">
       <el-form :model="form" label-width="80px">
         <el-form-item label="角色名称">
           <el-input v-model="form.roleName" :disabled="true"/>
@@ -354,7 +354,7 @@ function handleExport() {
 /** 多选框选中数据 */
 function handleSelectionChange(selection) {
   ids.value = selection.map(item => item.roleId);
-  single.value = selection.length != 1;
+  single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
 
@@ -408,7 +408,7 @@ function getDeptAllCheckedKeys() {
 
 /** 重置新增的表单以及其他数据  */
 function reset() {
-  if (menuRef.value != undefined) {
+  if (menuRef.value !== undefined) {
     menuRef.value.setCheckedKeys([]);
   }
   menuExpand.value = false;
@@ -465,15 +465,15 @@ function handleUpdate(row) {
 function getRoleMenuTreeselect(roleId) {
   return roleMenuTreeselect(roleId).then(response => {
     menuOptions.value = response.data.menus;
-    return response;
+    return response.data;
   });
 }
 
 /** 根据角色ID查询部门树结构 */
 function getDeptTree(roleId) {
   return deptTreeSelect(roleId).then(response => {
-    deptOptions.value = response.depts;
-    return response;
+    deptOptions.value = response.data.depts;
+    return response.data;
   });
 }
 
