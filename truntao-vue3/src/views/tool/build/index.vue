@@ -1,3 +1,9 @@
 <template>
-   <div> 表单构建 <svg-icon icon-class="build" /> </div>
+  <form-design @onSave="onSave" />
 </template>
+<script setup>
+
+const onSave = (schema) => {
+  console.log(schema)
+}
+</script>

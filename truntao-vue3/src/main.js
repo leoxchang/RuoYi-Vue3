@@ -45,6 +45,7 @@ import TreeSelect from '@/components/TreeSelect'
 import DictTag from '@/components/DictTag'
 // 字典数据组件
 import DictData from '@/components/DictData/index'
+import VueFormCraft from 'vue-form-craft'
 
 const app = createApp(App)
 
@@ -72,6 +73,7 @@ app.use(router)
 app.use(store)
 app.use(plugins)
 app.use(elementIcons)
+app.use(VueFormCraft)
 app.component('svg-icon', SvgIcon)
 DictData.install(app)
 
