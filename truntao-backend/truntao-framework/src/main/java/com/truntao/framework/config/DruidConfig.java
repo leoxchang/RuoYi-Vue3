@@ -86,7 +86,7 @@ public class DruidConfig {
         DruidStatProperties.StatViewServlet config = properties.getStatViewServlet();
         // 提取common.js的配置路径
         String pattern = config.getUrlPattern() != null ? config.getUrlPattern() : "/druid/*";
-        String commonJsPattern = pattern.replace("\\*", "js/common.js");
+        String commonJsPattern = pattern.replaceAll("\\*", "js/common.js");
         final String filePath = "support/http/resources/js/common.js";
         // 创建filter进行过滤
         Filter filter = new Filter() {
