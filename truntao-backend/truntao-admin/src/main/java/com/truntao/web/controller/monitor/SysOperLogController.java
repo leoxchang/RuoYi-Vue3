@@ -28,8 +28,8 @@ import com.truntao.system.service.ISysOperLogService;
  * @author truntao
  */
 @RestController
-@RequestMapping("/monitor/operlog")
-public class SysOperlogController extends BaseController {
+@RequestMapping("/monitor/oper-log")
+public class SysOperLogController extends BaseController {
     @Resource
     private ISysOperLogService operLogService;
 
