@@ -1,7 +1,7 @@
 <template>
   <div class="user-info-head" @click="editCropper()">
     <img :src="options.img" title="点击上传头像" class="img-circle img-lg" />
-    <el-dialog :title="title" v-model="open" width="800px" :modal-append-to-body="false" @opened="modalOpened" @close="closeDialog">
+    <el-dialog :title="title" v-model="open" :append-to="appendTo" width="800px" @open="dialogAppendTo"  @opened="modalOpened" @close="closeDialog">
       <el-row>
         <el-col :xs="24" :md="12" :style="{ height: '350px' }">
           <vue-cropper
@@ -66,6 +66,15 @@ import useUserStore from "@/store/modules/user";
 
 const userStore = useUserStore();
 const { proxy } = getCurrentInstance();
+const appendTo = ref('body');
+
+//接收来自父组件的 append-to 属性
+const props = defineProps({
+  dialogContainer: {
+    type: Object,
+    required: true
+  }
+});
 
 const open = ref(false);
 const visible = ref(false);
@@ -87,7 +96,9 @@ const options = reactive({
 function editCropper() {
   open.value = true;
 }
-
+function dialogAppendTo(){
+  appendTo.value = props.dialogContainer
+}
 /** 打开弹出层结束时的回调 */
 function modalOpened() {
   visible.value = true;

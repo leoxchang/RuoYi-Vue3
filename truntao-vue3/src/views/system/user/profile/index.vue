@@ -1,5 +1,5 @@
 <template>
-   <div class="app-container">
+   <div ref="appContainer" class="app-container">
       <el-row :gutter="20">
          <el-col :span="6" :xs="24">
             <el-card class="box-card">
@@ -10,7 +10,7 @@
                </template>
                <div>
                   <div class="text-center">
-                     <userAvatar />
+                     <userAvatar :dialog-container="appContainer"/>
                   </div>
                   <ul class="list-group list-group-striped">
                      <li class="list-group-item">
@@ -74,6 +74,7 @@ const state = reactive({
   roleGroup: {},
   postGroup: {}
 });
+const appContainer = ref({});
 
 function getUser() {
   getUserProfile().then(response => {
@@ -81,7 +82,6 @@ function getUser() {
     state.roleGroup = response.data.roleGroup;
     state.postGroup = response.data.postGroup;
   });
-};
-
+}
 getUser();
 </script>
