@@ -130,6 +130,10 @@ function handleBeforeUpload(file) {
     );
     return false;
   }
+  if (file.name.includes(',')) {
+    proxy.$modal.msgError('文件名不正确，不能包含英文逗号!');
+    return false;
+  }
   if (props.fileSize) {
     const isLt = file.size / 1024 / 1024 < props.fileSize;
     if (!isLt) {
