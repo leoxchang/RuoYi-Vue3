@@ -226,7 +226,7 @@ function handleUnlock() {
 function handleExport() {
   proxy.download("monitor/login-info/export", {
     ...queryParams.value,
-  }, `config_${new Date().getTime()}.xlsx`);
+  }, `loginInfo_${new Date().getTime()}.xlsx`);
 }
 
 getList();
