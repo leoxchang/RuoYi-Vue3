@@ -130,7 +130,7 @@ public class LogAspect {
     /**
      * 获取注解中对方法的描述信息 用于Controller层注解
      *
-     * @param log     日志
+     * @param log        日志
      * @param sysOperLog 操作日志
      */
     public void getControllerMethodDescription(JoinPoint joinPoint, Log log, SysOperLog sysOperLog, Object jsonResult) {
@@ -159,8 +159,8 @@ public class LogAspect {
     private void setRequestValue(JoinPoint joinPoint, SysOperLog operLog, String[] excludeParamNames) {
         Map<?, ?> paramsMap = ServletUtils.getParamMap(ServletUtils.getRequest());
         String requestMethod = operLog.getRequestMethod();
-        if (CollectionUtils.isEmpty(paramsMap)
-                && (HttpMethod.PUT.name().equals(requestMethod) || HttpMethod.POST.name().equals(requestMethod))) {
+        if (CollectionUtils.isEmpty(paramsMap) && StringUtils.equalsAny(requestMethod, HttpMethod.PUT.name(),
+                HttpMethod.POST.name(), HttpMethod.DELETE.name())) {
             String params = argsArrayToString(joinPoint.getArgs(), excludeParamNames);
             operLog.setOperParam(StringUtils.substring(params, 0, 2000));
         } else {
