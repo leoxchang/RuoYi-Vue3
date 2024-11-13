@@ -159,7 +159,7 @@ public class GenTableDTO {
     /**
      * 上级菜单ID字段
      */
-    private String parentMenuId;
+    private Long parentMenuId;
 
     /**
      * 上级菜单名称字段
