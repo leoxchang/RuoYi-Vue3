@@ -8,7 +8,9 @@ import cn.hutool.core.codec.Base64;
 import com.truntao.common.core.domain.R;
 import com.truntao.common.core.domain.dto.SysMenuDTO;
 import com.truntao.common.core.domain.dto.SysUserDTO;
+import com.truntao.common.core.domain.model.LoginUser;
 import com.truntao.common.utils.file.FileUploadUtils;
+import com.truntao.framework.web.service.TokenService;
 import com.truntao.system.domain.dto.LoginDTO;
 import com.truntao.system.domain.dto.LoginUserInfoDTO;
 import com.truntao.system.domain.vo.RouterVo;
@@ -42,6 +44,9 @@ public class SysLoginController {
     @Resource
     private SysPermissionService permissionService;
 
+    @Resource
+    private TokenService tokenService;
+
     /**
      * 登录方法
      *
@@ -65,7 +70,8 @@ public class SysLoginController {
      */
     @GetMapping("getInfo")
     public R<LoginUserInfoDTO> getInfo() {
-        SysUserDTO user = SecurityUtils.getLoginUser().getUser();
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        SysUserDTO user = loginUser.getUser();
         if (StringUtils.isNotEmpty(user.getAvatar()) && !user.getAvatar().contains("data:image/png;base64,")) {
             File avatarFile =
                     FileUploadUtils.getAbsoluteFile(StringUtils.substringAfter(user.getAvatar(),
@@ -79,6 +85,11 @@ public class SysLoginController {
         Set<String> roles = permissionService.getRolePermission(user);
         // 权限集合
         Set<String> permissions = permissionService.getMenuPermission(user);
+        if (!loginUser.getPermissions().equals(permissions))
+        {
+            loginUser.setPermissions(permissions);
+            tokenService.refreshToken(loginUser);
+        }
         LoginUserInfoDTO loginUserInfoDTO = new LoginUserInfoDTO();
         loginUserInfoDTO.setUser(user);
         loginUserInfoDTO.setRoles(roles);
