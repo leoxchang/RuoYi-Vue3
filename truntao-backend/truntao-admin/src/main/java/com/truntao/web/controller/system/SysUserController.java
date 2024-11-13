@@ -107,18 +107,19 @@ public class SysUserController extends BaseController {
     @PreAuthorize("@ss.hasPermission('system:user:query')")
     @GetMapping(value = {"/", "/{userId}"})
     public R<SysUserInfoDTO> getInfo(@PathVariable(value = "userId", required = false) Long userId) {
-        userService.checkUserDataScope(userId);
         SysUserInfoDTO userInfoDTO = new SysUserInfoDTO();
-        List<SysRoleDTO> roles = roleService.selectRoleAll();
-        userInfoDTO.setRoles(adminService.isAdmin(userId) ? roles :
-                roles.stream().filter(r -> !roleService.isAdmin(r.getRoleId())).toList());
-        userInfoDTO.setPosts(postService.selectPostAll());
         if (Objects.nonNull(userId)) {
+            userService.checkUserDataScope(userId);
             SysUserDTO sysUser = userService.selectUserById(userId);
             userInfoDTO.setUser(sysUser);
             userInfoDTO.setPostIds(postService.selectPostListByUserId(userId));
             userInfoDTO.setRoleIds(sysUser.getRoles().stream().map(SysRoleDTO::getRoleId).toList());
         }
+
+        List<SysRoleDTO> roles = roleService.selectRoleAll();
+        userInfoDTO.setRoles(adminService.isAdmin(userId) ? roles :
+                roles.stream().filter(r -> !roleService.isAdmin(r.getRoleId())).toList());
+        userInfoDTO.setPosts(postService.selectPostAll());
         return R.ok(userInfoDTO);
     }
 
