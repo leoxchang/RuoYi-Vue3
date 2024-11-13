@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import com.truntao.common.constant.UserConstants;
 import com.truntao.common.core.domain.dto.SysRoleDTO;
 import com.truntao.common.core.domain.dto.SysUserDTO;
 import org.apache.commons.collections4.CollectionUtils;
@@ -93,7 +94,8 @@ public class DataScopeAspect {
         StringBuilder sqlString = new StringBuilder();
         List<String> scopeCustomIds = new ArrayList<>();
         user.getRoles().forEach(role -> {
-            if (DATA_SCOPE_CUSTOM.equals(role.getDataScope()) && CollectionUtils.containsAny(role.getPermissions(),
+            if (DATA_SCOPE_CUSTOM.equals(role.getDataScope()) && StringUtils.equals(role.getStatus(),
+                    UserConstants.ROLE_NORMAL) && CollectionUtils.containsAny(role.getPermissions(),
                     Convert.toStrArray(permission))) {
                 scopeCustomIds.add(Convert.toStr(role.getRoleId()));
             }
@@ -102,7 +104,7 @@ public class DataScopeAspect {
 
         for (SysRoleDTO role : user.getRoles()) {
             String dataScope = role.getDataScope();
-            if (conditions.contains(dataScope)) {
+            if (conditions.contains(dataScope) || StringUtils.equals(role.getStatus(), UserConstants.ROLE_DISABLE)){
                 continue;
             }
             if (!CollectionUtils.containsAny(role.getPermissions(), Convert.toStrArray(permission))) {
@@ -124,7 +126,8 @@ public class DataScopeAspect {
             } else if (DATA_SCOPE_DEPT.equals(dataScope)) {
                 sqlString.append(CharSequenceUtil.format(" OR {}.dept_id = {} ", deptAlias, user.getDeptId()));
             } else if (DATA_SCOPE_DEPT_AND_CHILD.equals(dataScope)) {
-                sqlString.append(CharSequenceUtil.format(" OR {}.dept_id IN ( SELECT dept_id FROM sys_dept WHERE dept_id =" +
+                sqlString.append(CharSequenceUtil.format(" OR {}.dept_id IN ( SELECT dept_id FROM sys_dept WHERE " +
+                        "dept_id =" +
                         " {} or find_in_set( {} , ancestors ) )", deptAlias, user.getDeptId(), user.getDeptId()));
             } else if (DATA_SCOPE_SELF.equals(dataScope)) {
                 if (StringUtils.isNotBlank(userAlias)) {

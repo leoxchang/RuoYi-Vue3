@@ -4,8 +4,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.truntao.common.constant.UserConstants;
 import com.truntao.common.core.domain.dto.SysRoleDTO;
 import com.truntao.common.core.domain.dto.SysUserDTO;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -22,8 +24,9 @@ public class SysPermissionService {
     private final ISysRoleService roleService;
 
     private final ISysMenuService menuService;
+
     @Autowired
-    public SysPermissionService(ISysRoleService roleService,ISysMenuService menuService){
+    public SysPermissionService(ISysRoleService roleService, ISysMenuService menuService) {
         this.roleService = roleService;
         this.menuService = menuService;
     }
@@ -61,9 +64,11 @@ public class SysPermissionService {
             if (!CollectionUtils.isEmpty(roles)) {
                 // 多角色设置permissions属性，以便数据权限匹配权限
                 for (SysRoleDTO role : roles) {
-                    Set<String> rolePerms = menuService.selectMenuPermsByRoleId(role.getRoleId());
-                    role.setPermissions(rolePerms);
-                    perms.addAll(rolePerms);
+                    if (StringUtils.equals(role.getStatus(), UserConstants.ROLE_NORMAL)) {
+                        Set<String> rolePerms = menuService.selectMenuPermsByRoleId(role.getRoleId());
+                        role.setPermissions(rolePerms);
+                        perms.addAll(rolePerms);
+                    }
                 }
             } else {
                 perms.addAll(menuService.selectMenuPermsByUserId(user.getUserId()));
