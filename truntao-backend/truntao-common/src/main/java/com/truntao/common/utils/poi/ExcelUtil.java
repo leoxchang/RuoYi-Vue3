@@ -166,6 +166,11 @@ public class ExcelUtil<T> {
     private final Class<T> clazz;
 
     /**
+     * 需要显示列属性
+     */
+    public String[] includeFields;
+
+    /**
      * 需要排除列属性
      */
     private String[] excludeFields;
@@ -180,6 +185,15 @@ public class ExcelUtil<T> {
 
     public ExcelUtil(Class<T> clazz) {
         this.clazz = clazz;
+    }
+
+    /**
+     * 仅在Excel中显示列属性
+     *
+     * @param fields 列属性名 示例[单个"name"/多个"id","name"]
+     */
+    public void showColumn(String... fields) {
+        this.includeFields = fields;
     }
 
     /**
@@ -388,8 +402,7 @@ public class ExcelUtil<T> {
                     if (StringUtils.isNotEmpty(attr.readConverterExp())) {
                         val = reverseByExp(Convert.toStr(val), attr.readConverterExp(), attr.separator());
                     } else if (StringUtils.isNotEmpty(attr.dictType())) {
-                        if (!sysDictMap.containsKey(attr.dictType() + val))
-                        {
+                        if (!sysDictMap.containsKey(attr.dictType() + val)) {
                             String dictValue = reverseDictByExp(Convert.toStr(val), attr.dictType(), attr.separator());
                             sysDictMap.put(attr.dictType() + val, dictValue);
                         }
@@ -857,12 +870,10 @@ public class ExcelUtil<T> {
             // 设置列宽
             sheet.setColumnWidth(column, (int) ((attr.width() + 0.72) * 256));
         }
-        if (StringUtils.isNotEmpty(attr.prompt()) || attr.combo().length > 0 || attr.comboReadDict()){
+        if (StringUtils.isNotEmpty(attr.prompt()) || attr.combo().length > 0 || attr.comboReadDict()) {
             String[] comboArray = attr.combo();
-            if (attr.comboReadDict())
-            {
-                if (!sysDictMap.containsKey("combo_" + attr.dictType()))
-                {
+            if (attr.comboReadDict()) {
+                if (!sysDictMap.containsKey("combo_" + attr.dictType())) {
                     String labels = DictUtils.getDictLabels(attr.dictType());
                     sysDictMap.put("combo_" + attr.dictType(), labels);
                 }
@@ -1225,41 +1236,67 @@ public class ExcelUtil<T> {
      * 获取字段注解信息
      */
     public List<Object[]> getFields() {
-        List<Object[]> fieldList = new ArrayList<>();
+        List<Object[]> fields = new ArrayList<>();
         List<Field> tempFields = new ArrayList<>();
         tempFields.addAll(Arrays.asList(clazz.getSuperclass().getDeclaredFields()));
         tempFields.addAll(Arrays.asList(clazz.getDeclaredFields()));
-        for (Field field : tempFields) {
-            if (!ArrayUtils.contains(this.excludeFields, field.getName())) {
-                // 单注解
-                if (field.isAnnotationPresent(Excel.class)) {
-                    Excel attr = field.getAnnotation(Excel.class);
-                    if (attr != null && (attr.type() == Type.ALL || attr.type() == type)) {
-                        field.setAccessible(true);
-                        fieldList.add(new Object[]{field, attr});
-                    }
-                    if (Collection.class.isAssignableFrom(field.getType())) {
-                        subMethod = getSubMethod(field.getName(), clazz);
-                        ParameterizedType pt = (ParameterizedType) field.getGenericType();
-                        Class<?> subClass = (Class<?>) pt.getActualTypeArguments()[0];
-                        this.subFields = FieldUtils.getFieldsListWithAnnotation(subClass, Excel.class);
-                    }
+        if (ArrayUtils.isNotEmpty(includeFields)) {
+            for (Field field : tempFields) {
+                if (ArrayUtils.contains(this.includeFields, field.getName()) || field.isAnnotationPresent(Excels.class)) {
+                    addField(fields, field);
                 }
+            }
+        } else if (ArrayUtils.isNotEmpty(excludeFields)) {
+            for (Field field : tempFields) {
+                if (!ArrayUtils.contains(this.excludeFields, field.getName())) {
+                    addField(fields, field);
+                }
+            }
+        } else {
+            for (Field field : tempFields) {
+                addField(fields, field);
+            }
+        }
+        return fields;
+    }
 
-                // 多注解
-                if (field.isAnnotationPresent(Excels.class)) {
-                    Excels attrs = field.getAnnotation(Excels.class);
-                    Excel[] excels = attrs.value();
-                    for (Excel attr : excels) {
-                        if (!ArrayUtils.contains(this.excludeFields, field.getName() + "." + attr.targetAttr()) && (attr.type() == Type.ALL || attr.type() == type)) {
-                            field.setAccessible(true);
-                            fieldList.add(new Object[]{field, attr});
-                        }
+    /**
+     * 添加字段信息
+     */
+    public void addField(List<Object[]> fields, Field field) {
+        // 单注解
+        if (field.isAnnotationPresent(Excel.class)) {
+            Excel attr = field.getAnnotation(Excel.class);
+            if (attr != null && (attr.type() == Type.ALL || attr.type() == type)) {
+                field.setAccessible(true);
+                fields.add(new Object[]{field, attr});
+            }
+            if (Collection.class.isAssignableFrom(field.getType())) {
+                subMethod = getSubMethod(field.getName(), clazz);
+                ParameterizedType pt = (ParameterizedType) field.getGenericType();
+                Class<?> subClass = (Class<?>) pt.getActualTypeArguments()[0];
+                this.subFields = FieldUtils.getFieldsListWithAnnotation(subClass, Excel.class);
+            }
+        }
+
+        // 多注解
+        if (field.isAnnotationPresent(Excels.class)) {
+            Excels attrs = field.getAnnotation(Excels.class);
+            Excel[] excels = attrs.value();
+            for (Excel attr : excels) {
+                if (ArrayUtils.isNotEmpty(includeFields)) {
+                    if (ArrayUtils.contains(this.includeFields, field.getName() + "." + attr.targetAttr()) && (attr.type() == Type.ALL || attr.type() == type)) {
+                        field.setAccessible(true);
+                        fields.add(new Object[]{field, attr});
+                    }
+                } else {
+                    if (!ArrayUtils.contains(this.excludeFields, field.getName() + "." + attr.targetAttr()) && (attr.type() == Type.ALL || attr.type() == type)) {
+                        field.setAccessible(true);
+                        fields.add(new Object[]{field, attr});
                     }
                 }
             }
         }
-        return fieldList;
     }
 
     /**
