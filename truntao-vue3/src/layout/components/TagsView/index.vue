@@ -260,7 +260,7 @@ function handleScroll() {
 
 <style lang='scss' scoped>
 .tags-view-container {
-  height: 34px;
+  height: 38px;
   width: 100%;
   background: #fff;
   border-bottom: 1px solid #d8dce5;
@@ -270,7 +270,7 @@ function handleScroll() {
       display: inline-block;
       position: relative;
       cursor: pointer;
-      height: 26px;
+      height: 29px;
       line-height: 26px;
       border: 1px solid #d8dce5;
       color: #495060;
