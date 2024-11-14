@@ -1,5 +1,6 @@
 <template>
    <div class="app-container">
+     <div class="query-container">
       <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch">
          <el-form-item label="公告标题" prop="noticeTitle">
             <el-input
@@ -67,7 +68,8 @@
          </el-col>
          <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
       </el-row>
-
+     </div>
+     <div class="table-container">
       <el-table v-loading="loading" :data="noticeList" @selection-change="handleSelectionChange">
          <el-table-column type="selection" width="55" align="center" />
          <el-table-column label="序号" align="center" prop="noticeId" width="100" />
@@ -108,7 +110,7 @@
          v-model:limit="queryParams.pageSize"
          @pagination="getList"
       />
-
+     </div>
       <!-- 添加或修改公告对话框 -->
       <el-dialog :title="title" v-model="open" width="780px" :modal-append-to-body="false">
          <el-form ref="noticeRef" :model="form" :rules="rules" label-width="80px">
