@@ -26,7 +26,7 @@ services:
     container_name: truntao-frame-ui
     image: ${REGISTRY_ADDR:-192.168.88.4:5000}/truntao-frame-ui:latest
     build:
-      context: ./truntao-vue2
+      context: ./truntao-vue3
       dockerfile: ./docker/Dockerfile
     ports:
       - 6262:80
