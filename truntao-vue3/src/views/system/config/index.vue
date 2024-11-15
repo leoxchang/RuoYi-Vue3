@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <div class="query-container">>
+    <div class="query-container">
       <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
         <el-form-item label="参数名称" prop="configName">
           <el-input

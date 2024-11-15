@@ -85,10 +85,15 @@ function isActive(r) {
 }
 
 function activeStyle(tag) {
-  if (!isActive(tag)) return {};
+  if (!isActive(tag)) return {
+    "min-width": "80px",
+    "text-align": "center",
+  };
   return {
     "background-color": theme.value,
-    "border-color": theme.value
+    "border-color": theme.value,
+    "min-width": "80px",
+    "text-align": "center",
   };
 }
 
