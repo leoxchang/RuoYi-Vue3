@@ -1,0 +1,38 @@
+services:
+  truntao-frame:
+    container_name: truntao-frame
+    image: ${REGISTRY_ADDR:-192.168.88.4:5000}/truntao-frame:latest
+    build:
+      context: ./truntao-backend
+      dockerfile: ./Dockerfile
+    ports:
+      - 6363:6363
+    volumes:
+      - /home/frame/data:/home/ruoyi/uploadPath
+      - /home/frame/logs:/home/ruoyi/logs
+    environment: 
+      - JAVA_OPTS=-Xmx512m -Djava.security.egd=file:/dev/./urandom
+      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE:-test}
+      - SERVER_PORT=${SERVER_PORT:-6363}
+      - TRUNTAO_PROFILE=/home/ruoyi/uploadPath
+      - LOGBACK_PATH=/home/ruoyi/logs   
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
+  truntao-frame-ui:
+    container_name: truntao-frame-ui
+    image: ${REGISTRY_ADDR:-192.168.88.4:5000}/truntao-frame-ui:latest
+    build:
+      context: ./truntao-vue2
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - 6262:80
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    restart: always
