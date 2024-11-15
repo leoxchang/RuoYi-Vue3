@@ -34,12 +34,12 @@ const tagsViewStore = useTagsViewStore()
 
 .hasTagsView {
   .app-main {
-    /* 84 = navbar + tags-view = 50 + 34 */
-    min-height: calc(100vh - 84px);
+    /* 84 = navbar + tags-view = 50 + 38 */
+    min-height: calc(100vh - 88px);
   }
 
   .fixed-header + .app-main {
-    padding-top: 84px;
+    padding-top: 88px;
   }
 }
 </style>
