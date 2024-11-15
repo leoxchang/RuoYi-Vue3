@@ -17,6 +17,7 @@ function build_frame_ui() {
 }
 
 function build_all() {
+    echo 'start build all'
 }
 
 
