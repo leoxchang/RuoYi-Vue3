@@ -1,9 +1,17 @@
 /**
+ * 判断value字符串是否为空
+ * @param {string} value
+ * @returns {Boolean}
+ */
+export function isEmpty(value) {
+  return value == null || value === "" || value === undefined || value === "undefined";
+}
+/**
  * 判断url是否是http或https
  * @param {string} path
  * @returns {Boolean}
  */
- export function isHttp(url) {
+export function isHttp(url) {
   return url.indexOf('http://') !== -1 || url.indexOf('https://') !== -1
 }
 
@@ -12,7 +20,7 @@
  * @param {string} path
  * @returns {Boolean}
  */
- export function isExternal(path) {
+export function isExternal(path) {
   return /^(https?:|mailto:|tel:)/.test(path)
 }
 
