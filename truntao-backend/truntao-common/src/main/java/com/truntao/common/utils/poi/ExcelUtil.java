@@ -224,8 +224,6 @@ public class ExcelUtil<T> {
      */
     public void createTitle() {
         if (StringUtils.isNotEmpty(title)) {
-            subMergedFirstRowNum++;
-            subMergedLastRowNum++;
             int titleLastCol = this.fields.size() - 1;
             if (isSubList()) {
                 titleLastCol = titleLastCol + subFields.size() - 1;
@@ -235,8 +233,7 @@ public class ExcelUtil<T> {
             Cell titleCell = titleRow.createCell(0);
             titleCell.setCellStyle(styles.get("title"));
             titleCell.setCellValue(title);
-            sheet.addMergedRegion(new CellRangeAddress(titleRow.getRowNum(), titleRow.getRowNum(),
-                    titleRow.getRowNum(), titleLastCol));
+            sheet.addMergedRegion(new CellRangeAddress(titleRow.getRowNum(), titleRow.getRowNum(), 0, titleLastCol));
         }
     }
 
@@ -245,22 +242,29 @@ public class ExcelUtil<T> {
      */
     public void createSubHead() {
         if (isSubList()) {
-            subMergedFirstRowNum++;
-            subMergedLastRowNum++;
             Row subRow = sheet.createRow(rowNum);
-            int excelNum = 0;
+            int column = 0;
+            int subFieldSize = subFields != null ? subFields.size() : 0;
             for (Object[] objects : fields) {
+                Field field = (Field) objects[0];
                 Excel attr = (Excel) objects[1];
-                Cell headCell1 = subRow.createCell(excelNum);
-                headCell1.setCellValue(attr.name());
-                headCell1.setCellStyle(styles.get(CharSequenceUtil.format(HEADER_STYLE, attr.headerColor(),
-                        attr.headerBackgroundColor())));
-                excelNum++;
-            }
-            int headFirstRow = excelNum - 1;
-            int headLastRow = headFirstRow + subFields.size() - 1;
-            if (headLastRow > headFirstRow) {
-                sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, headFirstRow, headLastRow));
+                if (Collection.class.isAssignableFrom(field.getType())) {
+                    Cell cell = subRow.createCell(column);
+                    cell.setCellValue(attr.name());
+                    cell.setCellStyle(styles.get(CharSequenceUtil.format("header_{}_{}", attr.headerColor(),
+                            attr.headerBackgroundColor())));
+                    if (subFieldSize > 1) {
+                        CellRangeAddress cellAddress = new CellRangeAddress(rowNum, rowNum, column,
+                                column + subFieldSize - 1);
+                        sheet.addMergedRegion(cellAddress);
+                    }
+                    column += subFieldSize;
+                } else {
+                    Cell cell = subRow.createCell(column++);
+                    cell.setCellValue(attr.name());
+                    cell.setCellStyle(styles.get(CharSequenceUtil.format("header_{}_{}", attr.headerColor(),
+                            attr.headerBackgroundColor())));
+                }
             }
             rowNum++;
         }
@@ -615,53 +619,75 @@ public class ExcelUtil<T> {
     public void fillExcelData(int index, Row row) {
         int startNo = index * SHEET_SIZE;
         int endNo = Math.min(startNo + SHEET_SIZE, list.size());
-        int rowNo = (1 + rowNum) - startNo;
+        int currentRowNum = rowNum + 1; // 从标题行后开始
+
         for (int i = startNo; i < endNo; i++) {
-            int tempRowNo = i > 1 ? rowNo + 1 : rowNo + i;
-            rowNo = isSubList() ? tempRowNo : i + 1 + rowNum - startNo;
-            row = sheet.createRow(rowNo);
+            row = sheet.createRow(currentRowNum);
             // 得到导出对象.
             T vo = (T) list.get(i);
-            Collection<?> subList = null;
-            if (isSubList()) {
-                if (isSubListValue(vo)) {
-                    subList = getListCellValue(vo);
-                    subMergedLastRowNum = subMergedLastRowNum + subList.size();
-                } else {
-                    subMergedFirstRowNum++;
-                    subMergedLastRowNum++;
-                }
-            }
             int column = 0;
+            int maxSubListSize = getCurrentMaxSubListSize(vo);
             for (Object[] os : fields) {
                 Field field = (Field) os[0];
                 Excel excel = (Excel) os[1];
-                if (Collection.class.isAssignableFrom(field.getType()) && Objects.nonNull(subList)) {
-                    boolean subFirst = false;
-                    for (Object obj : subList) {
-                        if (subFirst) {
-                            rowNo++;
-                            row = sheet.createRow(rowNo);
-                        }
-                        List<Field> subFieldList = FieldUtils.getFieldsListWithAnnotation(obj.getClass(), Excel.class);
-                        int subIndex = 0;
-                        for (Field subField : subFieldList) {
-                            if (subField.isAnnotationPresent(Excel.class)) {
-                                subField.setAccessible(true);
-                                Excel attr = subField.getAnnotation(Excel.class);
-                                this.addCell(attr, row, (T) obj, subField, column + subIndex);
+                if (Collection.class.isAssignableFrom(field.getType())) {
+                    try {
+                        Collection<?> subList = (Collection<?>) getTargetValue(vo, field, excel);
+                        if (subList != null && !subList.isEmpty()) {
+                            int subIndex = 0;
+                            for (Object subVo : subList) {
+                                Row subRow = sheet.getRow(currentRowNum + subIndex);
+                                if (subRow == null) {
+                                    subRow = sheet.createRow(currentRowNum + subIndex);
+                                }
+
+                                int subColumn = column;
+                                for (Field subField : subFields) {
+                                    Excel subExcel = subField.getAnnotation(Excel.class);
+                                    addCell(subExcel, subRow, (T) subVo, subField, subColumn++);
+                                }
+                                subIndex++;
                             }
-                            subIndex++;
+                            column += subFields.size();
                         }
-                        subFirst = true;
+                    } catch (Exception e) {
+                        log.error("填充集合数据失败", e);
                     }
-                    this.subMergedFirstRowNum = this.subMergedFirstRowNum + subList.size();
                 } else {
-                    this.addCell(excel, row, vo, field, column++);
+                    // 创建单元格并设置值
+                    addCell(excel, row, vo, field, column);
+                    if (maxSubListSize > 1 && excel.needMerge()) {
+                        sheet.addMergedRegion(new CellRangeAddress(currentRowNum, currentRowNum + maxSubListSize - 1,
+                                column, column));
+                    }
+                    column++;
+                }
+            }
+            currentRowNum += maxSubListSize;
+        }
+    }
+
+    /**
+     * 获取子列表最大数
+     */
+    private int getCurrentMaxSubListSize(T vo) {
+        int maxSubListSize = 1;
+        for (Object[] os : fields) {
+            Field field = (Field) os[0];
+            if (Collection.class.isAssignableFrom(field.getType())) {
+                try {
+                    Collection<?> subList = (Collection<?>) getTargetValue(vo, field, (Excel) os[1]);
+                    if (subList != null && !subList.isEmpty()) {
+                        maxSubListSize = Math.max(maxSubListSize, subList.size());
+                    }
+                } catch (Exception e) {
+                    log.error("获取集合大小失败", e);
                 }
             }
         }
+        return maxSubListSize;
     }
+
 
     /**
      * 创建表格样式
@@ -903,9 +929,10 @@ public class ExcelUtil<T> {
                 // 创建cell
                 cell = row.createCell(column);
                 if (isSubListValue(vo) && getListCellValue(vo).size() > 1 && attr.needMerge()) {
-                    CellRangeAddress cellAddress = new CellRangeAddress(subMergedFirstRowNum, subMergedLastRowNum,
-                            column, column);
-                    sheet.addMergedRegion(cellAddress);
+                    if (subMergedLastRowNum >= subMergedFirstRowNum) {
+                        sheet.addMergedRegion(new CellRangeAddress(subMergedFirstRowNum, subMergedLastRowNum, column,
+                                column));
+                    }
                 }
                 cell.setCellStyle(styles.get(CharSequenceUtil.format(DATA_STYLE, attr.align(), attr.color(),
                         attr.backgroundColor())));
@@ -1190,6 +1217,7 @@ public class ExcelUtil<T> {
      * @return 最终的属性值
      */
     private Object getTargetValue(T vo, Field field, Excel excel) throws NoSuchFieldException, IllegalAccessException {
+        field.setAccessible(true);
         Object o = field.get(vo);
         if (StringUtils.isNotEmpty(excel.targetAttr())) {
             String target = excel.targetAttr();
@@ -1268,7 +1296,6 @@ public class ExcelUtil<T> {
         if (field.isAnnotationPresent(Excel.class)) {
             Excel attr = field.getAnnotation(Excel.class);
             if (attr != null && (attr.type() == Type.ALL || attr.type() == type)) {
-                field.setAccessible(true);
                 fields.add(new Object[]{field, attr});
             }
             if (Collection.class.isAssignableFrom(field.getType())) {
@@ -1286,12 +1313,10 @@ public class ExcelUtil<T> {
             for (Excel attr : excels) {
                 if (ArrayUtils.isNotEmpty(includeFields)) {
                     if (ArrayUtils.contains(this.includeFields, field.getName() + "." + attr.targetAttr()) && (attr.type() == Type.ALL || attr.type() == type)) {
-                        field.setAccessible(true);
                         fields.add(new Object[]{field, attr});
                     }
                 } else {
                     if (!ArrayUtils.contains(this.excludeFields, field.getName() + "." + attr.targetAttr()) && (attr.type() == Type.ALL || attr.type() == type)) {
-                        field.setAccessible(true);
                         fields.add(new Object[]{field, attr});
                     }
                 }
