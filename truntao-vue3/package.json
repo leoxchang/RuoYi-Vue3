@@ -31,7 +31,7 @@
     "vue-cropper": "1.1.1",
     "vue-router": "4.4.0",
     "crypto-js": "4.2.0",
-    "vue-form-craft": "3.0.11"
+    "vue-form-craft": "4.6.6"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "5.0.5",
