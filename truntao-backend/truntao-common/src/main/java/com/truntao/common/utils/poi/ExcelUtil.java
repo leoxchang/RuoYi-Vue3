@@ -776,13 +776,15 @@ public class ExcelUtil<T> {
         Map<String, CellStyle> stylesMap = new HashMap<>();
         for (Object[] os : fields) {
             Excel excel = (Excel) os[1];
-            String key = CharSequenceUtil.format(DATA_STYLE, excel.align(), excel.color(), excel.backgroundColor());
+            String key = CharSequenceUtil.format("data_{}_{}_{}_{}_{}", excel.align(), excel.color(),
+                    excel.backgroundColor(), excel.cellType(), excel.wrapText());
             stylesMap.computeIfAbsent(key, k -> {
                 CellStyle style = wb.createCellStyle();
                 style.setAlignment(excel.align());
                 setCellStyle(style);
                 style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
                 style.setFillForegroundColor(excel.backgroundColor().getIndex());
+                style.setWrapText(excel.wrapText());
                 Font dataFont = wb.createFont();
                 dataFont.setFontName(ARIAL);
                 dataFont.setFontHeightInPoints((short) 10);
@@ -819,8 +821,8 @@ public class ExcelUtil<T> {
                 attr.headerBackgroundColor())));
         if (isSubList()) {
             // 填充默认样式，防止合并单元格样式失效
-            sheet.setDefaultColumnStyle(column, styles.get(CharSequenceUtil.format(DATA_STYLE, attr.align(),
-                    attr.color(), attr.backgroundColor())));
+            sheet.setDefaultColumnStyle(column, styles.get(CharSequenceUtil.format("data_{}_{}_{}_{}_{}",
+                    attr.align(), attr.color(), attr.backgroundColor(), attr.cellType(), attr.wrapText())));
             if (attr.needMerge()) {
                 sheet.addMergedRegion(new CellRangeAddress(rowNum - 1, rowNum, column, column));
             }
@@ -934,8 +936,8 @@ public class ExcelUtil<T> {
                                 column));
                     }
                 }
-                cell.setCellStyle(styles.get(CharSequenceUtil.format(DATA_STYLE, attr.align(), attr.color(),
-                        attr.backgroundColor())));
+                cell.setCellStyle(styles.get(CharSequenceUtil.format("data_{}_{}_{}_{}_{}", attr.align(),
+                        attr.color(), attr.backgroundColor(), attr.cellType(), attr.wrapText())));
 
                 // 用于读取对象中的属性
                 Object value = getTargetValue(vo, field, attr);
