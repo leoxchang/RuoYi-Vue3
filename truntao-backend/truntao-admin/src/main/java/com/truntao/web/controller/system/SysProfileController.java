@@ -6,6 +6,7 @@ import com.truntao.common.core.domain.R;
 import com.truntao.common.core.domain.dto.SysUserDTO;
 import com.truntao.system.domain.dto.AvatarDTO;
 import com.truntao.system.domain.dto.ProfileDTO;
+import com.truntao.system.domain.ro.SysPasswordParam;
 import com.truntao.system.domain.ro.SysUserUpdateParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -94,7 +95,9 @@ public class SysProfileController extends BaseController {
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping("/updatePwd")
-    public R<Void> updatePwd(String oldPassword, String newPassword) {
+    public R<Void> updatePwd(@RequestBody SysPasswordParam sysPasswordParam) {
+        String oldPassword = sysPasswordParam.getOldPassword();
+        String newPassword = sysPasswordParam.getNewPassword();
         LoginUser loginUser = getLoginUser();
         String userName = loginUser.getUsername();
         String password = loginUser.getPassword();
