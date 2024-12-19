@@ -6,7 +6,7 @@
 	
     <groupId>com.truntao</groupId>
     <artifactId>truntao-backend</artifactId>
-    <version>3.8.7</version>
+    <version>3.8.8</version>
 
     <name>truntao-backend</name>
     <description>base管理系统</description>
