@@ -2,8 +2,10 @@ package com.truntao.common.core.domain;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.truntao.common.constant.UserConstants;
 import com.truntao.common.core.domain.dto.SysMenuDTO;
 import com.truntao.common.core.domain.dto.SysDeptDTO;
 import lombok.Data;
@@ -26,6 +28,9 @@ public class TreeSelect implements Serializable {
      */
     private String label;
 
+    /** 节点禁用 */
+    private boolean disabled = false;
+
     /**
      * 子节点
      */
@@ -38,6 +43,7 @@ public class TreeSelect implements Serializable {
     public TreeSelect(SysDeptDTO dept) {
         this.id = dept.getDeptId();
         this.label = dept.getDeptName();
+        this.disabled = Objects.equals(UserConstants.DEPT_DISABLE, dept.getStatus());
         this.children = dept.getChildren().stream().map(TreeSelect::new).toList();
     }
 
