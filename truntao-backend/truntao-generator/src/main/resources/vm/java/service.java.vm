@@ -10,7 +10,7 @@ import ${packageName}.domain.ro.${ClassName}UpdateParam;
  * ${functionName}Service接口
  * 
  * @author ${author}
- * @date ${datetime}
+ * Created ${datetime}
  */
 public interface I${ClassName}Service {
     /**

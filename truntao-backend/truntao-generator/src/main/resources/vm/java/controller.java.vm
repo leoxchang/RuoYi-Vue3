@@ -33,7 +33,7 @@ import com.truntao.common.core.page.PageDTO;
  * ${functionName}Controller
  * 
  * @author ${author}
- * @date ${datetime}
+ * Created ${datetime}
  */
 @RestController
 @RequestMapping("/${moduleName}/${businessName}")

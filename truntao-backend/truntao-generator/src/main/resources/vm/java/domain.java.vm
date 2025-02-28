@@ -18,7 +18,7 @@ import java.io.Serial;
  * ${functionName}对象 ${tableName}
  *
  * @author ${author}
- * @date ${datetime}
+ * Created ${datetime}
  */
 #if($table.crud || $table.sub)
 #set($Entity="BaseEntity")
@@ -49,11 +49,10 @@ public class ${ClassName} extends ${Entity}{
     private $column.javaType $column.javaField;
     #elseif($column.columnName == 'del_flag')
     /** $column.columnComment */
-    @TableField("${column.columnName}")
     @TableLogic
+    @TableField("${column.columnName}")
     private $column.javaType $column.javaField;
     #elseif($column.javaField == 'createTime'|| $column.javaField == 'updateTime'|| $column.javaField == 'createBy'|| $column.javaField == 'updateBy')
-
     #else
     /** $column.columnComment */
     @TableField("${column.columnName}")

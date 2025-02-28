@@ -1,5 +1,6 @@
 package com.truntao.generator.service;
 
+import cn.hutool.json.JSONUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
 import com.github.pagehelper.Page;
@@ -122,6 +123,7 @@ public class GenTableServiceImpl implements IGenTableService {
     public void updateGenTable(GenTableParam genTableParam) {
         GenTable genTable = new GenTable();
         BeanUtils.copyProperties(genTableParam, genTable);
+        genTable.setOptions(JSONUtil.toJsonStr(genTableParam.getParams()));
         int row = genTableMapper.updateById(genTable);
         if (row > 0) {
             for (GenTableColumn cenTableColumn : genTableParam.getColumns()) {

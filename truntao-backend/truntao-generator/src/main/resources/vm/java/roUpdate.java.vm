@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  * ${functionName}对象 ${tableName}
  *
  * @author ${author}
- * @date ${datetime}
+ * Created ${datetime}
  */
 #if($table.crud || $table.sub)
 #set($Entity="BaseEntity")
@@ -38,7 +38,7 @@ public class ${ClassName}UpdateParam extends ${ClassName}Param{
 #else
 #set($comment=$column.columnComment)
 #end
-    #if($column.javaField == 'id' || $column.javaField == 'createTime'|| $column.javaField == 'updateTime'|| $column.javaField == 'createBy'|| $column.javaField == 'updateBy')
+    #if($column.javaField == 'id')
         /** $column.columnComment */
         #if($column.javaField == 'createTime'|| $column.javaField == 'updateTime')
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -69,12 +69,14 @@ public class ${ClassName}UpdateParam extends ${ClassName}Param{
     public ${ClassName} get${ClassName}(){
         ${ClassName} ${className} = super.get${ClassName}();
         #foreach ($column in $columns)
-            #if($column.javaField.length() > 2 && $column.javaField.substring(1,2).matches("[A-Z]"))
-                #set($AttrName=$column.javaField)
-            #else
-                #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+            #if($column.javaField == 'id')
+                #if($column.javaField.length() > 2 && $column.javaField.substring(1,2).matches("[A-Z]"))
+                    #set($AttrName=$column.javaField)
+                #else
+                    #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
+                #end
+                    ${className}.set${AttrName}(get${AttrName}());
             #end
-                ${className}.set${AttrName}(get${AttrName}());
         #end
         return ${className};
     }

@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 业务表 gen_table
@@ -142,6 +143,8 @@ public class GenTableParam {
      */
     private String parentMenuName;
 
+    private Map<String,Object> params;
+
     public GenTable getGenTable() {
         GenTable genTable = new GenTable();
         genTable.setTableId(getTableId());
@@ -160,6 +163,7 @@ public class GenTableParam {
         genTable.setGenType(getGenType());
         genTable.setGenPath(getGenPath());
         genTable.setOptions(getOptions());
+        genTable.setParams(getParams());
         return genTable;
     }
 }

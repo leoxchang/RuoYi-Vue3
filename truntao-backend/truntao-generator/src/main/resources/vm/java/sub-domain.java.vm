@@ -9,7 +9,7 @@ import com.truntao.framework.aspectj.lang.annotation.Excel;
  * ${subTable.functionName}对象 ${subTableName}
  * 
  * @author ${author}
- * @date ${datetime}
+ * Created ${datetime}
  */
 public class ${subClassName} extends BaseEntity{
     private static final long serialVersionUID = 1L;

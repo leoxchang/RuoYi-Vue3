@@ -157,10 +157,10 @@ public class VelocityUtils {
         templates.add("vm/java/serviceImpl.java.vm");
         templates.add("vm/java/controller.java.vm");
         templates.add("vm/js/api.js.vm");
-        if (org.apache.commons.lang3.StringUtils.equalsIgnoreCase(GenConstants.ORACLE, dialect)) {
+        if (StringUtils.equalsIgnoreCase(GenConstants.ORACLE, dialect)) {
             templates.add("vm/xml/oracle/mapper.xml.vm");
             templates.add("vm/sql/oracle/sql.vm");
-        } else if (org.apache.commons.lang3.StringUtils.equalsIgnoreCase(GenConstants.MYSQL, dialect)) {
+        } else if (StringUtils.equalsIgnoreCase(GenConstants.MYSQL, dialect)) {
             templates.add("vm/xml/mysql/mapper.xml.vm");
             templates.add("vm/sql/mysql/sql.vm");
         }

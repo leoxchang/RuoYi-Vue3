@@ -19,7 +19,7 @@ import com.truntao.common.annotation.Excel;
  * ${functionName}对象 ${tableName}
  *
  * @author ${author}
- * @date ${datetime}
+ * Created ${datetime}
  */
 @Data
 @ToString
@@ -32,12 +32,15 @@ public class ${ClassName}DTO{
     public ${ClassName}DTO(${ClassName} ${className}){
         if (Objects.nonNull(${className})) {
             #foreach ($column in $columns)
+            #if($column.javaField == 'delFlag')
+            #else
                 #if($column.javaField.length() > 2 && $column.javaField.substring(1,2).matches("[A-Z]"))
                     #set($AttrName=$column.javaField)
                 #else
                     #set($AttrName=$column.javaField.substring(0,1).toUpperCase() + ${column.javaField.substring(1)})
                 #end
                 set${AttrName}(${className}.get${AttrName}());
+            #end
             #end
         }
     }
@@ -59,7 +62,6 @@ public class ${ClassName}DTO{
     #else
     @Excel(name = "${comment}")
     #end
-
     @Schema(description = "$column.columnComment")
     private $column.javaType $column.javaField;
 #end

@@ -29,7 +29,7 @@ import javax.annotation.Resource;
  * ${functionName}Service业务层处理
  *
  * @author ${author}
- * @date ${datetime}
+ * Created ${datetime}
  */
 @Service
 public class ${ClassName}ServiceImpl implements I${ClassName}Service {

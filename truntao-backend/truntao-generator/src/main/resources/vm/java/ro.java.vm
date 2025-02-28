@@ -15,7 +15,7 @@ import lombok.ToString;
  * ${functionName}对象 ${tableName}
  *
  * @author ${author}
- * @date ${datetime}
+ * Created ${datetime}
  */
 @Data
 @ToString
