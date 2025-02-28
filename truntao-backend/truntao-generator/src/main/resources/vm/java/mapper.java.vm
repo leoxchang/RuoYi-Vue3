@@ -24,22 +24,6 @@ public interface ${ClassName}Mapper extends BaseMapper<${ClassName}> {
      * @return ${functionName}集合
      */
     Page<${ClassName}> select${ClassName}List(${ClassName} ${className});
-
-    /**
-     * 删除${functionName}
-     *
-     * @param ${pkColumn.javaField} ${functionName}主键
-     * @return 结果
-     */
-    int delete${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaType} ${pkColumn.javaField});
-
-    /**
-     * 批量删除${functionName}
-     *
-     * @param ${pkColumn.javaField}s 需要删除的数据主键集合
-     * @return 结果
-     */
-    int delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaType}[] ${pkColumn.javaField}s);
     #if($table.sub)
 
      /**

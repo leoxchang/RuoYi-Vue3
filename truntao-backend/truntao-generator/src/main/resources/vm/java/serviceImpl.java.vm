@@ -136,7 +136,7 @@ public class ${ClassName}ServiceImpl implements I${ClassName}Service {
         #if($table.sub)
                 ${className}Mapper.delete${subClassName}By${subTableFkClassName}s(${pkColumn.javaField}s);
         #end
-        return ${className}Mapper.deleteBatchIds(Arrays.asList(${pkColumn.javaField}s));
+        return ${className}Mapper.deleteByIds(Arrays.asList(${pkColumn.javaField}s));
     }
 
     /**
