@@ -23,7 +23,7 @@ function build_all() {
 
 echo $module_name
 if [ "$module_name" = "frame-backend" ]; then
-    build_workorder
+    build_frame
 elif [ "$module_name" = "frame-ui" ]; then
     build_frame_ui
 else 
