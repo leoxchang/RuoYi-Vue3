@@ -22,6 +22,18 @@ variables:
 stages:          # List of stages for jobs, and their order of execution
   - build
 
+build_backend:
+  stage: build
+  before_script:
+    - chmod 755 dingding.sh && export job_name="job_start" && ./dingding.sh
+  script:
+    - chmod 755 build.sh && export module_name="truntao-backend" && ./build.sh
+  after_script:
+    - chmod 755 dingding.sh && export job_name="job_end" && ./dingding.sh
+  rules:
+    - changes:
+        - truntao-backend/**/*
+
 build_frame_ui:
   stage: build
   before_script:
