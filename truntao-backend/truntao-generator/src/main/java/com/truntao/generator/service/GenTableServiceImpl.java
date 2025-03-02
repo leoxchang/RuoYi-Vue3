@@ -126,8 +126,8 @@ public class GenTableServiceImpl implements IGenTableService {
         genTable.setOptions(JSONUtil.toJsonStr(genTableParam.getParams()));
         int row = genTableMapper.updateById(genTable);
         if (row > 0) {
-            for (GenTableColumn cenTableColumn : genTableParam.getColumns()) {
-                genTableColumnMapper.updateById(cenTableColumn);
+            for (GenTableColumn genTableColumn : genTableParam.getColumns()) {
+                genTableColumnMapper.updateById(genTableColumn);
             }
         }
     }
@@ -374,12 +374,12 @@ public class GenTableServiceImpl implements IGenTableService {
                 throw new ServiceException("树父编码字段不能为空");
             } else if (StringUtils.isEmpty(paramsObj.getString(GenConstants.TREE_NAME))) {
                 throw new ServiceException("树名称字段不能为空");
-            } else if (GenConstants.TPL_SUB.equals(genTable.getTplCategory())) {
-                if (StringUtils.isEmpty(genTable.getSubTableName())) {
-                    throw new ServiceException("关联子表的表名不能为空");
-                } else if (StringUtils.isEmpty(genTable.getSubTableFkName())) {
-                    throw new ServiceException("子表关联的外键名不能为空");
-                }
+            }
+        } else if (GenConstants.TPL_SUB.equals(genTable.getTplCategory())) {
+            if (StringUtils.isEmpty(genTable.getSubTableName())) {
+                throw new ServiceException("关联子表的表名不能为空");
+            } else if (StringUtils.isEmpty(genTable.getSubTableFkName())) {
+                throw new ServiceException("子表关联的外键名不能为空");
             }
         }
     }
