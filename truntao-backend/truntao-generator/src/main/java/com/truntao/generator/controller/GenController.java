@@ -16,6 +16,7 @@ import com.truntao.common.core.domain.R;
 import com.truntao.common.core.page.PageDTO;
 import com.truntao.common.utils.SecurityUtils;
 import com.truntao.common.utils.sql.SqlUtil;
+import com.truntao.generator.config.GenConfig;
 import com.truntao.generator.domain.po.GenTable;
 import com.truntao.generator.domain.dto.GenTableAllDTO;
 import com.truntao.generator.domain.dto.GenTableColumnDTO;
@@ -166,6 +167,9 @@ public class GenController extends BaseController {
     @Log(title = "代码生成", businessType = BusinessType.GENCODE)
     @GetMapping("/genCode/{tableName}")
     public R<Void> genCode(@PathVariable("tableName") String tableName) {
+        if (!GenConfig.allowOverwrite) {
+            return R.fail("【系统预设】不允许生成文件覆盖到本地");
+        }
         genTableService.generatorCode(tableName);
         return R.ok();
     }
