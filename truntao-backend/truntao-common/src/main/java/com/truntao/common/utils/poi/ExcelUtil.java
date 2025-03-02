@@ -277,14 +277,7 @@ public class ExcelUtil<T> {
      * @return 转换后集合
      */
     public List<T> importExcel(InputStream is) {
-        try {
-            return importExcel(is, 0);
-        } catch (IOException | InstantiationException | NoSuchMethodException | InvocationTargetException |
-                 IllegalAccessException e) {
-            throw new UtilException(e.getMessage());
-        } finally {
-            IOUtils.closeQuietly(is);
-        }
+        return importExcel(is, 0);
     }
 
     /**
@@ -294,9 +287,17 @@ public class ExcelUtil<T> {
      * @param titleNum 标题占用行数
      * @return 转换后集合
      */
-    public List<T> importExcel(InputStream is, int titleNum) throws IOException, InstantiationException,
-            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return importExcel(StringUtils.EMPTY, is, titleNum);
+    public List<T> importExcel(InputStream is, int titleNum) {
+        List<T> list;
+        try {
+            list = importExcel(StringUtils.EMPTY, is, titleNum);
+        } catch (Exception e) {
+            log.error("导入Excel异常{}", e.getMessage());
+            throw new UtilException(e.getMessage());
+        } finally {
+            IOUtils.closeQuietly(is);
+        }
+        return list;
     }
 
     /**
@@ -407,7 +408,8 @@ public class ExcelUtil<T> {
                         val = reverseByExp(Convert.toStr(val), attr.readConverterExp(), attr.separator());
                     } else if (StringUtils.isNotEmpty(attr.dictType())) {
                         if (!sysDictMap.containsKey(attr.dictType() + val)) {
-                            String dictValue = reverseDictByExp(Convert.toStr(val), attr.dictType(), attr.separator());
+                            String dictValue = reverseDictByExp(Convert.toStr(val), attr.dictType(),
+                                    attr.separator());
                             sysDictMap.put(attr.dictType() + val, dictValue);
                         }
                         val = sysDictMap.get(attr.dictType() + val);
@@ -657,7 +659,8 @@ public class ExcelUtil<T> {
                     // 创建单元格并设置值
                     addCell(excel, row, vo, field, column);
                     if (maxSubListSize > 1 && excel.needMerge()) {
-                        sheet.addMergedRegion(new CellRangeAddress(currentRowNum, currentRowNum + maxSubListSize - 1,
+                        sheet.addMergedRegion(new CellRangeAddress(currentRowNum,
+                                currentRowNum + maxSubListSize - 1,
                                 column, column));
                     }
                     column++;
@@ -932,7 +935,8 @@ public class ExcelUtil<T> {
                 cell = row.createCell(column);
                 if (isSubListValue(vo) && getListCellValue(vo).size() > 1 && attr.needMerge()) {
                     if (subMergedLastRowNum >= subMergedFirstRowNum) {
-                        sheet.addMergedRegion(new CellRangeAddress(subMergedFirstRowNum, subMergedLastRowNum, column,
+                        sheet.addMergedRegion(new CellRangeAddress(subMergedFirstRowNum, subMergedLastRowNum,
+                                column,
                                 column));
                     }
                 }
@@ -1218,7 +1222,8 @@ public class ExcelUtil<T> {
      * @param excel 注解
      * @return 最终的属性值
      */
-    private Object getTargetValue(T vo, Field field, Excel excel) throws NoSuchFieldException, IllegalAccessException {
+    private Object getTargetValue(T vo, Field field, Excel excel) throws
+            NoSuchFieldException, IllegalAccessException {
         field.setAccessible(true);
         Object o = field.get(vo);
         if (StringUtils.isNotEmpty(excel.targetAttr())) {
