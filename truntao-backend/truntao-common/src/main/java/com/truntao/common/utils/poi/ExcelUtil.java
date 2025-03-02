@@ -950,6 +950,7 @@ public class ExcelUtil<T> {
                 String separator = attr.separator();
                 String dictType = attr.dictType();
                 if (StringUtils.isNotEmpty(dateFormat) && Objects.nonNull(value)) {
+                    cell.getCellStyle().setDataFormat(this.wb.getCreationHelper().createDataFormat().getFormat(dateFormat));
                     cell.setCellValue(parseDateToStr(dateFormat, value));
                 } else if (StringUtils.isNotEmpty(readConverterExp) && Objects.nonNull(value)) {
                     cell.setCellValue(convertByExp(Convert.toStr(value), readConverterExp, separator));
