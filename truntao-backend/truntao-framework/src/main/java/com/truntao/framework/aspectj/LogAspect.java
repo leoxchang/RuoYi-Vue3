@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.truntao.common.core.domain.dto.SysUserDTO;
+import com.truntao.common.core.text.Convert;
+import com.truntao.common.utils.ExceptionUtil;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
@@ -105,7 +107,7 @@ public class LogAspect {
 
             if (e != null) {
                 sysOperLog.setStatus(BusinessStatus.FAIL.ordinal());
-                sysOperLog.setErrorMsg(StringUtils.substring(e.getMessage(), 0, 2000));
+                sysOperLog.setErrorMsg(StringUtils.substring(Convert.toStr(e.getMessage(), ExceptionUtil.getExceptionMessage(e)), 0, 2000));
             }
             // 设置方法名称
             String className = joinPoint.getTarget().getClass().getName();
