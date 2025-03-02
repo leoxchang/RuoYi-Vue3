@@ -21,6 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.truntao.common.constant.Constants;
+import org.springframework.http.MediaType;
 
 /**
  * 通用http发送方法
@@ -137,10 +138,10 @@ public class HttpUtils {
      *
      * @param connection connection
      */
-    private static void addPostHeader(URLConnection connection) {
+    private static void addPostHeader(URLConnection connection, String contentType) {
         addHeader(connection);
         connection.setRequestProperty("Accept-Charset", StandardCharsets.UTF_8.displayName());
-        connection.setRequestProperty("contentType", StandardCharsets.UTF_8.displayName());
+        connection.setRequestProperty("contentType", contentType);
     }
 
 
@@ -152,27 +153,43 @@ public class HttpUtils {
      * @return 所代表远程资源的响应结果
      */
     public static String sendPost(String url, String param) {
+        return sendPost(url, param, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+    }
+
+    /**
+     * 向指定 URL 发送POST方法的请求
+     *
+     * @param url         发送请求的 URL
+     * @param param       请求参数
+     * @param contentType 内容类型
+     * @return 所代表远程资源的响应结果
+     */
+    public static String sendPost(String url, String param, String contentType) {
         String result = null;
         try {
             log.info("sendPost - {}", url);
             URL realUrl = new URL(url);
             URLConnection conn = realUrl.openConnection();
-            addPostHeader(conn);
+            addPostHeader(conn, contentType);
             conn.setDoOutput(true);
             conn.setDoInput(true);
             sendParam(conn, param);
 
             result = getResponseResult(conn, StandardCharsets.UTF_8.toString());
-        } catch (ConnectException e) {
+        } catch (
+                ConnectException e) {
             log.error(URL_ERROR_INFO, url, param);
             log.error("调用HttpUtils.sendPost ConnectException", e);
-        } catch (SocketTimeoutException e) {
+        } catch (
+                SocketTimeoutException e) {
             log.error(URL_ERROR_INFO, url, param);
             log.error("调用HttpUtils.sendPost SocketTimeoutException", e);
-        } catch (IOException e) {
+        } catch (
+                IOException e) {
             log.error(URL_ERROR_INFO, url, param);
             log.error("调用HttpUtils.sendPost IOException", e);
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             log.error(URL_ERROR_INFO, url, param);
             log.error("调用HttpsUtil.sendPost Exception", e);
         }
@@ -187,6 +204,11 @@ public class HttpUtils {
     }
 
     public static String sendSSLPost(String url, String param) {
+        return sendSSLPost(url, param, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+    }
+
+
+    public static String sendSSLPost(String url, String param, String contentType) {
         String result = null;
         String urlNameString = url + "?" + param;
         try {
@@ -195,7 +217,7 @@ public class HttpUtils {
             sc.init(null, new TrustManager[]{new TrustAnyTrustManager()}, new java.security.SecureRandom());
             URL console = new URL(urlNameString);
             HttpsURLConnection conn = (HttpsURLConnection) console.openConnection();
-            addPostHeader(conn);
+            addPostHeader(conn, contentType);
             conn.setDoOutput(true);
             conn.setDoInput(true);
 
