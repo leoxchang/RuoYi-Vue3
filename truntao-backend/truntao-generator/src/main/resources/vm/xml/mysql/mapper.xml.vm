@@ -76,16 +76,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             where ${subTableFkName} = #{${subTableFkName}}
         </select>
     #end
-    <delete id="delete${ClassName}By${pkColumn.capJavaField}" parameterType="${pkColumn.javaType}">
-        delete from ${tableName} where ${pkColumn.columnName} = #{${pkColumn.javaField}}
-    </delete>
-
-    <delete id="delete${ClassName}By${pkColumn.capJavaField}s" parameterType="String">
-        delete from ${tableName} where ${pkColumn.columnName} in 
-        <foreach item="${pkColumn.javaField}" collection="array" open="(" separator="," close=")">
-            #{${pkColumn.javaField}}
-        </foreach>
-    </delete>
 #if($table.sub)
 
     <insert id="batch${subClassName}">
