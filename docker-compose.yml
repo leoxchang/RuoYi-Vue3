@@ -12,7 +12,6 @@ services:
       - /home/frame/logs:/home/ruoyi/logs
     environment: 
       - JAVA_OPTS=-Xmx512m -Djava.security.egd=file:/dev/./urandom
-      - SPRING_PROFILES_ACTIVE=${PROFILES_ACTIVE:-test}
       - SERVER_PORT=${SERVER_PORT:-6363}
       - TRUNTAO_PROFILE=/home/ruoyi/uploadPath
       - LOGBACK_PATH=/home/ruoyi/logs   
