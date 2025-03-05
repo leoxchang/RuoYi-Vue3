@@ -38,7 +38,7 @@ const useUserStore = defineStore(
             const user = res.data.user
             let avatar = user.avatar || ""
             if (!isHttp(avatar)) {
-              avatar = (isEmpty(avatar)) ? defAva : import.meta.env.VITE_APP_BASE_API + avatar
+              avatar = (isEmpty(avatar)) ? defAva : avatar
             }
             if (res.data.roles && res.data.roles.length > 0) { // 验证返回的roles是否是一个非空数组
               this.roles = res.data.roles
