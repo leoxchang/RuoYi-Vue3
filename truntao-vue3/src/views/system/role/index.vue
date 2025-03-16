@@ -247,7 +247,9 @@
   </div>
 </template>
 
-<script setup name="Role">
+<script setup lang="ts">
+import { ref, reactive, toRefs, getCurrentInstance, nextTick } from 'vue';
+import { useRouter } from 'vue-router';
 import {
   addRole,
   changeRoleStatus,
@@ -259,30 +261,35 @@ import {
   deptTreeSelect
 } from "@/api/system/role";
 import {roleMenuTreeselect, treeselect as menuTreeselect} from "@/api/system/menu";
+import type { FormInstance, TreeInstance } from 'element-plus';
+import type { Role, RoleQueryParams } from '@/types/system/role';
 
 const router = useRouter();
-const {proxy} = getCurrentInstance();
-const {sys_normal_disable} = proxy.useDict("sys_normal_disable");
+const {proxy} = getCurrentInstance()!;
+const {sys_normal_disable} = proxy!.useDict("sys_normal_disable");
 
-const roleList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
-const dateRange = ref([]);
-const menuOptions = ref([]);
-const menuExpand = ref(false);
-const menuNodeAll = ref(false);
-const deptExpand = ref(true);
-const deptNodeAll = ref(false);
-const deptOptions = ref([]);
-const openDataScope = ref(false);
-const menuRef = ref(null);
-const deptRef = ref(null);
+const roleList = ref<Role[]>([]);
+const open = ref<boolean>(false);
+const loading = ref<boolean>(true);
+const showSearch = ref<boolean>(true);
+const ids = ref<Array<string | number>>([]);
+const single = ref<boolean>(true);
+const multiple = ref<boolean>(true);
+const total = ref<number>(0);
+const title = ref<string>("");
+const dateRange = ref<string[]>([]);
+const menuOptions = ref<any[]>([]);
+const menuExpand = ref<boolean>(false);
+const menuNodeAll = ref<boolean>(false);
+const deptExpand = ref<boolean>(false);
+const deptNodeAll = ref<boolean>(false);
+const deptOptions = ref<any[]>([]);
+const openDataScope = ref<boolean>(false);
+
+const roleRef = ref<FormInstance>();
+const queryRef = ref<FormInstance>();
+const menuRef = ref<TreeInstance>();
+const deptRef = ref<TreeInstance>();
 
 /** 数据范围选项*/
 const dataScopeOptions = ref([
@@ -294,14 +301,15 @@ const dataScopeOptions = ref([
 ]);
 
 const data = reactive({
-  form: {},
+  form: {} as Role,
   queryParams: {
     pageNum: 1,
     pageSize: 10,
     roleName: undefined,
     roleKey: undefined,
-    status: undefined
-  },
+    status: undefined,
+    createTime: undefined
+  } as RoleQueryParams,
   rules: {
     roleName: [{required: true, message: "角色名称不能为空", trigger: "blur"}],
     roleKey: [{required: true, message: "权限字符不能为空", trigger: "blur"}],
@@ -315,8 +323,8 @@ const {queryParams, form, rules} = toRefs(data);
 function getList() {
   loading.value = true;
   listRole(queryParams.value).then(response => {
-    roleList.value = response.data.rows;
-    total.value = response.data.total;
+    roleList.value = response.data.data.rows;
+    total.value = response.data.data.total;
     loading.value = false;
   });
 }
@@ -330,25 +338,25 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  proxy!.resetForm("queryRef");
   handleQuery();
 }
 
 /** 删除按钮操作 */
 function handleDelete(row) {
   const roleIds = row.roleId || ids.value;
-  proxy.$modal.confirm('是否确认删除角色编号为"' + roleIds + '"的数据项?').then(function () {
+  proxy!.$modal.confirm('是否确认删除角色编号为"' + roleIds + '"的数据项?').then(function () {
     return delRole(roleIds);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
+    proxy!.$modal.msgSuccess("删除成功");
   }).catch(() => {
   });
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download("system/role/export", {
+  proxy!.download("system/role/export", {
     ...queryParams.value,
   }, `role_${new Date().getTime()}.xlsx`);
 }
@@ -363,10 +371,10 @@ function handleSelectionChange(selection) {
 /** 角色状态修改 */
 function handleStatusChange(row) {
   let text = row.status === "0" ? "启用" : "停用";
-  proxy.$modal.confirm('确认要"' + text + '""' + row.roleName + '"角色吗?').then(function () {
+  proxy!.$modal.confirm('确认要"' + text + '""' + row.roleName + '"角色吗?').then(function () {
     return changeRoleStatus(row.roleId, row.status);
   }).then(() => {
-    proxy.$modal.msgSuccess(text + "成功");
+    proxy!.$modal.msgSuccess(text + "成功");
   }).catch(function () {
     row.status = row.status === "0" ? "1" : "0";
   });
@@ -415,7 +423,7 @@ function reset() {
   }
   menuExpand.value = false;
   menuNodeAll.value = false;
-  deptExpand.value = true;
+  deptExpand.value = false;
   deptNodeAll.value = false;
   form.value = {
     roleId: undefined,
@@ -429,7 +437,7 @@ function reset() {
     deptCheckStrictly: true,
     remark: undefined
   };
-  proxy.resetForm("roleRef");
+  proxy!.resetForm("roleRef");
 }
 
 /** 添加角色 */
@@ -529,14 +537,14 @@ function submitForm() {
       if (form.value.roleId !== undefined && form.value.roleId !== null) {
         form.value.menuIds = getMenuAllCheckedKeys();
         updateRole(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
+          proxy!.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
         form.value.menuIds = getMenuAllCheckedKeys();
         addRole(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
+          proxy!.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
         });
@@ -583,7 +591,7 @@ function submitDataScope() {
   if (form.value.roleId != undefined) {
     form.value.deptIds = getDeptAllCheckedKeys();
     dataScope(form.value).then(response => {
-      proxy.$modal.msgSuccess("修改成功");
+      proxy!.$modal.msgSuccess("修改成功");
       openDataScope.value = false;
       getList();
     });

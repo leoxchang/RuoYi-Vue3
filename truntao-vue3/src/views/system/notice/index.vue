@@ -160,35 +160,41 @@
    </div>
 </template>
 
-<script setup name="Notice">
+<script setup lang="ts">
+import { ref, reactive, toRefs, getCurrentInstance } from 'vue';
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
+import { parseTime } from '@/utils/truntao';
+import type { FormInstance } from 'element-plus';
+import type { Notice, NoticeQueryParams, NoticeListResponse, NoticeDetailResponse } from '@/types/system/notice';
 
-const { proxy } = getCurrentInstance();
-const { sys_notice_status, sys_notice_type } = proxy.useDict("sys_notice_status", "sys_notice_type");
+const { proxy } = getCurrentInstance()!;
+const { sys_notice_status, sys_notice_type } = proxy!.useDict("sys_notice_status", "sys_notice_type");
 
-const noticeList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
+const noticeList = ref<Notice[]>([]);
+const open = ref<boolean>(false);
+const loading = ref<boolean>(true);
+const showSearch = ref<boolean>(true);
+const ids = ref<(string | number)[]>([]);
+const single = ref<boolean>(true);
+const multiple = ref<boolean>(true);
+const total = ref<number>(0);
+const title = ref<string>("");
+const noticeRef = ref<FormInstance>();
+const queryRef = ref<FormInstance>();
 
 const data = reactive({
-  form: {},
+  form: {} as Notice,
   queryParams: {
     pageNum: 1,
     pageSize: 10,
     noticeTitle: undefined,
     createBy: undefined,
     status: undefined
-  },
+  } as NoticeQueryParams,
   rules: {
     noticeTitle: [{ required: true, message: "公告标题不能为空", trigger: "blur" }],
     noticeType: [{ required: true, message: "公告类型不能为空", trigger: "change" }]
-  },
+  }
 });
 
 const { queryParams, form, rules } = toRefs(data);
@@ -196,7 +202,7 @@ const { queryParams, form, rules } = toRefs(data);
 /** 查询公告列表 */
 function getList() {
   loading.value = true;
-  listNotice(queryParams.value).then(response => {
+  listNotice(queryParams.value).then((response: NoticeListResponse) => {
     noticeList.value = response.data.rows;
     total.value = response.data.total;
     loading.value = false;
@@ -216,7 +222,7 @@ function reset() {
     noticeContent: undefined,
     status: "0"
   };
-  proxy.resetForm("noticeRef");
+  proxy!.resetForm("noticeRef");
 }
 /** 搜索按钮操作 */
 function handleQuery() {
@@ -225,12 +231,12 @@ function handleQuery() {
 }
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  proxy!.resetForm("queryRef");
   handleQuery();
 }
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.noticeId);
+function handleSelectionChange(selection: Notice[]) {
+  ids.value = selection.map(item => item.noticeId as string | number);
   single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
@@ -241,10 +247,10 @@ function handleAdd() {
   title.value = "添加公告";
 }
 /**修改按钮操作 */
-function handleUpdate(row) {
+function handleUpdate(row?: Notice) {
   reset();
-  const noticeId = row.noticeId || ids.value;
-  getNotice(noticeId).then(response => {
+  const noticeId = row?.noticeId || ids.value;
+  getNotice(noticeId as string | number).then((response: NoticeDetailResponse) => {
     form.value = response.data;
     open.value = true;
     title.value = "修改公告";
@@ -252,17 +258,17 @@ function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["noticeRef"].validate(valid => {
+  noticeRef.value?.validate(valid => {
     if (valid) {
       if (form.value.noticeId !== undefined) {
-        updateNotice(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
+        updateNotice(form.value).then(() => {
+          proxy!.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addNotice(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
+        addNotice(form.value).then(() => {
+          proxy!.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
         });
@@ -271,13 +277,13 @@ function submitForm() {
   });
 }
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const noticeIds = row.noticeId || ids.value
-  proxy.$modal.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？').then(function() {
-    return delNotice(noticeIds);
+function handleDelete(row?: Notice) {
+  const noticeIds = row?.noticeId || ids.value;
+  proxy!.$modal.confirm('是否确认删除公告编号为"' + noticeIds + '"的数据项？').then(function() {
+    return delNotice(noticeIds as string | number | (string | number)[]);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
+    proxy!.$modal.msgSuccess("删除成功");
   }).catch(() => {});
 }
 

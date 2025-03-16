@@ -1,4 +1,3 @@
-
 <template>
    <div class="app-container">
       <el-form :model="queryParams" ref="queryRef" v-show="showSearch" :inline="true">
@@ -91,35 +90,49 @@
    </div>
 </template>
 
-<script setup name="AuthUser">
+<script setup lang="ts" name="AuthUser">
+import { ref, reactive, toRefs, getCurrentInstance } from 'vue';
+import { useRoute } from 'vue-router';
+import { allocatedUserList, unallocatedUserList, authUserCancel, authUserCancelAll, authUserSelectAll } from "@/api/system/role";
+import type { FormInstance } from 'element-plus';
+import type { User, AllocatedUserQueryParams, UnallocatedUserQueryParams, UserListResponse } from '@/types/system/role';
 import selectUser from "./selectUser";
-import { allocatedUserList, authUserCancel, authUserCancelAll } from "@/api/system/role";
 
 const route = useRoute();
-const { proxy } = getCurrentInstance();
-const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
+const { proxy } = getCurrentInstance()!;
+const { sys_normal_disable } = proxy!.useDict("sys_normal_disable");
 
-const userList = ref([]);
-const loading = ref(true);
-const showSearch = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const userIds = ref([]);
+const userList = ref<User[]>([]);
+const loading = ref<boolean>(true);
+const roleId = ref<string | number>(route.params.roleId);
+const total = ref<number>(0);
+const title = ref<string>("");
+const openSelect = ref<boolean>(false);
+const ids = ref<Array<string | number>>([]);
+const single = ref<boolean>(true);
+const multiple = ref<boolean>(true);
+const showSearch = ref<boolean>(true);
+const queryRef = ref<FormInstance>();
 
-const queryParams = reactive({
-  pageNum: 1,
-  pageSize: 10,
-  roleId: route.params.roleId,
-  userName: undefined,
-  phoneNumber: undefined,
+const data = reactive({
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    roleId: undefined,
+    userName: undefined,
+    phonenumber: undefined
+  } as AllocatedUserQueryParams
 });
+
+const { queryParams } = toRefs(data);
 
 /** 查询授权用户列表 */
 function getList() {
   loading.value = true;
-  allocatedUserList(queryParams).then(response => {
-    userList.value = response.data.rows;
-    total.value = response.data.total;
+  queryParams.value.roleId = roleId.value;
+  allocatedUserList(queryParams.value).then(response => {
+    userList.value = response.data.data.rows;
+    total.value = response.data.data.total;
     loading.value = false;
   });
 }
@@ -132,7 +145,7 @@ function handleClose() {
 
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.pageNum = 1;
+  queryParams.value.pageNum = 1;
   getList();
 }
 
@@ -144,7 +157,7 @@ function resetQuery() {
 
 // 多选框选中数据
 function handleSelectionChange(selection) {
-  userIds.value = selection.map(item => item.userId);
+  ids.value = selection.map(item => item.userId);
   multiple.value = !selection.length;
 }
 
@@ -156,7 +169,7 @@ function openSelectUser() {
 /** 取消授权按钮操作 */
 function cancelAuthUser(row) {
   proxy.$modal.confirm('确认要取消该用户"' + row.userName + '"角色吗？').then(function () {
-    return authUserCancel({ userId: row.userId, roleId: queryParams.roleId });
+    return authUserCancel({ userId: row.userId, roleId: queryParams.value.roleId });
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("取消授权成功");
@@ -165,8 +178,8 @@ function cancelAuthUser(row) {
 
 /** 批量取消授权按钮操作 */
 function cancelAuthUserAll(row) {
-  const roleId = queryParams.roleId;
-  const uIds = userIds.value.join(",");
+  const roleId = queryParams.value.roleId;
+  const uIds = ids.value.join(",");
   proxy.$modal.confirm("是否取消选中用户授权数据项?").then(function () {
     return authUserCancelAll({ roleId: roleId, userIds: uIds });
   }).then(() => {

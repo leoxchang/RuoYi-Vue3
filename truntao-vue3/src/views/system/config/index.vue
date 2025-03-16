@@ -166,32 +166,38 @@
   </div>
 </template>
 
-<script setup name="Config">
+<script setup lang="ts">
+import {ref, reactive, toRefs, getCurrentInstance} from 'vue';
 import {listConfig, getConfig, delConfig, addConfig, updateConfig, refreshCache} from "@/api/system/config";
+import {parseTime} from '@/utils/truntao';
+import type {FormInstance} from 'element-plus';
+import type {Config, ConfigDetailResponse, ConfigListResponse, ConfigQueryParams} from '@/types/system/config';
 
-const {proxy} = getCurrentInstance();
-const {sys_yes_no} = proxy.useDict("sys_yes_no");
+const {proxy} = getCurrentInstance()!;
+const {sys_yes_no} = proxy!.useDict("sys_yes_no");
 
-const configList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
-const dateRange = ref([]);
+const configList = ref<Config[]>([]);
+const open = ref<boolean>(false);
+const loading = ref<boolean>(true);
+const showSearch = ref<boolean>(true);
+const ids = ref<(string | number)[]>([]);
+const single = ref<boolean>(true);
+const multiple = ref<boolean>(true);
+const total = ref<number>(0);
+const title = ref<string>("");
+const dateRange = ref<string[]>([]);
+const configRef = ref<FormInstance>();
+const queryRef = ref<FormInstance>();
 
 const data = reactive({
-  form: {},
+  form: {} as Config,
   queryParams: {
     pageNum: 1,
     pageSize: 10,
     configName: undefined,
     configKey: undefined,
     configType: undefined
-  },
+  } as ConfigQueryParams,
   rules: {
     configName: [{required: true, message: "参数名称不能为空", trigger: "blur"}],
     configKey: [{required: true, message: "参数键名不能为空", trigger: "blur"}],
@@ -204,7 +210,7 @@ const {queryParams, form, rules} = toRefs(data);
 /** 查询参数列表 */
 function getList() {
   loading.value = true;
-  listConfig(queryParams.value).then(response => {
+  listConfig(queryParams.value).then((response: ConfigListResponse) => {
     configList.value = response.data.rows;
     total.value = response.data.total;
     loading.value = false;
@@ -227,7 +233,7 @@ function reset() {
     configType: "Y",
     remark: undefined
   };
-  proxy.resetForm("configRef");
+  proxy!.resetForm("configRef");
 }
 
 /** 搜索按钮操作 */
@@ -239,14 +245,14 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  proxy!.resetForm("queryRef");
   handleQuery();
 }
 
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.configId);
-  single.value = selection.length != 1;
+function handleSelectionChange(selection: Config[]) {
+  ids.value = selection.map(item => item.configId as string | number);
+  single.value = selection.length !== 1;
   multiple.value = !selection.length;
 }
 
@@ -258,10 +264,10 @@ function handleAdd() {
 }
 
 /** 修改按钮操作 */
-function handleUpdate(row) {
+function handleUpdate(row?: Config) {
   reset();
-  const configId = row.configId || ids.value;
-  getConfig(configId).then(response => {
+  const configId = row?.configId || ids.value;
+  getConfig(configId as string | number).then((response: ConfigDetailResponse) => {
     form.value = response.data;
     open.value = true;
     title.value = "修改参数";
@@ -270,17 +276,17 @@ function handleUpdate(row) {
 
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["configRef"].validate(valid => {
+  configRef.value?.validate(valid => {
     if (valid) {
       if (form.value.configId != undefined) {
-        updateConfig(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
+        updateConfig(form.value).then(() => {
+          proxy!.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addConfig(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
+        addConfig(form.value).then(() => {
+          proxy!.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
         });
@@ -290,20 +296,20 @@ function submitForm() {
 }
 
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const configIds = row.configId || ids.value;
-  proxy.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？').then(function () {
-    return delConfig(configIds);
+function handleDelete(row?: Config) {
+  const configIds = row?.configId || ids.value;
+  proxy!.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？').then(function () {
+    return delConfig(configIds as string | number | (string | number)[]);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
+    proxy!.$modal.msgSuccess("删除成功");
   }).catch(() => {
   });
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download("system/config/export", {
+  proxy!.download("system/config/export", {
     ...queryParams.value
   }, `config_${new Date().getTime()}.xlsx`);
 }
@@ -311,7 +317,7 @@ function handleExport() {
 /** 刷新缓存按钮操作 */
 function handleRefreshCache() {
   refreshCache().then(() => {
-    proxy.$modal.msgSuccess("刷新缓存成功");
+    proxy!.$modal.msgSuccess("刷新缓存成功");
   });
 }
 

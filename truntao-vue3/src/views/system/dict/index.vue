@@ -173,45 +173,50 @@
   </div>
 </template>
 
-<script setup name="Dict">
-import useDictStore from '@/store/modules/dict'
-import {listType, getType, delType, addType, updateType, refreshCache} from "@/api/system/dict/type";
+<script setup lang="ts">
+import { ref, reactive, toRefs, getCurrentInstance } from 'vue';
+import useDictStore from '@/store/modules/dict';
+import { listType, getType, delType, addType, updateType, refreshCache } from "@/api/system/dict/type";
+import type { FormInstance } from 'element-plus';
+import type { DictType, DictTypeQueryParams, DictTypeResponse } from '@/types/system/dict';
 
-const {proxy} = getCurrentInstance();
-const {sys_normal_disable} = proxy.useDict("sys_normal_disable");
+const { proxy } = getCurrentInstance()!;
+const { sys_normal_disable } = proxy!.useDict("sys_normal_disable");
 
-const typeList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
-const dateRange = ref([]);
+const typeList = ref<DictType[]>([]);
+const open = ref<boolean>(false);
+const loading = ref<boolean>(true);
+const showSearch = ref<boolean>(true);
+const ids = ref<Array<string | number>>([]);
+const single = ref<boolean>(true);
+const multiple = ref<boolean>(true);
+const total = ref<number>(0);
+const title = ref<string>("");
+const dateRange = ref<string[]>([]);
+const dictRef = ref<FormInstance>();
+const queryRef = ref<FormInstance>();
 
 const data = reactive({
-  form: {},
+  form: {} as DictType,
   queryParams: {
     pageNum: 1,
     pageSize: 10,
     dictName: undefined,
     dictType: undefined,
     status: undefined
-  },
+  } as DictTypeQueryParams,
   rules: {
-    dictName: [{required: true, message: "字典名称不能为空", trigger: "blur"}],
-    dictType: [{required: true, message: "字典类型不能为空", trigger: "blur"}]
-  },
+    dictName: [{ required: true, message: "字典名称不能为空", trigger: "blur" }],
+    dictType: [{ required: true, message: "字典类型不能为空", trigger: "blur" }]
+  }
 });
 
-const {queryParams, form, rules} = toRefs(data);
+const { queryParams, form, rules } = toRefs(data);
 
 /** 查询字典类型列表 */
 function getList() {
   loading.value = true;
-  listType(queryParams.value).then(response => {
+  listType(queryParams.value).then((response: DictTypeResponse) => {
     typeList.value = response.data.rows;
     total.value = response.data.total;
     loading.value = false;
@@ -233,7 +238,7 @@ function reset() {
     status: "0",
     remark: undefined
   };
-  proxy.resetForm("dictRef");
+  proxy!.resetForm("dictRef");
 }
 
 /** 搜索按钮操作 */
@@ -245,7 +250,7 @@ function handleQuery() {
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  proxy!.resetForm("queryRef");
   handleQuery();
 }
 
@@ -276,17 +281,17 @@ function handleUpdate(row) {
 
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["dictRef"].validate(valid => {
+  proxy!.$refs["dictRef"].validate(valid => {
     if (valid) {
       if (form.value.dictId != undefined) {
-        updateType(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
-          open.value = false;
-          getList();
+        updateType(form.value).then(() => {
+            proxy!.$modal.msgSuccess("修改成功");
+            open.value = false;
+            getList();
         });
       } else {
-        addType(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
+        addType(form.value).then(() => {
+          proxy!.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
         });
@@ -298,18 +303,18 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const dictIds = row.dictId || ids.value;
-  proxy.$modal.confirm('是否确认删除字典编号为"' + dictIds + '"的数据项？').then(function () {
+  proxy!.$modal.confirm('是否确认删除字典编号为"' + dictIds + '"的数据项？').then(function () {
     return delType(dictIds);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
+    proxy!.$modal.msgSuccess("删除成功");
   }).catch(() => {
   });
 }
 
 /** 导出按钮操作 */
 function handleExport() {
-  proxy.download("system/dict/type/export", {
+  proxy!.download("system/dict/type/export", {
     ...queryParams.value
   }, `dict_${new Date().getTime()}.xlsx`);
 }
@@ -317,7 +322,7 @@ function handleExport() {
 /** 刷新缓存按钮操作 */
 function handleRefreshCache() {
   refreshCache().then(() => {
-    proxy.$modal.msgSuccess("刷新成功");
+    proxy!.$modal.msgSuccess("刷新成功");
     useDictStore().cleanDict();
   });
 }

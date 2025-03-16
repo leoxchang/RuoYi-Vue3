@@ -60,8 +60,11 @@
    </el-dialog>
 </template>
 
-<script setup name="SelectUser">
-import { authUserSelectAll, unallocatedUserList } from "@/api/system/role";
+<script setup lang="ts">
+import { ref, reactive, toRefs, getCurrentInstance } from 'vue';
+import { unallocatedUserList, authUserSelectAll } from "@/api/system/role";
+import type { FormInstance } from 'element-plus';
+import type { User, UnallocatedUserQueryParams } from '@/types/system/role';
 
 const props = defineProps({
   roleId: {
@@ -69,32 +72,38 @@ const props = defineProps({
   }
 });
 
-const { proxy } = getCurrentInstance();
-const { sys_normal_disable } = proxy.useDict("sys_normal_disable");
+const { proxy } = getCurrentInstance()!;
+const { sys_normal_disable } = proxy!.useDict("sys_normal_disable");
 
-const userList = ref([]);
+const userList = ref<User[]>([]);
 const visible = ref(false);
-const total = ref(0);
-const userIds = ref([]);
+const total = ref<number>(0);
+const userIds = ref<Array<string | number>>([]);
+const loading = ref<boolean>(true);
+const queryRef = ref<FormInstance>();
 
-const queryParams = reactive({
-  pageNum: 1,
-  pageSize: 10,
-  roleId: undefined,
-  userName: undefined,
-  phoneNumber: undefined
+const data = reactive({
+  queryParams: {
+    pageNum: 1,
+    pageSize: 10,
+    roleId: undefined,
+    userName: undefined,
+    phoneNumber: undefined
+  } as UnallocatedUserQueryParams
 });
+
+const { queryParams } = toRefs(data);
 
 // 显示弹框
 function show() {
-  queryParams.roleId = props.roleId;
+  queryParams.value.roleId = props.roleId;
   getList();
   visible.value = true;
 }
 
 /**选择行 */
 function clickRow(row) {
-  proxy.$refs["refTable"].toggleRowSelection(row);
+  proxy!.$refs["refTable"].toggleRowSelection(row);
 }
 
 // 多选框选中数据
@@ -102,38 +111,43 @@ function handleSelectionChange(selection) {
   userIds.value = selection.map(item => item.userId);
 }
 
-// 查询表数据
+/** 查询未授权用户列表 */
 function getList() {
-  unallocatedUserList(queryParams).then(res => {
-    userList.value = res.data.rows;
-    total.value = res.data.total;
+  loading.value = true;
+  unallocatedUserList(queryParams.value).then(response => {
+    userList.value = response.data.data.rows;
+    total.value = response.data.data.total;
+    loading.value = false;
   });
 }
 
 /** 搜索按钮操作 */
 function handleQuery() {
-  queryParams.pageNum = 1;
+  queryParams.value.pageNum = 1;
   getList();
 }
 
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  proxy!.resetForm("queryRef");
   handleQuery();
 }
 
 const emit = defineEmits(["ok"]);
 /** 选择授权用户操作 */
 function handleSelectUser() {
-  const roleId = queryParams.roleId;
-  const uIds = userIds.value.join(",");
-  if (uIds == "") {
-    proxy.$modal.msgError("请选择要分配的用户");
+  const roleId = queryParams.value.roleId;
+  if (!roleId) {
+    proxy!.$modal.msgError("角色ID不能为空");
     return;
   }
-  authUserSelectAll({ roleId: roleId, userIds: uIds }).then(res => {
-    proxy.$modal.msgSuccess(res.msg);
-    if (res.code === 200) {
+  if (userIds.value.length === 0) {
+    proxy!.$modal.msgError("请选择要分配的用户");
+    return;
+  }
+  authUserSelectAll({ roleId: roleId as string | number, userIds: userIds.value }).then(res => {
+    proxy!.$modal.msgSuccess(res.data.msg);
+    if (res.data.code === 200) {
       visible.value = false;
       emit("ok");
     }

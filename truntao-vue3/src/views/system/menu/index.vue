@@ -302,44 +302,50 @@
   </div>
 </template>
 
-<script setup name="Menu">
-import {addMenu, delMenu, getMenu, listMenu, updateMenu} from "@/api/system/menu";
+<script setup lang="ts">
+import { ref, reactive, toRefs, getCurrentInstance, nextTick } from 'vue';
+import { addMenu, delMenu, getMenu, listMenu, updateMenu } from "@/api/system/menu";
 import SvgIcon from "@/components/SvgIcon";
 import IconSelect from "@/components/IconSelect";
+import { parseTime } from '@/utils/truntao';
+import type { FormInstance } from 'element-plus';
+import type { Menu, MenuQueryParams, MenuListResponse, MenuDetailResponse, MenuTreeOption } from '@/types/system/menu';
 
-const {proxy} = getCurrentInstance();
-const {sys_show_hide, sys_normal_disable} = proxy.useDict("sys_show_hide", "sys_normal_disable");
+const { proxy } = getCurrentInstance()!;
+const { sys_show_hide, sys_normal_disable } = proxy!.useDict("sys_show_hide", "sys_normal_disable");
 
-const menuList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const title = ref("");
-const menuOptions = ref([]);
-const isExpandAll = ref(false);
-const refreshTable = ref(true);
-const iconSelectRef = ref(null);
+const menuList = ref<Menu[]>([]);
+const open = ref<boolean>(false);
+const loading = ref<boolean>(true);
+const showSearch = ref<boolean>(true);
+const title = ref<string>("");
+const menuOptions = ref<MenuTreeOption[]>([]);
+const isExpandAll = ref<boolean>(false);
+const refreshTable = ref<boolean>(true);
+const iconSelectRef = ref<InstanceType<typeof IconSelect>>();
+const menuRef = ref<FormInstance>();
+const queryRef = ref<FormInstance>();
 
 const data = reactive({
-  form: {},
+  form: {} as Menu,
   queryParams: {
     menuName: undefined,
     visible: undefined
-  },
+  } as MenuQueryParams,
   rules: {
-    menuName: [{required: true, message: "菜单名称不能为空", trigger: "blur"}],
-    orderNum: [{required: true, message: "菜单顺序不能为空", trigger: "blur"}],
-    path: [{required: true, message: "路由地址不能为空", trigger: "blur"}]
-  },
+    menuName: [{ required: true, message: "菜单名称不能为空", trigger: "blur" }],
+    orderNum: [{ required: true, message: "菜单顺序不能为空", trigger: "blur" }],
+    path: [{ required: true, message: "路由地址不能为空", trigger: "blur" }]
+  }
 });
 
-const {queryParams, form, rules} = toRefs(data);
+const { queryParams, form, rules } = toRefs(data);
 
 /** 查询菜单列表 */
 function getList() {
   loading.value = true;
-  listMenu(queryParams.value).then(response => {
-    menuList.value = proxy.handleTree(response.data, "menuId");
+  listMenu(queryParams.value).then((response: MenuListResponse) => {
+    menuList.value = proxy!.handleTree(response.data, "menuId");
     loading.value = false;
   });
 }
@@ -347,9 +353,9 @@ function getList() {
 /** 查询菜单下拉树结构 */
 function getTreeselect() {
   menuOptions.value = [];
-  listMenu().then(response => {
-    const menu = {menuId: 0, menuName: "主类目", children: []};
-    menu.children = proxy.handleTree(response.data, "menuId");
+  listMenu().then((response: MenuListResponse) => {
+    const menu: MenuTreeOption = { menuId: 0, menuName: "主类目", children: [] };
+    menu.children = proxy!.handleTree(response.data, "menuId");
     menuOptions.value.push(menu);
   });
 }
@@ -374,16 +380,16 @@ function reset() {
     visible: "0",
     status: "0"
   };
-  proxy.resetForm("menuRef");
+  proxy!.resetForm("menuRef");
 }
 
 /** 展示下拉图标 */
 function showSelectIcon() {
-  iconSelectRef.value.reset();
+  iconSelectRef.value?.reset();
 }
 
 /** 选择图标 */
-function selected(name) {
+function selected(name: string) {
   form.value.icon = name;
 }
 
@@ -394,12 +400,12 @@ function handleQuery() {
 
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  proxy!.resetForm("queryRef");
   handleQuery();
 }
 
 /** 新增按钮操作 */
-function handleAdd(row) {
+function handleAdd(row?: Menu) {
   reset();
   getTreeselect();
   if (row != null && row.menuId) {
@@ -421,10 +427,10 @@ function toggleExpandAll() {
 }
 
 /** 修改按钮操作 */
-async function handleUpdate(row) {
+async function handleUpdate(row: Menu) {
   reset();
   await getTreeselect();
-  getMenu(row.menuId).then(response => {
+  getMenu(row.menuId as string | number).then((response: MenuDetailResponse) => {
     form.value = response.data;
     open.value = true;
     title.value = "修改菜单";
@@ -433,17 +439,17 @@ async function handleUpdate(row) {
 
 /** 提交按钮 */
 function submitForm() {
-  proxy.$refs["menuRef"].validate(valid => {
+  menuRef.value?.validate(valid => {
     if (valid) {
       if (form.value.menuId != undefined) {
-        updateMenu(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
+        updateMenu(form.value).then(() => {
+          proxy!.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addMenu(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
+        addMenu(form.value).then(() => {
+          proxy!.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
         });
@@ -453,14 +459,13 @@ function submitForm() {
 }
 
 /** 删除按钮操作 */
-function handleDelete(row) {
-  proxy.$modal.confirm('是否确认删除名称为"' + row.menuName + '"的数据项?').then(function () {
-    return delMenu(row.menuId);
+function handleDelete(row: Menu) {
+  proxy!.$modal.confirm('是否确认删除名称为"' + row.menuName + '"的数据项?').then(function() {
+    return delMenu(row.menuId as string | number);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {
-  });
+    proxy!.$modal.msgSuccess("删除成功");
+  }).catch(() => {});
 }
 
 getList();
