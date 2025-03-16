@@ -323,8 +323,8 @@ const {queryParams, form, rules} = toRefs(data);
 function getList() {
   loading.value = true;
   listRole(queryParams.value).then(response => {
-    roleList.value = response.data.data.rows;
-    total.value = response.data.data.total;
+    roleList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
@@ -536,14 +536,14 @@ function submitForm() {
     if (valid) {
       if (form.value.roleId !== undefined && form.value.roleId !== null) {
         form.value.menuIds = getMenuAllCheckedKeys();
-        updateRole(form.value).then(response => {
+        updateRole(form.value).then(() => {
           proxy!.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
         form.value.menuIds = getMenuAllCheckedKeys();
-        addRole(form.value).then(response => {
+        addRole(form.value).then(() => {
           proxy!.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
@@ -590,7 +590,7 @@ function handleDataScope(row) {
 function submitDataScope() {
   if (form.value.roleId != undefined) {
     form.value.deptIds = getDeptAllCheckedKeys();
-    dataScope(form.value).then(response => {
+    dataScope(form.value).then(() => {
       proxy!.$modal.msgSuccess("修改成功");
       openDataScope.value = false;
       getList();

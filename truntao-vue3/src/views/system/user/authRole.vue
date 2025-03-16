@@ -45,57 +45,73 @@
    </div>
 </template>
 
-<script setup name="AuthRole">
+<script setup lang="ts">
+import { ref, nextTick, getCurrentInstance } from 'vue';
+import { useRoute } from 'vue-router';
 import { getAuthRole, updateAuthRole } from "@/api/system/user";
 
-const route = useRoute();
-const { proxy } = getCurrentInstance();
+interface UserInfo {
+  userId?: string | number;
+  userName?: string;
+  nickName?: string;
+}
 
-const loading = ref(true);
-const total = ref(0);
-const pageNum = ref(1);
-const pageSize = ref(10);
-const roleIds = ref([]);
-const roles = ref([]);
-const form = ref({
+interface RoleInfo {
+  roleId: string | number;
+  roleName: string;
+  roleKey: string;
+  createTime: string;
+  flag?: boolean;
+}
+
+const route = useRoute();
+const { proxy } = getCurrentInstance()!;
+
+const loading = ref<boolean>(true);
+const total = ref<number>(0);
+const pageNum = ref<number>(1);
+const pageSize = ref<number>(10);
+const roleIds = ref<(string | number)[]>([]);
+const roles = ref<RoleInfo[]>([]);
+const form = ref<UserInfo>({
   nickName: undefined,
   userName: undefined,
   userId: undefined
 });
 
 /** 单击选中行数据 */
-function clickRow(row) {
-  proxy.$refs["roleRef"].toggleRowSelection(row);
+function clickRow(row: RoleInfo) {
+  (proxy!.$refs["roleRef"] as any).toggleRowSelection(row);
 }
 
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
+function handleSelectionChange(selection: RoleInfo[]) {
   roleIds.value = selection.map(item => item.roleId);
 }
 
 /** 保存选中的数据编号 */
-function getRowKey(row) {
+function getRowKey(row: RoleInfo) {
   return row.roleId;
 }
 
 /** 关闭按钮 */
 function close() {
   const obj = { path: "/system/user" };
-  proxy.$tab.closeOpenPage(obj);
+  proxy!.$tab.closeOpenPage(obj);
 }
 
 /** 提交按钮 */
 function submitForm() {
   const userId = form.value.userId;
   const rIds = roleIds.value.join(",");
-  updateAuthRole({ userId: userId, roleIds: rIds }).then(response => {
-    proxy.$modal.msgSuccess("授权成功");
+  updateAuthRole({ userId: userId, roleIds: rIds }).then(() => {
+    proxy!.$modal.msgSuccess("授权成功");
     close();
   });
 }
 
 (() => {
-  const userId = route.params && route.params.userId;
+  const userId = Array.isArray(route.params.userId) ? route.params.userId[0] : route.params.userId;
   if (userId) {
     loading.value = true;
     getAuthRole(userId).then(response => {
@@ -105,7 +121,7 @@ function submitForm() {
       nextTick(() => {
         roles.value.forEach(row => {
           if (row.flag) {
-            proxy.$refs["roleRef"].toggleRowSelection(row);
+            (proxy!.$refs["roleRef"] as any).toggleRowSelection(row);
           }
         });
       });
