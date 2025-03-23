@@ -62,19 +62,42 @@
    </div>
 </template>
 
-<script setup name="Profile">
-import userAvatar from "./userAvatar";
-import userInfo from "./userInfo";
-import resetPwd from "./resetPwd";
+<script setup lang="ts">
+import userAvatar from "./userAvatar.vue";
+import userInfo from "./userInfo.vue";
+import resetPwd from "./resetPwd.vue";
+import { reactive, ref } from 'vue';
 import { getUserProfile } from "@/api/system/user";
 
+interface UserDept {
+  deptName: string;
+}
+
+interface UserInfo {
+  userName?: string;
+  phoneNumber?: string;
+  email?: string;
+  dept?: UserDept;
+  createTime?: string;
+}
+
+interface UserState {
+  user: UserInfo;
+  roleGroup: string;
+  postGroup: string;
+}
+
+interface DialogContainer {
+  value?: HTMLElement;
+}
+
 const activeTab = ref("userinfo");
-const state = reactive({
+const state = reactive<UserState>({
   user: {},
-  roleGroup: {},
-  postGroup: {}
+  roleGroup: "",
+  postGroup: ""
 });
-const appContainer = ref({});
+const appContainer = ref<DialogContainer>({});
 
 function getUser() {
   getUserProfile().then(response => {

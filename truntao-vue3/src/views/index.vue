@@ -3,14 +3,6 @@
   </div>
 </template>
 
-<script setup name="Index">
-const version = ref('3.8.7')
-
-function goTarget(url) {
-  window.open(url, '__blank')
-}
-</script>
-
 <style scoped lang="scss">
 .home {
   blockquote {

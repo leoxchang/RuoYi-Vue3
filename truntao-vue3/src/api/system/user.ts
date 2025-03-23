@@ -77,12 +77,23 @@ export function changeUserStatus(userId: string | number, status: string): Promi
   })
 }
 
+// 定义用户个人信息响应类型
+export interface UserProfileResponse {
+  code: number;
+  data: {
+    user: User;
+    roleGroup: string;
+    postGroup: string;
+  };
+  msg: string;
+}
+
 // 查询用户个人信息
-export function getUserProfile(): Promise<any> {
+export function getUserProfile(): Promise<UserProfileResponse> {
   return request({
     url: '/system/user/profile',
     method: 'get'
-  })
+  }) as unknown as Promise<UserProfileResponse>
 }
 
 // 修改用户个人信息

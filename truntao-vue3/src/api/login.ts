@@ -1,13 +1,29 @@
 import request from '@/utils/request'
+import { AxiosPromise } from 'axios'
+
+interface LoginData {
+  username: string;
+  password: string;
+  code: string;
+  uuid: string;
+}
+
+interface RegisterData {
+  username: string;
+  password: string;
+  confirmPassword: string;
+  code: string;
+  uuid: string;
+}
+
+interface CodeImgResponse {
+  captchaEnabled: boolean;
+  img: string;
+  uuid: string;
+}
 
 // 登录方法
-export function login(username, password, code, uuid) {
-  const data = {
-    username,
-    password,
-    code,
-    uuid
-  }
+export function login(data: LoginData): AxiosPromise {
   return request({
     url: '/login',
     headers: {
@@ -20,7 +36,7 @@ export function login(username, password, code, uuid) {
 }
 
 // 注册方法
-export function register(data) {
+export function register(data: RegisterData): AxiosPromise {
   return request({
     url: '/register',
     headers: {
@@ -32,7 +48,7 @@ export function register(data) {
 }
 
 // 获取用户详细信息
-export function getInfo() {
+export function getInfo(): AxiosPromise {
   return request({
     url: '/getInfo',
     method: 'get'
@@ -40,7 +56,7 @@ export function getInfo() {
 }
 
 // 退出方法
-export function logout() {
+export function logout(): AxiosPromise {
   return request({
     url: '/logout',
     method: 'post'
@@ -48,7 +64,7 @@ export function logout() {
 }
 
 // 获取验证码
-export function getCodeImg() {
+export function getCodeImg(): AxiosPromise<CodeImgResponse> {
   return request({
     url: '/captchaImage',
     headers: {
@@ -57,4 +73,4 @@ export function getCodeImg() {
     method: 'get',
     timeout: 20000
   })
-}
+} 

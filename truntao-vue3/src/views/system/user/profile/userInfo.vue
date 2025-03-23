@@ -22,18 +22,36 @@
    </el-form>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref, watch, getCurrentInstance } from 'vue';
+import type { FormInstance } from 'element-plus';
 import { updateUserProfile } from "@/api/system/user";
+
+interface UserFormData {
+  nickName?: string;
+  phoneNumber?: string;
+  email?: string;
+  sex?: string;
+}
+
+interface UserProps {
+  phoneNumber?: string;
+  email?: string;
+  nickName?: string;
+  sex?: string;
+}
 
 const props = defineProps({
   user: {
-    type: Object
+    type: Object as () => UserProps,
+    required: true
   }
 });
 
-const { proxy } = getCurrentInstance();
+const { proxy } = getCurrentInstance()!;
+const userRef = ref<FormInstance>();
 
-const form = ref({});
+const form = ref<UserFormData>({});
 const rules = ref({
   nickName: [{ required: true, message: "用户昵称不能为空", trigger: "blur" }],
   email: [{ required: true, message: "邮箱地址不能为空", trigger: "blur" }, { type: "email", message: "请输入正确的邮箱地址", trigger: ["blur", "change"] }],
@@ -42,12 +60,16 @@ const rules = ref({
 
 /** 提交按钮 */
 function submit() {
-  proxy.$refs.userRef.validate(valid => {
+  userRef.value?.validate(valid => {
     if (valid) {
-      updateUserProfile(form.value).then(response => {
-        proxy.$modal.msgSuccess("修改成功");
-        props.user.phoneNumber = form.value.phoneNumber;
-        props.user.email = form.value.email;
+      updateUserProfile(form.value).then(() => {
+        proxy!.$modal.msgSuccess("修改成功");
+        if (props.user && form.value.phoneNumber) {
+          props.user.phoneNumber = form.value.phoneNumber;
+        }
+        if (props.user && form.value.email) {
+          props.user.email = form.value.email;
+        }
       });
     }
   });
@@ -55,13 +77,18 @@ function submit() {
 
 /** 关闭按钮 */
 function close() {
-  proxy.$tab.closePage();
+  proxy!.$tab.closeOpenPage({ path: '/system/user/profile' });
 }
 
 // 回显当前登录用户信息
-watch(() => props.user, user => {
+watch(() => props.user, (user) => {
   if (user) {
-    form.value = { nickName: user.nickName, phoneNumber: user.phoneNumber, email: user.email, sex: user.sex };
+    form.value = { 
+      nickName: user.nickName, 
+      phoneNumber: user.phoneNumber, 
+      email: user.email, 
+      sex: user.sex 
+    };
   }
 },{ immediate: true });
 </script>

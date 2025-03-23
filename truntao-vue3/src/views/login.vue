@@ -63,18 +63,29 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import type { FormInstance } from 'element-plus';
 import { getCodeImg } from "@/api/login";
 import Cookies from "js-cookie";
 import { encrypt, decrypt } from "@/utils/jsencrypt";
-import useUserStore from '@/store/modules/user'
+import useUserStore from '@/store/modules/user';
 
-const userStore = useUserStore()
+interface LoginFormData {
+  username: string;
+  password: string;
+  rememberMe: boolean;
+  code: string;
+  uuid: string;
+}
+
+const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
-const { proxy } = getCurrentInstance();
+const loginRef = ref<FormInstance>();
 
-const loginForm = ref({
+const loginForm = ref<LoginFormData>({
   username: "",
   password: "",
   rememberMe: false,
@@ -94,21 +105,21 @@ const loading = ref(false);
 const captchaEnabled = ref(true);
 // 注册开关
 const register = ref(false);
-const redirect = ref(undefined);
+const redirect = ref<string | undefined>(undefined);
 
 watch(route, (newRoute) => {
-    redirect.value = newRoute.query && newRoute.query.redirect;
+    redirect.value = newRoute.query && newRoute.query.redirect as string | undefined;
 }, { immediate: true });
 
 function handleLogin() {
-  proxy.$refs.loginRef.validate(valid => {
+  loginRef.value?.validate(valid => {
     if (valid) {
       loading.value = true;
       // 勾选了需要记住密码设置在 cookie 中设置记住用户名和密码
       if (loginForm.value.rememberMe) {
         Cookies.set("username", loginForm.value.username, { expires: 30 });
         Cookies.set("password", encrypt(loginForm.value.password), { expires: 30 });
-        Cookies.set("rememberMe", loginForm.value.rememberMe, { expires: 30 });
+        Cookies.set("rememberMe", String(loginForm.value.rememberMe), { expires: 30 });
       } else {
         // 否则移除
         Cookies.remove("username");
@@ -118,9 +129,9 @@ function handleLogin() {
       // 调用action的登录方法
       userStore.login(loginForm.value).then(() => {
         const query = route.query;
-        const otherQueryParams = Object.keys(query).reduce((acc, cur) => {
+        const otherQueryParams = Object.keys(query).reduce((acc: Record<string, string>, cur) => {
           if (cur !== "redirect") {
-            acc[cur] = query[cur];
+            acc[cur] = query[cur] as string;
           }
           return acc;
         }, {});
@@ -137,11 +148,12 @@ function handleLogin() {
 }
 
 function getCode() {
-  getCodeImg().then(res => {
-    captchaEnabled.value = res.data.captchaEnabled === undefined ? true : res.data.captchaEnabled;
+  getCodeImg().then(response => {
+    const res = response.data;
+    captchaEnabled.value = res.captchaEnabled === undefined ? true : res.captchaEnabled;
     if (captchaEnabled.value) {
-      codeUrl.value = "data:image/gif;base64," + res.data.img;
-      loginForm.value.uuid = res.data.uuid;
+      codeUrl.value = "data:image/gif;base64," + res.img;
+      loginForm.value.uuid = res.uuid;
     }
   });
 }
@@ -153,7 +165,9 @@ function getCookie() {
   loginForm.value = {
     username: username === undefined ? loginForm.value.username : username,
     password: password === undefined ? loginForm.value.password : decrypt(password),
-    rememberMe: rememberMe === undefined ? false : Boolean(rememberMe)
+    rememberMe: rememberMe === undefined ? false : Boolean(rememberMe),
+    code: loginForm.value.code,
+    uuid: loginForm.value.uuid
   };
 }
 

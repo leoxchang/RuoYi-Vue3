@@ -19,7 +19,7 @@
         </el-col>
         <el-col :xs="24" :md="12" :style="{ height: '350px' }">
           <div class="avatar-upload-preview">
-            <img :src="options.previews.url" :style="options.previews.img" />
+            <img v-if="options.previews.url" :src="options.previews.url" :style="options.previews.img || {}"  alt=""/>
           </div>
         </el-col>
       </el-row>
@@ -58,20 +58,40 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import "vue-cropper/dist/index.css";
+import { ref, reactive, getCurrentInstance } from 'vue';
 import { VueCropper } from "vue-cropper";
 import { uploadAvatar } from "@/api/system/user";
 import useUserStore from "@/store/modules/user";
 
-const userStore = useUserStore();
-const { proxy } = getCurrentInstance();
-const appendTo = ref('body');
+interface CropperOptions {
+  img: string;
+  autoCrop: boolean;
+  autoCropWidth: number;
+  autoCropHeight: number;
+  fixedBox: boolean;
+  outputType: string;
+  filename: string;
+  previews: {
+    url?: string;
+    img?: Record<string, string>;
+  };
+}
 
-//接收来自父组件的 append-to 属性
+interface DialogContainer {
+  value?: HTMLElement;
+}
+
+const userStore = useUserStore();
+const { proxy } = getCurrentInstance()!;
+const appendTo = ref('body');
+const cropper = ref();
+
+// 接收来自父组件的 append-to 属性
 const props = defineProps({
   dialogContainer: {
-    type: Object,
+    type: Object as () => DialogContainer,
     required: true
   }
 });
@@ -80,8 +100,8 @@ const open = ref(false);
 const visible = ref(false);
 const title = ref("修改头像");
 
-//图片裁剪数据
-const options = reactive({
+// 图片裁剪数据
+const options = reactive<CropperOptions>({
   img: userStore.avatar,     // 裁剪图片的地址
   autoCrop: true,            // 是否默认生成截图框
   autoCropWidth: 200,        // 默认生成截图框宽度
@@ -89,16 +109,18 @@ const options = reactive({
   fixedBox: true,            // 固定截图框大小 不允许改变
   outputType: "png",         // 默认生成截图为PNG格式
   filename: 'avatar',        // 文件名称
-  previews: {}               //预览数据
+  previews: {}               // 预览数据
 });
 
 /** 编辑头像 */
 function editCropper() {
   open.value = true;
 }
-function dialogAppendTo(){
-  appendTo.value = props.dialogContainer
+
+function dialogAppendTo() {
+  appendTo.value = props.dialogContainer as unknown as string;
 }
+
 /** 打开弹出层结束时的回调 */
 function modalOpened() {
   visible.value = true;
@@ -109,29 +131,29 @@ function requestUpload() {}
 
 /** 向左旋转 */
 function rotateLeft() {
-  proxy.$refs.cropper.rotateLeft();
+  (proxy!.$refs.cropper as any).rotateLeft();
 }
 
 /** 向右旋转 */
 function rotateRight() {
-  proxy.$refs.cropper.rotateRight();
+  (proxy!.$refs.cropper as any).rotateRight();
 }
 
 /** 图片缩放 */
-function changeScale(num) {
+function changeScale(num: number) {
   num = num || 1;
-  proxy.$refs.cropper.changeScale(num);
+  (proxy!.$refs.cropper as any).changeScale(num);
 }
 
 /** 上传预处理 */
-function beforeUpload(file) {
+function beforeUpload(file: File) {
   if (file.type.indexOf("image/") == -1) {
-    proxy.$modal.msgError("文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。");
+    proxy!.$modal.msgError("文件格式错误，请上传图片类型,如：JPG，PNG后缀的文件。");
   } else {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => {
-      options.img = reader.result;
+      options.img = reader.result as string;
       options.filename = file.name;
     };
   }
@@ -139,28 +161,28 @@ function beforeUpload(file) {
 
 /** 上传图片 */
 function uploadImg() {
-  proxy.$refs.cropper.getCropBlob(data => {
+  (proxy!.$refs.cropper as any).getCropBlob((data: Blob) => {
     let formData = new FormData();
     formData.append("avatarFile", data, options.filename);
     uploadAvatar(formData).then(response => {
       open.value = false;
       options.img = response.data.imgUrl;
       userStore.avatar = options.img;
-      proxy.$modal.msgSuccess("修改成功");
+      proxy!.$modal.msgSuccess("修改成功");
       visible.value = false;
     });
   });
 }
 
 /** 实时预览 */
-function realTime(data) {
+function realTime(data: any) {
   options.previews = data;
 }
 
 /** 关闭窗口 */
 function closeDialog() {
   options.img = userStore.avatar;
-  options.visible = false;
+  visible.value = false;
 }
 </script>
 

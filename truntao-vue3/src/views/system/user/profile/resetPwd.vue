@@ -16,24 +16,34 @@
    </el-form>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { reactive, ref, getCurrentInstance } from 'vue';
+import type { FormInstance, FormItemRule } from 'element-plus';
 import { updateUserPwd } from "@/api/system/user";
 
-const { proxy } = getCurrentInstance();
+interface UserPassword {
+  oldPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+}
 
-const user = reactive({
+const { proxy } = getCurrentInstance()!;
+const pwdRef = ref<FormInstance>();
+
+const user = reactive<UserPassword>({
   oldPassword: undefined,
   newPassword: undefined,
   confirmPassword: undefined
 });
 
-const equalToPassword = (rule, value, callback) => {
+const equalToPassword = (_: FormItemRule, value: string, callback: (error?: Error) => void) => {
   if (user.newPassword !== value) {
     callback(new Error("两次输入的密码不一致"));
   } else {
     callback();
   }
 };
+
 const rules = ref({
   oldPassword: [{ required: true, message: "旧密码不能为空", trigger: "blur" }],
   newPassword: [{ required: true, message: "新密码不能为空", trigger: "blur" },
@@ -49,10 +59,10 @@ const rules = ref({
 
 /** 提交按钮 */
 function submit() {
-  proxy.$refs.pwdRef.validate(valid => {
-    if (valid) {
-      updateUserPwd(user.oldPassword, user.newPassword).then(response => {
-        proxy.$modal.msgSuccess("修改成功");
+  pwdRef.value?.validate(valid => {
+    if (valid && user.oldPassword && user.newPassword) {
+      updateUserPwd(user.oldPassword, user.newPassword).then(() => {
+        proxy!.$modal.msgSuccess("修改成功");
       });
     }
   });
@@ -60,6 +70,6 @@ function submit() {
 
 /** 关闭按钮 */
 function close() {
-  proxy.$tab.closePage();
+  proxy!.$tab.closeOpenPage({ path: '/system/user/profile' });
 }
 </script>
