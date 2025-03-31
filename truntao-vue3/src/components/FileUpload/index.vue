@@ -39,46 +39,30 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue';
 import { getToken } from "@/utils/auth";
+import type { FileItem, FileUploadProps, UploadResponse, FileUploadInstance } from './index.d';
 
-const props = defineProps({
-  modelValue: [String, Object, Array],
-  // 数量限制
-  limit: {
-    type: Number,
-    default: 5,
-  },
-  // 大小限制(MB)
-  fileSize: {
-    type: Number,
-    default: 5,
-  },
-  // 文件类型, 例如['png', 'jpg', 'jpeg']
-  fileType: {
-    type: Array,
-    default: () => ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "pdf"],
-  },
-  // 是否显示提示
-  isShowTip: {
-    type: Boolean,
-    default: true
-  },
-    // 禁用组件（仅查看文件）
-  disabled: {
-    type: Boolean,
-    default: false
-  }
+const props = withDefaults(defineProps<FileUploadProps>(), {
+  limit: 5,
+  fileSize: 5,
+  fileType: () => ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "pdf"],
+  isShowTip: true,
+  disabled: false
 });
 
-const { proxy } = getCurrentInstance();
-const emit = defineEmits();
+const emit = defineEmits<{
+  (e: 'update:modelValue', value: string): void;
+}>();
+
+const fileUpload = ref<FileUploadInstance>();
 const number = ref(0);
-const uploadList = ref([]);
+const uploadList = ref<FileItem[]>([]);
 const baseUrl = import.meta.env.VITE_APP_BASE_API;
 const uploadFileUrl = ref(import.meta.env.VITE_APP_BASE_API + "/common/upload"); // 上传文件服务器地址
 const headers = ref({ Authorization: "Bearer " + getToken() });
-const fileList = ref([]);
+const fileList = ref<FileItem[]>([]);
 const showTip = computed(
   () => props.isShowTip && (props.fileType || props.fileSize)
 );
@@ -87,7 +71,7 @@ watch(() => props.modelValue, val => {
   if (val) {
     let temp = 1;
     // 首先将值转为数组
-    const list = Array.isArray(val) ? val : props.modelValue.split(',');
+    const list = Array.isArray(val) ? val : (typeof val === 'string' ? val.split(',') : [val]);
     // 然后将数组转为对象数组
     fileList.value = list.map(item => {
       if (typeof item === "string") {
@@ -100,10 +84,10 @@ watch(() => props.modelValue, val => {
     fileList.value = [];
     return [];
   }
-},{ deep: true, immediate: true });
+}, { deep: true, immediate: true });
 
 // 上传前校检格式和大小
-function handleBeforeUpload(file) {
+function handleBeforeUpload(file: File): boolean {
   // 校检文件类型
   if (props.fileType.length) {
     const fileName = file.name.split('.');
@@ -138,12 +122,12 @@ function handleExceed() {
 }
 
 // 上传失败
-function handleUploadError(err) {
+function handleUploadError() {
   proxy.$modal.msgError("上传文件失败");
 }
 
 // 上传成功回调
-function handleUploadSuccess(res, file) {
+function handleUploadSuccess(res: UploadResponse, file: File) {
   if (res.code === 200) {
     uploadList.value.push({ name: res.data.fileName, url: res.data.fileName });
     uploadedSuccessfully();
@@ -151,13 +135,13 @@ function handleUploadSuccess(res, file) {
     number.value--;
     proxy.$modal.closeLoading();
     proxy.$modal.msgError(res.msg);
-    proxy.$refs.fileUpload.handleRemove(file);
+    fileUpload.value?.handleRemove(file);
     uploadedSuccessfully();
   }
 }
 
 // 删除文件
-function handleDelete(index) {
+function handleDelete(index: number) {
   fileList.value.splice(index, 1);
   emit("update:modelValue", listToString(fileList.value));
 }
@@ -174,7 +158,7 @@ function uploadedSuccessfully() {
 }
 
 // 获取文件名称
-function getFileName(name) {
+function getFileName(name: string): string {
   // 如果是url那么取最后的名字 如果不是直接返回
   if (name.lastIndexOf("/") > -1) {
     return name.slice(name.lastIndexOf("/") + 1);
@@ -184,15 +168,14 @@ function getFileName(name) {
 }
 
 // 对象转成指定字符串分隔
-function listToString(list, separator) {
+function listToString(list: FileItem[], separator: string = ","): string {
   let strs = "";
-  separator = separator || ",";
   for (let i in list) {
     if (list[i].url) {
       strs += list[i].url + separator;
     }
   }
-  return strs != '' ? strs.substr(0, strs.length - 1) : '';
+  return strs !== '' ? strs.substr(0, strs.length - 1) : '';
 }
 </script>
 

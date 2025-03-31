@@ -34,45 +34,44 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  /* 是否显示检索条件 */
-  showSearch: {
-    type: Boolean,
-    default: true,
-  },
-  /* 显隐列信息 */
-  columns: {
-    type: Array,
-  },
-  /* 是否显示检索图标 */
-  search: {
-    type: Boolean,
-    default: true,
-  },
-  /* 显隐列类型（transfer穿梭框、checkbox复选框） */
-  showColumnsType: {
-    type: String,
-    default: "checkbox",
-  },
-  /* 右外边距 */
-  gutter: {
-    type: Number,
-    default: 10,
-  },
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+
+interface Column {
+  key: number;
+  label: string;
+  visible: boolean;
+}
+
+interface Props {
+  showSearch?: boolean;
+  columns?: Column[];
+  search?: boolean;
+  showColumnsType?: 'transfer' | 'checkbox';
+  gutter?: number;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  showSearch: true,
+  search: true,
+  showColumnsType: 'checkbox',
+  gutter: 10
 })
 
-const emits = defineEmits(['update:showSearch', 'queryTable']);
+const emits = defineEmits<{
+  (e: 'update:showSearch', value: boolean): void;
+  (e: 'queryTable'): void;
+}>();
 
 // 显隐数据
-const value = ref([]);
+const value = ref<number[]>([]);
 // 弹出层标题
 const title = ref("显示/隐藏");
 // 是否显示弹出层
 const open = ref(false);
 
 const style = computed(() => {
-  const ret = {};
+  const ret: Record<string, string> = {};
   if (props.gutter) {
     ret.marginRight = `${props.gutter / 2}px`;
   }
@@ -90,7 +89,7 @@ function refresh() {
 }
 
 // 右侧列表元素变化
-function dataChange(data) {
+function dataChange(data: number[]) {
   for (let item in props.columns) {
     const key = props.columns[item].key;
     props.columns[item].visible = !data.includes(key);
@@ -102,7 +101,7 @@ function showColumn() {
   open.value = true;
 }
 
-if (props.showColumnsType == 'transfer') {
+if (props.showColumnsType === 'transfer' && props.columns) {
   // 显隐列初始默认隐藏列
   for (let item in props.columns) {
     if (props.columns[item].visible === false) {
@@ -112,10 +111,11 @@ if (props.showColumnsType == 'transfer') {
 }
 
 // 勾选
-function checkboxChange(event, label) {
-  props.columns.filter(item => item.label == label)[0].visible = event;
+function checkboxChange(event: boolean, label: string) {
+  if (props.columns) {
+    props.columns.filter(item => item.label === label)[0].visible = event;
+  }
 }
-
 </script>
 
 <style lang='scss' scoped>

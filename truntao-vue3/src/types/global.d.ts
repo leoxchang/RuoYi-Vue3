@@ -57,4 +57,17 @@ interface ImportMetaEnv {
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
+}
+
+interface ModalInstance {
+  msgError: (message: string) => void;
+  msgSuccess: (message: string) => void;
+  loading: (message: string) => void;
+  closeLoading: () => void;
+}
+
+declare module 'vue' {
+  interface ComponentCustomProperties {
+    $modal: ModalInstance;
+  }
 } 

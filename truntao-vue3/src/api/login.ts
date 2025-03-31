@@ -1,14 +1,13 @@
 import request from '@/utils/request'
-import { AxiosPromise } from 'axios'
 
-interface LoginData {
+export interface LoginData {
   username: string;
   password: string;
   code: string;
   uuid: string;
 }
 
-interface RegisterData {
+export interface RegisterData {
   username: string;
   password: string;
   confirmPassword: string;
@@ -16,14 +15,14 @@ interface RegisterData {
   uuid: string;
 }
 
-interface CodeImgResponse {
+export interface CodeImgResponse {
   captchaEnabled: boolean;
   img: string;
   uuid: string;
 }
 
 // 登录方法
-export function login(data: LoginData): AxiosPromise {
+export function login(data: LoginData): Promise<any> {
   return request({
     url: '/login',
     headers: {
@@ -36,7 +35,7 @@ export function login(data: LoginData): AxiosPromise {
 }
 
 // 注册方法
-export function register(data: RegisterData): AxiosPromise {
+export function register(data: RegisterData): Promise<any> {
   return request({
     url: '/register',
     headers: {
@@ -48,7 +47,7 @@ export function register(data: RegisterData): AxiosPromise {
 }
 
 // 获取用户详细信息
-export function getInfo(): AxiosPromise {
+export function getInfo(): Promise {
   return request({
     url: '/getInfo',
     method: 'get'
@@ -56,7 +55,7 @@ export function getInfo(): AxiosPromise {
 }
 
 // 退出方法
-export function logout(): AxiosPromise {
+export function logout(): Promise<any> {
   return request({
     url: '/logout',
     method: 'post'
@@ -64,7 +63,7 @@ export function logout(): AxiosPromise {
 }
 
 // 获取验证码
-export function getCodeImg(): AxiosPromise<CodeImgResponse> {
+export function getCodeImg(): Promise<CodeImgResponse> {
   return request({
     url: '/captchaImage',
     headers: {
@@ -73,4 +72,4 @@ export function getCodeImg(): AxiosPromise<CodeImgResponse> {
     method: 'get',
     timeout: 20000
   })
-} 
+}

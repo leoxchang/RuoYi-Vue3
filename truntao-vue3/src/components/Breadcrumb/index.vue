@@ -9,28 +9,41 @@
   </el-breadcrumb>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import usePermissionStore from '@/store/modules/permission'
+import type { RouteLocationNormalizedLoaded } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 
-const route = useRoute();
-const router = useRouter();
+interface BreadcrumbItem {
+  path: string
+  meta: {
+    title: string
+    breadcrumb?: boolean
+  }
+  redirect?: string
+  name?: string
+  children?: RouteRecordRaw[]
+}
+
+const route = useRoute() as RouteLocationNormalizedLoaded
+const router = useRouter()
 const permissionStore = usePermissionStore()
-const levelList = ref([])
+const levelList = ref<BreadcrumbItem[]>([])
 
 function getBreadcrumb() {
   // only show routes with meta.title
-  let matched = []
+  let matched: BreadcrumbItem[] = []
   const pathNum = findPathNum(route.path)
   // multi-level menu
   if (pathNum > 2) {
     const reg = /\/\w+/gi
-    const pathList = route.path.match(reg).map((item, index) => {
+    const pathList = route.path.match(reg)?.map((item, index) => {
       if (index !== 0) item = item.slice(1)
       return item
-    })
+    }) || []
     getMatched(pathList, permissionStore.defaultRoutes, matched)
   } else {
-    matched = route.matched.filter((item) => item.meta && item.meta.title)
+    matched = route.matched.filter((item) => item.meta && item.meta.title) as BreadcrumbItem[]
   }
   // 判断是否为首页
   if (!isDashboard(matched[0])) {

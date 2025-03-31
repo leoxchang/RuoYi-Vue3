@@ -14,25 +14,19 @@
   </el-image>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { isExternal } from "@/utils/validate";
+import type { PropType } from 'vue';
 
-const props = defineProps({
-  src: {
-    type: String,
-    default: ""
-  },
-  width: {
-    type: [Number, String],
-    default: ""
-  },
-  height: {
-    type: [Number, String],
-    default: ""
-  }
-});
+interface ImagePreviewProps {
+  src: string;
+  width: number | string;
+  height: number | string;
+}
 
-const realSrc = computed(() => {
+const props = defineProps<ImagePreviewProps>();
+
+const realSrc = computed<string | undefined>(() => {
   if (!props.src) {
     return;
   }
@@ -43,27 +37,28 @@ const realSrc = computed(() => {
   return import.meta.env.VITE_APP_BASE_API + real_src;
 });
 
-const realSrcList = computed(() => {
+const realSrcList = computed<string[] | undefined>(() => {
   if (!props.src) {
     return;
   }
   let real_src_list = props.src.split(",");
-  let srcList = [];
+  let srcList: string[] = [];
   real_src_list.forEach(item => {
     if (isExternal(item)) {
-      return srcList.push(item);
+      srcList.push(item);
+    } else {
+      srcList.push(import.meta.env.VITE_APP_BASE_API + item);
     }
-    return srcList.push(import.meta.env.VITE_APP_BASE_API + item);
   });
   return srcList;
 });
 
-const realWidth = computed(() =>
-  typeof props.width == "string" ? props.width : `${props.width}px`
+const realWidth = computed<string>(() =>
+  typeof props.width === "string" ? props.width : `${props.width}px`
 );
 
-const realHeight = computed(() =>
-  typeof props.height == "string" ? props.height : `${props.height}px`
+const realHeight = computed<string>(() =>
+  typeof props.height === "string" ? props.height : `${props.height}px`
 );
 </script>
 

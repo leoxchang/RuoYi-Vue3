@@ -24,18 +24,31 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import type { PropType } from 'vue'
+
+interface DictOption {
+  value: string | number
+  label: string
+  elTagType?: string
+  elTagClass?: string
+}
+
 // 记录未匹配的项
-const unmatchArray = ref([]);
+const unmatchArray = ref<string[]>([])
 
 const props = defineProps({
   // 数据
   options: {
-    type: Array,
-    default: null,
+    type: Array as PropType<DictOption[]>,
+    default: () => [],
   },
   // 当前的值
-  value: [Number, String, Array],
+  value: {
+    type: [Number, String, Array] as PropType<number | string | (string | number)[]>,
+    default: '',
+  },
   // 当未找到匹配的数据时，显示value
   showValue: {
     type: Boolean,
@@ -45,7 +58,7 @@ const props = defineProps({
     type: String,
     default: ",",
   }
-});
+})
 
 const values = computed(() => {
   if (props.value === null || typeof props.value === 'undefined' || props.value === '') return [];
@@ -67,11 +80,11 @@ const unmatch = computed(() => {
   return unmatch // 返回标志的值
 });
 
-function handleArray(array) {
-  if (array.length === 0) return "";
+function handleArray(array: string[]) {
+  if (array.length === 0) return ""
   return array.reduce((pre, cur) => {
-    return pre + " " + cur;
-  });
+    return pre + " " + cur
+  })
 }
 </script>
 

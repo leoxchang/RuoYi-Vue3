@@ -8,17 +8,16 @@
   </div>
 </template>
 
-<script setup>
-const props = defineProps({
-  src: {
-    type: String,
-    required: true
-  }
-})
+<script setup lang="ts">
+interface Props {
+  src: string
+}
 
-const height = ref(document.documentElement.clientHeight - 94.5 + "px;")
-const loading = ref(true)
-const url = computed(() => props.src)
+const props = defineProps<Props>()
+
+const height = ref<string>(document.documentElement.clientHeight - 94.5 + "px;")
+const loading = ref<boolean>(true)
+const url = computed<string>(() => props.src)
 
 onMounted(() => {
   setTimeout(() => {
