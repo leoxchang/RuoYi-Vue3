@@ -15,22 +15,27 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref, computed, getCurrentInstance } from 'vue';
 import useAppStore from "@/store/modules/app";
+import type { ComponentSize } from "element-plus";
+
+interface SizeOption {
+  label: string;
+  value: ComponentSize;
+}
 
 const appStore = useAppStore();
 const size = computed(() => appStore.size);
-const route = useRoute();
-const router = useRouter();
-const { proxy } = getCurrentInstance();
-const sizeOptions = ref([
+const { proxy } = getCurrentInstance()!;
+const sizeOptions = ref<SizeOption[]>([
   { label: "较大", value: "large" },
   { label: "默认", value: "default" },
   { label: "稍小", value: "small" },
 ]);
 
-function handleSetSize(size) {
-  proxy.$modal.loading("正在设置布局大小，请稍候...");
+function handleSetSize(size: ComponentSize) {
+  proxy!.$modal.loading("正在设置布局大小，请稍候...");
   appStore.setSize(size);
   setTimeout("window.location.reload()", 1000);
 }

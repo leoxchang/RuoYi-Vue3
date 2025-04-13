@@ -6,43 +6,45 @@
     :ellipsis="false"
   >
     <template v-for="(item, index) in topMenus">
-      <el-menu-item :style="{'--theme': theme}" :index="item.path" :key="index" v-if="index < visibleNumber">
+      <el-menu-item :style="{'--theme': theme}" :index="item.path" :key="index" v-if="index < (visibleNumber || 0)">
         <svg-icon
-        v-if="item.meta && item.meta.icon && item.meta.icon !== '#'"
-        :icon-class="item.meta.icon"/>
-        {{ item.meta.title }}
+          v-if="item.meta?.icon && item.meta.icon !== '#'"
+          :icon-class="item.meta.icon"/>
+        {{ item.meta?.title }}
       </el-menu-item>
     </template>
 
     <!-- 顶部菜单超出数量折叠 -->
-    <el-sub-menu :style="{'--theme': theme}" index="more" v-if="topMenus.length > visibleNumber">
+    <el-sub-menu :style="{'--theme': theme}" index="more" v-if="topMenus.length > (visibleNumber || 0)">
       <template #title>更多菜单</template>
       <template v-for="(item, index) in topMenus">
         <el-menu-item
           :index="item.path"
           :key="index"
-          v-if="index >= visibleNumber">
-        <svg-icon
-          v-if="item.meta && item.meta.icon && item.meta.icon !== '#'"
-          :icon-class="item.meta.icon"/>
-        {{ item.meta.title }}
+          v-if="index >= (visibleNumber || 0)">
+          <svg-icon
+            v-if="item.meta?.icon && item.meta.icon !== '#'"
+            :icon-class="item.meta.icon"/>
+          {{ item.meta?.title }}
         </el-menu-item>
       </template>
     </el-sub-menu>
   </el-menu>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { constantRoutes } from "@/router"
 import { isHttp } from '@/utils/validate'
 import useAppStore from '@/store/modules/app'
 import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
+import { useRoute, useRouter } from 'vue-router'
+import { ref, computed, onMounted, onBeforeUnmount } from "vue"
 
 // 顶部栏初始数
-const visibleNumber = ref(null);
+const visibleNumber = ref<number>(0);
 // 当前激活菜单的 index
-const currentIndex = ref(null);
+const currentIndex = ref<string | null>(null);
 // 隐藏侧边栏路由
 const hideList = ['/index', '/user/profile'];
 
@@ -57,9 +59,24 @@ const theme = computed(() => settingsStore.theme);
 // 所有的路由信息
 const routers = computed(() => permissionStore.topbarRouters);
 
+type AppRouteRecordRaw = {
+  path: string;
+  component: any;
+  hidden?: boolean;
+  children?: AppRouteRecordRaw[];
+  parentPath?: string;
+  meta?: {
+    title?: string;
+    icon?: string;
+    link?: string;
+  };
+  query?: string;
+  redirect?: string;
+}
+
 // 顶部显示菜单
 const topMenus = computed(() => {
-  let topMenus = [];
+  let topMenus: AppRouteRecordRaw[] = [];
   routers.value.map((menu) => {
     if (menu.hidden !== true) {
       // 兼容顶部栏一级菜单内部跳转
@@ -75,7 +92,7 @@ const topMenus = computed(() => {
 
 // 设置子路由
 const childrenMenus = computed(() => {
-  let childrenMenus = [];
+  let childrenMenus: AppRouteRecordRaw[] = [];
   routers.value.map((router) => {
     for (let item in router.children) {
       if (router.children[item].parentPath === undefined) {
@@ -91,7 +108,7 @@ const childrenMenus = computed(() => {
       childrenMenus.push(router.children[item]);
     }
   })
-  return constantRoutes.concat(childrenMenus);
+  return [...constantRoutes, ...childrenMenus];
 })
 
 // 默认激活的菜单
@@ -100,11 +117,11 @@ const activeMenu = computed(() => {
   let activePath = path;
   if (path !== undefined && path.lastIndexOf("/") > 0 && hideList.indexOf(path) === -1) {
     const tmpPath = path.substring(1, path.length);
-    if (!route.meta.link) {
+    if (!route.meta?.link) {
       activePath = "/" + tmpPath.substring(0, tmpPath.indexOf("/"));
       appStore.toggleSideBarHide(false);
     }
-  } else if(!route.children) {
+  } else {
     activePath = path;
     appStore.toggleSideBarHide(true);
   }
@@ -114,10 +131,10 @@ const activeMenu = computed(() => {
 
 function setVisibleNumber() {
   const width = document.body.getBoundingClientRect().width / 3;
-  visibleNumber.value = parseInt(width / 85);
+  visibleNumber.value = Math.floor(width / 85);
 }
 
-function handleSelect(key, keyPath) {
+function handleSelect(key: string) {
   currentIndex.value = key;
   const route = routers.value.find(item => item.path === key);
   if (isHttp(key)) {
@@ -125,8 +142,8 @@ function handleSelect(key, keyPath) {
     window.open(key, "_blank");
   } else if (!route || !route.children) {
     // 没有子路由路径内部打开
-    const routeMenu = childrenMenus.value.find(item => item.path === key);
-    if (routeMenu && routeMenu.query) {
+    const routeMenu = childrenMenus.value.find(item => item.path === key) as AppRouteRecordRaw;
+    if (routeMenu?.query) {
       let query = JSON.parse(routeMenu.query);
       router.push({ path: key, query: query });
     } else {
@@ -140,12 +157,13 @@ function handleSelect(key, keyPath) {
   }
 }
 
-function activeRoutes(key) {
-  let routes = [];
+function activeRoutes(key: string) {
+  let routes: AppRouteRecordRaw[] = [];
   if (childrenMenus.value && childrenMenus.value.length > 0) {
     childrenMenus.value.map((item) => {
-      if (key == item.parentPath || (key == "index" && "" == item.path)) {
-        routes.push(item);
+      const routeItem = item as AppRouteRecordRaw;
+      if (key === routeItem.parentPath || (key === "index" && "" === routeItem.path)) {
+        routes.push(routeItem);
       }
     });
   }

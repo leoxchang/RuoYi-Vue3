@@ -28,47 +28,17 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { treeSelectProps } from './index.d'
+import { ref, computed, getCurrentInstance, nextTick, onMounted, watch } from 'vue';
 
-const { proxy } = getCurrentInstance();
+const { proxy } = getCurrentInstance()!;
 
-const props = defineProps({
-  /* 配置项 */
-  objMap: {
-    type: Object,
-    default: () => {
-      return {
-        value: 'id', // ID字段名
-        label: 'label', // 显示名称
-        children: 'children' // 子级字段名
-      }
-    }
-  },
-  /* 自动收起 */
-  accordion: {
-    type: Boolean,
-    default: () => {
-      return false
-    }
-  },
-  /**当前双向数据绑定的值 */
-  value: {
-    type: [String, Number],
-    default: ''
-  },
-  /**当前的数据 */
-  options: {
-    type: Array,
-    default: () => []
-  },
-  /**输入框内部的文字 */
-  placeholder: {
-    type: String,
-    default: ''
-  }
-})
+const props = defineProps(treeSelectProps);
 
-const emit = defineEmits(['update:value']);
+const emit = defineEmits<{
+  (e: 'update:value', value: string | number): void
+}>();
 
 const valueId = computed({
   get: () => props.value,
@@ -76,17 +46,17 @@ const valueId = computed({
     emit('update:value', val)
   }
 });
-const valueTitle = ref('');
-const defaultExpandedKey = ref([]);
+const valueTitle = ref<string>('');
+const defaultExpandedKey = ref<(string | number)[]>([]);
 
-function initHandle() {
+function initHandle(): void {
   nextTick(() => {
     const selectedValue = valueId.value;
     if(selectedValue !== null && typeof (selectedValue) !== 'undefined') {
-      const node = proxy.$refs.selectTree.getNode(selectedValue)
+      const node = proxy!.$refs.selectTree.getNode(selectedValue)
       if (node) {
         valueTitle.value = node.data[props.objMap.label]
-        proxy.$refs.selectTree.setCurrentKey(selectedValue) // 设置默认选中
+        proxy!.$refs.selectTree.setCurrentKey(selectedValue) // 设置默认选中
         defaultExpandedKey.value = [selectedValue] // 设置默认展开
       }
     } else {
@@ -94,27 +64,27 @@ function initHandle() {
     }
   })
 }
-function handleNodeClick(node) {
+function handleNodeClick(node: Record<string, any>): void {
   valueTitle.value = node[props.objMap.label]
   valueId.value = node[props.objMap.value];
   defaultExpandedKey.value = [];
-  proxy.$refs.treeSelect.blur()
+  proxy!.$refs.treeSelect.blur()
   selectFilterData('')
 }
-function selectFilterData(val) {
-  proxy.$refs.selectTree.filter(val)
+function selectFilterData(val: string): void {
+  proxy!.$refs.selectTree.filter(val)
 }
-function filterNode(value, data) {
+function filterNode(value: string, data: Record<string, any>): boolean {
   if (!value) return true
   return data[props.objMap['label']].indexOf(value) !== -1
 }
-function clearHandle() {
+function clearHandle(): void {
   valueTitle.value = ''
   valueId.value = ''
   defaultExpandedKey.value = [];
   clearSelected()
 }
-function clearSelected() {
+function clearSelected(): void {
   const allNode = document.querySelectorAll('#tree-option .el-tree-node')
   allNode.forEach((element) => element.classList.remove('is-current'))
 }

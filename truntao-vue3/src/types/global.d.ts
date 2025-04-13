@@ -5,6 +5,7 @@ import { ComponentCustomProperties } from 'vue'
 declare module 'vue' {
   interface ComponentCustomProperties {
     $modal: {
+      loading(message: string): unknown;
       msgSuccess: (message: string) => void;
       msgError: (message: string) => void;
       msgWarning: (message: string) => void;
@@ -58,16 +59,3 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
-
-interface ModalInstance {
-  msgError: (message: string) => void;
-  msgSuccess: (message: string) => void;
-  loading: (message: string) => void;
-  closeLoading: () => void;
-}
-
-declare module 'vue' {
-  interface ComponentCustomProperties {
-    $modal: ModalInstance;
-  }
-} 

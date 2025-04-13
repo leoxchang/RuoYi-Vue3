@@ -1,34 +1,44 @@
 <template>
   <div :class="{ 'show': show }" class="header-search">
-    <svg-icon class-name="search-icon" icon-class="search" @click.stop="click" />
+    <svg-icon class-name="search-icon" icon-class="search" @click.stop="click"/>
     <el-select
-      ref="headerSearchSelectRef"
-      v-model="search"
-      :remote-method="querySearch"
-      filterable
-      default-first-option
-      remote
-      placeholder="Search"
-      class="header-search-select"
-      @change="change"
+        ref="headerSearchSelectRef"
+        v-model="search"
+        :remote-method="querySearch"
+        filterable
+        default-first-option
+        remote
+        placeholder="Search"
+        class="header-search-select"
+        @change="change"
     >
-      <el-option v-for="option in options" :key="option.item.path" :value="option.item" :label="option.item.title.join(' > ')" />
+      <el-option v-for="option in options" :key="option.item.path" :value="option.item" :label="option.item.title.join(' > ')"/>
     </el-select>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Fuse from 'fuse.js'
-import { getNormalPath } from '@/utils/truntao'
-import { isHttp } from '@/utils/validate'
+import {getNormalPath} from '@/utils/truntao'
+import {isHttp} from '@/utils/validate'
 import usePermissionStore from '@/store/modules/permission'
+import {ref, computed, nextTick, onMounted, watch, watchEffect} from 'vue'
+import {useRouter} from 'vue-router'
 
-const search = ref('');
-const options = ref([]);
-const searchPool = ref([]);
-const show = ref(false);
-const fuse = ref(undefined);
-const headerSearchSelectRef = ref(null);
+interface SearchOption {
+  item: {
+    path: string
+    title: string[]
+    query?: string
+  }
+}
+
+const search = ref<string>('');
+const options = ref<SearchOption[]>([]);
+const searchPool = ref<Array<{ path: string, title: string[], query?: string }>>([]);
+const show = ref<boolean>(false);
+const fuse = ref<Fuse<any> | undefined>(undefined);
+const headerSearchSelectRef = ref<any>(null);
 const router = useRouter();
 const routes = computed(() => usePermissionStore().defaultRoutes);
 
@@ -37,12 +47,14 @@ function click() {
   if (show.value) {
     headerSearchSelectRef.value && headerSearchSelectRef.value.focus()
   }
-};
+}
+
 function close() {
   headerSearchSelectRef.value && headerSearchSelectRef.value.blur()
   options.value = []
   show.value = false
 }
+
 function change(val) {
   const path = val.path;
   const query = val.query;
@@ -52,7 +64,7 @@ function change(val) {
     window.open(path.substr(pindex, path.length), "_blank");
   } else {
     if (query) {
-      router.push({ path: path, query: JSON.parse(query) });
+      router.push({path: path, query: JSON.parse(query)});
     } else {
       router.push(path)
     }
@@ -64,6 +76,7 @@ function change(val) {
     show.value = false
   })
 }
+
 function initFuse(list) {
   fuse.value = new Fuse(list, {
     shouldSort: true,
@@ -80,16 +93,19 @@ function initFuse(list) {
     }]
   })
 }
+
 // Filter out the routes that can be displayed in the sidebar
 // And generate the internationalized title
-function generateRoutes(routes, basePath = '', prefixTitle = []) {
-  let res = []
+function generateRoutes(routes, basePath = '', prefixTitle: string[] = []) {
+  let res: Array<{ path: string, title: string[], query?: string }> = []
 
   for (const r of routes) {
     // skip hidden router
-    if (r.hidden) { continue }
+    if (r.hidden) {
+      continue
+    }
     const p = r.path.length > 0 && r.path[0] === '/' ? r.path : '/' + r.path;
-    const data = {
+    const data: { path: string, title: string[], query?: string } = {
       path: !isHttp(r.path) ? getNormalPath(basePath + p) : r.path,
       title: [...prefixTitle]
     }
@@ -117,8 +133,9 @@ function generateRoutes(routes, basePath = '', prefixTitle = []) {
   }
   return res
 }
+
 function querySearch(query) {
-  if (query !== '') {
+  if (query !== '' && fuse.value) {
     options.value = fuse.value.search(query)
   } else {
     options.value = []

@@ -37,33 +37,34 @@
   </el-form>
 </template>
 
-<script setup>
-const emit = defineEmits(['update'])
-const props = defineProps({
-  cron: {
-    type: Object,
-    default: {
-      second: "*",
-      min: "*",
-      hour: "*",
-      day: "*",
-      month: "*",
-      week: "?",
-      year: "",
-    }
-  },
-  check: {
-    type: Function,
-    default: () => {
-    }
-  }
-})
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+
+interface CronValue {
+  second: string
+  min: string
+  hour: string
+  day: string
+  month: string
+  week: string
+  year: string
+}
+
+const emit = defineEmits<{
+  (e: 'update', field: keyof CronValue, value: string, type: string): void
+}>()
+
+const props = defineProps<{
+  cron: CronValue
+  check: (value: number, min: number, max: number) => number
+}>()
+
 const radioValue = ref(1)
 const cycle01 = ref(0)
 const cycle02 = ref(1)
 const average01 = ref(0)
 const average02 = ref(1)
-const checkboxList = ref([])
+const checkboxList = ref<number[]>([])
 const checkCopy = ref([0])
 const cycleTotal = computed(() => {
   cycle01.value = props.check(cycle01.value, 0, 22)
@@ -81,7 +82,7 @@ const checkboxString = computed(() => {
 watch(() => props.cron.hour, value => changeRadioValue(value))
 watch([radioValue, cycleTotal, averageTotal, checkboxString], () => onRadioChange())
 
-function changeRadioValue(value) {
+function changeRadioValue(value: string) {
   if (props.cron.min === '*') {
     emit('update', 'min', '0', 'hour');
   }
@@ -101,7 +102,7 @@ function changeRadioValue(value) {
     average02.value = Number(indexArr[1])
     radioValue.value = 3
   } else {
-    checkboxList.value = [...new Set(value.split(',').map(item => Number(item)))]
+    checkboxList.value = value.split(',').map(item => Number(item))
     radioValue.value = 4
   }
 }

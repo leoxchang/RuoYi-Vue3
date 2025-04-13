@@ -51,34 +51,34 @@
         </el-form-item>
     </el-form>
 </template>
-<script setup>
-const emit = defineEmits(['update'])
-const props = defineProps({
-    cron: {
-        type: Object,
-        default: {
-            second: "*",
-            min: "*",
-            hour: "*",
-            day: "*",
-            month: "*",
-            week: "?",
-            year: "",
-        }
-    },
-    check: {
-        type: Function,
-        default: () => {
-        }
-    }
-})
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+
+interface CronValue {
+  second: string
+  min: string
+  hour: string
+  day: string
+  month: string
+  week: string
+  year: string
+}
+
+const emit = defineEmits<{
+  (e: 'update', field: keyof CronValue, value: string, type: string): void
+}>()
+
+const props = defineProps<{
+  cron: CronValue
+  check: (value: number, min: number, max: number) => number
+}>()
 const radioValue = ref(1)
 const cycle01 = ref(1)
 const cycle02 = ref(2)
 const average01 = ref(1)
 const average02 = ref(1)
 const workday = ref(1)
-const checkboxList = ref([])
+const checkboxList = ref<number[]>([])
 const checkCopy = ref([1])
 const cycleTotal = computed(() => {
     cycle01.value = props.check(cycle01.value, 1, 30)
@@ -99,7 +99,7 @@ const checkboxString = computed(() => {
 })
 watch(() => props.cron.day, value => changeRadioValue(value))
 watch([radioValue, cycleTotal, averageTotal, workdayTotal, checkboxString], () => onRadioChange())
-function changeRadioValue(value) {
+function changeRadioValue(value: string) {
     if (value === "*") {
         radioValue.value = 1
     } else if (value === "?") {
@@ -121,7 +121,7 @@ function changeRadioValue(value) {
     } else if (value === "L") {
         radioValue.value = 6
     } else {
-        checkboxList.value = [...new Set(value.split(',').map(item => Number(item)))]
+        checkboxList.value = value.split(',').map(item => Number(item))
         radioValue.value = 7
     }
 }
