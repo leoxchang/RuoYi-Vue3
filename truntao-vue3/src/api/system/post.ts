@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { PostQueryParams, Post, PostListResponse, PostDetailResponse, CommonResponse } from '@/types/system/post'
+import type { PostQueryParams, Post, PostListResponse, PostDetailResponse, Result } from '@/types/system/post'
 
 // 查询岗位列表
 export function listPost(query: PostQueryParams): Promise<PostListResponse> {
@@ -19,27 +19,27 @@ export function getPost(postId: string | number): Promise<PostDetailResponse> {
 }
 
 // 新增岗位
-export function addPost(data: Post): Promise<CommonResponse> {
+export function addPost(data: Post): Promise<Result> {
   return request({
     url: '/system/post',
     method: 'post',
     data: data
-  }) as unknown as Promise<CommonResponse>
+  }) as unknown as Promise<Result>
 }
 
 // 修改岗位
-export function updatePost(data: Post): Promise<CommonResponse> {
+export function updatePost(data: Post): Promise<Result> {
   return request({
     url: '/system/post',
     method: 'put',
     data: data
-  }) as unknown as Promise<CommonResponse>
+  }) as unknown as Promise<Result>
 }
 
 // 删除岗位
-export function delPost(postId: string | number | (string | number)[]): Promise<CommonResponse> {
+export function delPost(postId: string | number | (string | number)[]): Promise<Result> {
   return request({
     url: '/system/post/' + postId,
     method: 'delete'
-  }) as unknown as Promise<CommonResponse>
+  }) as unknown as Promise<Result>
 }

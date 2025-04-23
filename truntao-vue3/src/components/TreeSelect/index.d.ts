@@ -1,4 +1,4 @@
-import type { PropType } from 'vue'
+import type { PropType,DefineComponent } from 'vue'
 
 export interface TreeSelectProps {
   /* 配置项 */
@@ -43,3 +43,7 @@ export const treeSelectProps = {
     default: ''
   }
 }
+
+declare const TreeSelect: DefineComponent<TreeSelectProps>
+
+// export default TreeSelect

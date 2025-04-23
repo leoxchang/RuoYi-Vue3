@@ -41,7 +41,7 @@ export interface PostDetailResponse {
 }
 
 // 通用响应
-export interface CommonResponse {
+export interface Result {
   code: number;
   msg: string;
-} 
+}

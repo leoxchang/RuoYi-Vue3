@@ -6,9 +6,9 @@ import type {
   RoleDetailResponse,
   AllocatedUserQueryParams,
   UnallocatedUserQueryParams,
-  UserListResponse,
-  CommonResponse
+  UserListResponse
 } from '@/types/system/role';
+import type { Result } from '@/types/global';
 
 // 查询角色列表
 export function listRole(query?: RoleQueryParams): Promise<RoleListResponse> {
@@ -94,30 +94,30 @@ export function unallocatedUserList(query: UnallocatedUserQueryParams): Promise<
 }
 
 // 取消用户授权角色
-export function authUserCancel(data: { userId: string | number; roleId: string | number }): Promise<CommonResponse> {
+export function authUserCancel(data: { userId: string | number; roleId: string | number }): Promise<Result<any>> {
   return request({
     url: '/system/role/authUser/cancel',
     method: 'put',
     data: data
-  }) as unknown as Promise<CommonResponse>
+  }) as unknown as Promise<Result<any>>
 }
 
 // 批量取消用户授权角色
-export function authUserCancelAll(data: { userIds: (string | number)[]; roleId: string | number }): Promise<CommonResponse> {
+export function authUserCancelAll(data: { userIds: (string | number)[]; roleId: string | number }): Promise<Result<any>> {
   return request({
     url: '/system/role/authUser/cancelAll',
     method: 'put',
     data: data
-  }) as unknown as Promise<CommonResponse>
+  }) as unknown as Promise<Result<any>>
 }
 
 // 授权用户选择
-export function authUserSelectAll(data: { userIds: (string | number)[]; roleId: string | number }): Promise<CommonResponse> {
+export function authUserSelectAll(data: { userIds: (string | number)[]; roleId: string | number }): Promise<Result<any>> {
   return request({
     url: '/system/role/authUser/selectAll',
     method: 'put',
     data: data
-  }) as unknown as Promise<CommonResponse>
+  }) as unknown as Promise<Result<any>>
 }
 
 // 根据角色ID查询部门树结构

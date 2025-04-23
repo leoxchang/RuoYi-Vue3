@@ -192,7 +192,7 @@ const {queryParams, form, rules} = toRefs(data);
 /** 查询部门列表 */
 function getList() {
   loading.value = true;
-  listDept(queryParams.value).then((response: DeptListResponse) => {
+  listDept(queryParams.value).then((response) => {
     deptList.value = proxy!.handleTree(response.data, "deptId");
     loading.value = false;
   });
@@ -233,7 +233,7 @@ function resetQuery() {
 /** 新增按钮操作 */
 function handleAdd(row?: Dept) {
   reset();
-  listDept().then((response: DeptListResponse) => {
+  listDept().then((response) => {
     deptOptions.value = proxy!.handleTree(response.data, "deptId");
   });
   if (row != undefined) {

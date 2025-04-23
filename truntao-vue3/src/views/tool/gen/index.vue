@@ -91,11 +91,11 @@
             <span>{{ (queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1 }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="表名称" align="center" prop="tableName" :show-overflow-tooltip="true" />
-        <el-table-column label="表描述" align="center" prop="tableComment" :show-overflow-tooltip="true" />
-        <el-table-column label="实体" align="center" prop="className" :show-overflow-tooltip="true" />
-        <el-table-column label="创建时间" align="center" prop="createTime" width="160" sortable="custom" :sort-orders="['descending', 'ascending']" />
-        <el-table-column label="更新时间" align="center" prop="updateTime" width="160" sortable="custom" :sort-orders="['descending', 'ascending']" />
+        <el-table-column label="表名称" align="center" prop="tableName" :show-overflow-tooltip="true"/>
+        <el-table-column label="表描述" align="center" prop="tableComment" :show-overflow-tooltip="true"/>
+        <el-table-column label="实体" align="center" prop="className" :show-overflow-tooltip="true"/>
+        <el-table-column label="创建时间" align="center" prop="createTime" width="160" sortable="custom" :sort-orders="['descending', 'ascending']"/>
+        <el-table-column label="更新时间" align="center" prop="updateTime" width="160" sortable="custom" :sort-orders="['descending', 'ascending']"/>
         <el-table-column label="操作" align="center" width="330" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-tooltip content="预览" placement="top">
@@ -108,7 +108,7 @@
               <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['tool:gen:remove']"></el-button>
             </el-tooltip>
             <el-tooltip content="同步" placement="top">
-              <el-button link type="primary" icon="Refresh" @click="handleSynchDb(scope.row)" v-hasPermi="['tool:gen:edit']"></el-button>
+              <el-button link type="primary" icon="Refresh" @click="handleSyncDb(scope.row)" v-hasPermi="['tool:gen:edit']"></el-button>
             </el-tooltip>
             <el-tooltip content="生成代码" placement="top">
               <el-button link type="primary" icon="Download" @click="handleGenTable(scope.row)" v-hasPermi="['tool:gen:code']"></el-button>
@@ -145,26 +145,29 @@
   </div>
 </template>
 
-<script setup name="Gen">
+<script setup lang="ts">
+import {ref, reactive, toRefs, getCurrentInstance, onActivated} from 'vue';
+import {useRoute} from 'vue-router';
 import {listTable, previewTable, delTable, genCode, syncDb} from "@/api/tool/gen";
 import router from "@/router";
-import importTable from "./importTable";
-import createTable from "./createTable";
+import importTable from "./importTable.vue";
+import createTable from "./createTable.vue";
+import {TableRow, QueryParams, PreviewData} from "@/types/tool/gen"
 
 const route = useRoute();
-const {proxy} = getCurrentInstance();
+const {proxy} = getCurrentInstance()!;
 
-const tableList = ref([]);
+const tableList = ref<TableRow[]>([]);
 const loading = ref(true);
 const showSearch = ref(true);
-const ids = ref([]);
+const ids = ref<number[]>([]);
 const single = ref(true);
 const multiple = ref(true);
 const total = ref(0);
-const tableNames = ref([]);
-const dateRange = ref([]);
+const tableNames = ref<string[]>([]);
+const dateRange = ref<string[]>([]);
 const uniqueId = ref("");
-const defaultSort = ref({ prop: "createTime", order: "descending" });
+const defaultSort = ref({prop: "createTime", order: "descending"});
 
 const data = reactive({
   queryParams: {
@@ -174,13 +177,13 @@ const data = reactive({
     tableComment: undefined,
     orderByColumn: defaultSort.value.prop,
     isAsc: defaultSort.value.order
-  },
+  } as QueryParams,
   preview: {
     open: false,
     title: "代码预览",
     data: {},
     activeName: "domain.java"
-  }
+  } as PreviewData
 });
 
 const {queryParams, preview} = toRefs(data);
@@ -188,10 +191,10 @@ const {queryParams, preview} = toRefs(data);
 onActivated(() => {
   const time = route.query.t;
   if (time != null && time != uniqueId.value) {
-    uniqueId.value = time;
+    uniqueId.value = time as string;
     queryParams.value.pageNum = Number(route.query.pageNum);
     dateRange.value = [];
-    proxy.resetForm("queryForm");
+    proxy!.resetForm("queryForm");
     getList();
   }
 })
@@ -213,54 +216,54 @@ function handleQuery() {
 }
 
 /** 生成代码操作 */
-function handleGenTable(row) {
+function handleGenTable(row: TableRow) {
   const tbNames = row.tableName || tableNames.value;
   if (tbNames === "") {
-    proxy.$modal.msgError("请选择要生成的数据");
+    proxy!.$modal.msgError("请选择要生成的数据");
     return;
   }
   if (row.genType === "1") {
-    genCode(row.tableName).then(response => {
-      proxy.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath);
+    genCode(row.tableName).then(() => {
+      proxy!.$modal.msgSuccess("成功生成到自定义路径：" + row.genPath);
     });
   } else {
-    proxy.$download.zip("/tool/gen/batchGenCode?tables=" + tbNames, "truntao.zip");
+    proxy!.$download.zip("/tool/gen/batchGenCode?tables=" + tbNames, "truntao.zip");
   }
 }
 
 /** 同步数据库操作 */
-function handleSynchDb(row) {
+function handleSyncDb(row: TableRow) {
   const tableName = row.tableName;
-  proxy.$modal.confirm('确认要强制同步"' + tableName + '"表结构吗？').then(function () {
+  proxy!.$modal.confirm('确认要强制同步"' + tableName + '"表结构吗？').then(function () {
     return syncDb(tableName);
   }).then(() => {
-    proxy.$modal.msgSuccess("同步成功");
+    proxy!.$modal.msgSuccess("同步成功");
   }).catch(() => {
   });
 }
 
 /** 打开导入表弹窗 */
 function openImportTable() {
-  proxy.$refs["importRef"].show();
+  proxy!.$refs["importRef"].show();
 }
 
 /** 打开创建表弹窗 */
 function openCreateTable() {
-  proxy.$refs["createRef"].show();
+  proxy!.$refs["createRef"].show();
 }
 
 /** 重置按钮操作 */
 function resetQuery() {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  proxy!.resetForm("queryRef");
   queryParams.value.pageNum = 1;
-  proxy.$refs["genRef"].sort(defaultSort.value.prop, defaultSort.value.order);
+  proxy!.$refs["genRef"].sort(defaultSort.value.prop, defaultSort.value.order);
 }
 
 /** 预览按钮 */
-function handlePreview(row) {
+function handlePreview(row: TableRow) {
   previewTable(row.tableId).then(response => {
-    preview.value.data = response.data;
+    preview.value.data = (response.data as any).data as Record<string, string>;
     preview.value.open = true;
     preview.value.activeName = "domain.java";
   });
@@ -268,38 +271,38 @@ function handlePreview(row) {
 
 /** 复制代码成功 */
 function copyTextSuccess() {
-  proxy.$modal.msgSuccess("复制成功");
+  proxy!.$modal.msgSuccess("复制成功");
 }
 
 // 多选框选中数据
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.tableId);
+function handleSelectionChange(selection: TableRow[]) {
+  ids.value = selection.map(item => item.tableId).filter((id): id is number => id !== undefined);
   tableNames.value = selection.map(item => item.tableName);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
 
 /** 排序触发事件 */
-function handleSortChange(column, prop, order) {
+function handleSortChange(column: any) {
   queryParams.value.orderByColumn = column.prop;
   queryParams.value.isAsc = column.order;
   getList();
 }
 
 /** 修改按钮操作 */
-function handleEditTable(row) {
+function handleEditTable(row: TableRow) {
   const tableId = row.tableId || ids.value[0];
   router.push({path: "/tool/gen-edit/index/" + tableId, query: {pageNum: queryParams.value.pageNum}});
 }
 
 /** 删除按钮操作 */
-function handleDelete(row) {
+function handleDelete(row: TableRow) {
   const tableIds = row.tableId || ids.value;
-  proxy.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？').then(function () {
+  proxy!.$modal.confirm('是否确认删除表编号为"' + tableIds + '"的数据项？').then(function () {
     return delTable(tableIds);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
+    proxy!.$modal.msgSuccess("删除成功");
   }).catch(() => {
   });
 }

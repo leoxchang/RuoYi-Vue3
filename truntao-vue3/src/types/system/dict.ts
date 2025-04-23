@@ -68,7 +68,7 @@ export interface DictDetailResponse {
 }
 
 // 通用响应对象
-export interface CommonResponse {
+export interface Result {
   code: number;
   msg: string;
   data: any;

@@ -50,23 +50,38 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref, reactive, getCurrentInstance } from 'vue';
 import { listDbTable, importTable } from "@/api/tool/gen";
+
+interface QueryParams {
+  pageNum: number;
+  pageSize: number;
+  tableName?: string;
+  tableComment?: string;
+}
+
+interface TableRow {
+  tableName: string;
+  tableComment: string;
+  createTime: string;
+  updateTime: string;
+}
 
 const total = ref(0);
 const visible = ref(false);
-const tables = ref([]);
-const dbTableList = ref([]);
-const { proxy } = getCurrentInstance();
+const tables = ref<string[]>([]);
+const dbTableList = ref<TableRow[]>([]);
+const { proxy } = getCurrentInstance()!;
 
-const queryParams = reactive({
+const queryParams = reactive<QueryParams>({
   pageNum: 1,
   pageSize: 10,
   tableName: undefined,
   tableComment: undefined
 });
 
-const emit = defineEmits(["ok"]);
+const emit = defineEmits<(e: 'ok') => void>();
 
 /** 查询参数列表 */
 function show() {
@@ -75,12 +90,12 @@ function show() {
 }
 
 /** 单击选择行 */
-function clickRow(row) {
-  proxy.$refs.table.toggleRowSelection(row);
+function clickRow(row: TableRow) {
+  proxy!.$refs.table.toggleRowSelection(row);
 }
 
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
+function handleSelectionChange(selection: TableRow[]) {
   tables.value = selection.map(item => item.tableName);
 }
 
@@ -100,7 +115,7 @@ function handleQuery() {
 
 /** 重置按钮操作 */
 function resetQuery() {
-  proxy.resetForm("queryRef");
+  proxy!.resetForm("queryRef");
   handleQuery();
 }
 
@@ -108,11 +123,11 @@ function resetQuery() {
 function handleImportTable() {
   const tableNames = tables.value.join(",");
   if (tableNames === "") {
-    proxy.$modal.msgError("请选择要导入的表");
+    proxy!.$modal.msgError("请选择要导入的表");
     return;
   }
   importTable({ tables: tableNames }).then(res => {
-    proxy.$modal.msgSuccess(res.msg);
+    proxy!.$modal.msgSuccess(res.msg);
     if (res.code === 200) {
       visible.value = false;
       emit("ok");

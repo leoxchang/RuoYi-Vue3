@@ -126,30 +126,36 @@
   </el-card>
 </template>
 
-<script setup name="GenEdit">
+<script setup lang="ts">
+import { ref, getCurrentInstance } from 'vue';
+import { useRoute } from 'vue-router';
 import { getGenTable, updateGenTable } from "@/api/tool/gen";
-import { optionselect as getDictOptionselect } from "@/api/system/dict/type";
-import basicInfoForm from "./basicInfoForm";
-import genInfoForm from "./genInfoForm";
+import { optionSelect as getDictOptionSelect } from "@/api/system/dict/type";
+import basicInfoForm from "./basicInfoForm.vue";
+import genInfoForm from "./genInfoForm.vue";
+import { Column, TableInfo } from "@/types/tool/gen";
+import {DictType} from "@/types/system/dict";
+
+
 
 const route = useRoute();
-const { proxy } = getCurrentInstance();
+const { proxy } = getCurrentInstance()!;
 
 const activeName = ref("columnInfo");
 const tableHeight = ref(document.documentElement.scrollHeight - 245 + "px");
-const tables = ref([]);
-const columns = ref([]);
-const dictOptions = ref([]);
-const info = ref({});
+const tables = ref<any[]>([]);
+const columns = ref<Column[]>([]);
+const dictOptions = ref<DictType[]>([]);
+const info = ref<TableInfo>({});
 
 /** 提交按钮 */
 function submitForm() {
-  const basicForm = proxy.$refs.basicInfo.$refs.basicInfoForm;
-  const genForm = proxy.$refs.genInfo.$refs.genInfoForm;
+  const basicForm = proxy!.$refs.basicInfo.$refs.basicInfoForm;
+  const genForm = proxy!.$refs.genInfo.$refs.genInfoForm;
   Promise.all([basicForm, genForm].map(getFormPromise)).then(res => {
     const validateResult = res.every(item => !!item);
     if (validateResult) {
-      const genTable = Object.assign({}, info.value);
+      const genTable = {...info.value};
       genTable.columns = columns.value;
       genTable.params = {
         treeCode: info.value.treeCode,
@@ -158,20 +164,20 @@ function submitForm() {
         parentMenuId: info.value.parentMenuId
       };
       updateGenTable(genTable).then(res => {
-        proxy.$modal.msgSuccess(res.msg);
+        proxy!.$modal.msgSuccess(res.msg);
         if (res.code === 200) {
           close();
         }
       });
     } else {
-      proxy.$modal.msgError("表单校验未通过，请重新检查提交内容");
+      proxy!.$modal.msgError("表单校验未通过，请重新检查提交内容");
     }
   });
 }
 
-function getFormPromise(form) {
+function getFormPromise(form: any): Promise<boolean> {
   return new Promise(resolve => {
-    form.validate(res => {
+    form.validate((res: boolean) => {
       resolve(res);
     });
   });
@@ -179,7 +185,7 @@ function getFormPromise(form) {
 
 function close() {
   const obj = { path: "/tool/gen", query: { t: Date.now(), pageNum: route.query.pageNum } };
-  proxy.$tab.closeOpenPage(obj);
+  proxy!.$tab.closeOpenPage(obj);
 }
 
 (() => {
@@ -192,7 +198,7 @@ function close() {
       tables.value = res.data.tables;
     });
     /** 查询字典下拉列表 */
-    getDictOptionselect().then(response => {
+    getDictOptionSelect().then(response => {
       dictOptions.value = response.data;
     });
   }

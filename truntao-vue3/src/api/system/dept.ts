@@ -7,8 +7,8 @@ import type {
 } from '@/types/system/dept';
 
 // 查询部门列表
-export function listDept(query?: DeptQueryParams): Promise<DeptListResponse> {
-  return request({
+export function listDept(query?: DeptQueryParams) : Promise<DeptListResponse>{
+  return request<DeptListResponse>({
     url: '/system/dept/list',
     method: 'get',
     params: query

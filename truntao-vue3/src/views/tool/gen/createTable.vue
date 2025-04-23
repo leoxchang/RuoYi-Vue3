@@ -12,13 +12,15 @@
   </el-dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref, getCurrentInstance } from 'vue';
 import { createTable } from "@/api/tool/gen";
 
 const visible = ref(false);
 const content = ref("");
-const { proxy } = getCurrentInstance();
-const emit = defineEmits(["ok"]);
+const { proxy } = getCurrentInstance()!;
+
+const emit = defineEmits<(e: 'ok') => void>();
 
 /** 显示弹框 */
 function show() {
@@ -28,11 +30,11 @@ function show() {
 /** 导入按钮操作 */
 function handleImportTable() {
   if (content.value === "") {
-    proxy.$modal.msgError("请输入建表语句");
+    proxy!.$modal.msgError("请输入建表语句");
     return;
   }
   createTable({ sql: content.value }).then(res => {
-    proxy.$modal.msgSuccess(res.msg);
+    proxy!.$modal.msgSuccess(res.msg);
     if (res.code === 200) {
       visible.value = false;
       emit("ok");

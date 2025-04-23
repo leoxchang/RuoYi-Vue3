@@ -1,6 +1,6 @@
 import request from '@/utils/request'
-import type { MenuQueryParams, Menu, MenuListResponse, MenuDetailResponse, MenuTreeSelectResponse, CommonResponse } from '@/types/system/menu'
-
+import type { MenuQueryParams, Menu, MenuListResponse, MenuDetailResponse, MenuTreeSelectResponse } from '@/types/system/menu'
+import type { Result } from '@/types/global'
 // 查询菜单列表
 export function listMenu(query?: MenuQueryParams): Promise<MenuListResponse> {
   return request({
@@ -35,27 +35,27 @@ export function roleMenuTreeselect(roleId: string | number): Promise<MenuTreeSel
 }
 
 // 新增菜单
-export function addMenu(data: Menu): Promise<CommonResponse> {
+export function addMenu(data: Menu): Promise<Result<any>> {
   return request({
     url: '/system/menu',
     method: 'post',
     data: data
-  }) as unknown as Promise<CommonResponse>
+  }) as unknown as Promise<Result<any>>
 }
 
 // 修改菜单
-export function updateMenu(data: Menu): Promise<CommonResponse> {
+export function updateMenu(data: Menu): Promise<Result<any>> {
   return request({
     url: '/system/menu',
     method: 'put',
     data: data
-  }) as unknown as Promise<CommonResponse>
+  }) as unknown as Promise<Result<any>>
 }
 
 // 删除菜单
-export function delMenu(menuId: string | number): Promise<CommonResponse> {
+export function delMenu(menuId: string | number): Promise<Result<any>> {
   return request({
     url: '/system/menu/' + menuId,
     method: 'delete'
-  }) as unknown as Promise<CommonResponse>
+  }) as unknown as Promise<Result<any>>
 }

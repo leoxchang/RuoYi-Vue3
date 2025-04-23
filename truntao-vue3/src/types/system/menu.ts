@@ -55,9 +55,3 @@ export interface MenuTreeSelectResponse {
   msg: string;
   data: MenuTreeOption[];
 }
-
-// 通用响应
-export interface CommonResponse {
-  code: number;
-  msg: string;
-} 

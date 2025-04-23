@@ -38,7 +38,7 @@ export interface ConfigDetailResponse {
 }
 
 // 通用响应
-export interface CommonResponse {
+export interface Result {
   code: number;
   msg: string;
-} 
+}

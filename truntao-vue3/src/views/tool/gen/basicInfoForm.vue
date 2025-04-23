@@ -30,13 +30,20 @@
   </el-form>
 </template>
 
-<script setup>
-defineProps({
-  info: {
-    type: Object,
-    default: null
-  }
-});
+<script setup lang="ts">
+import { ref } from 'vue';
+
+interface TableInfo {
+  tableName: string;
+  tableComment: string;
+  className: string;
+  functionAuthor: string;
+  remark?: string;
+}
+
+defineProps<{
+  info: TableInfo
+}>();
 
 // 表单校验
 const rules = ref({

@@ -11,8 +11,9 @@
 
 <script setup lang="ts">
 import usePermissionStore from '@/store/modules/permission'
-import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { ref, watchEffect } from 'vue'
 
 interface BreadcrumbItem {
   path: string
@@ -25,7 +26,7 @@ interface BreadcrumbItem {
   children?: RouteRecordRaw[]
 }
 
-const route = useRoute() as RouteLocationNormalizedLoaded
+const route = useRoute()
 const router = useRouter()
 const permissionStore = usePermissionStore()
 const levelList = ref<BreadcrumbItem[]>([])
@@ -43,7 +44,7 @@ function getBreadcrumb() {
     }) || []
     getMatched(pathList, permissionStore.defaultRoutes, matched)
   } else {
-    matched = route.matched.filter((item) => item.meta && item.meta.title) as BreadcrumbItem[]
+    matched = route.matched.filter((item) => item.meta && item.meta.title) as unknown as BreadcrumbItem[]
   }
   // 判断是否为首页
   if (!isDashboard(matched[0])) {

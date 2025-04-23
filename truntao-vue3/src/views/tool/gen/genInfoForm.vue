@@ -234,23 +234,57 @@
   </el-form>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import { ref, getCurrentInstance, onMounted, watch } from 'vue';
 import { listMenu } from "@/api/system/menu";
 
-const subColumns = ref([]);
-const menuOptions = ref([]);
-const { proxy } = getCurrentInstance();
+interface Column {
+  columnName: string;
+  columnComment: string;
+  [key: string]: any;
+}
 
-const props = defineProps({
-  info: {
-    type: Object,
-    default: null
-  },
-  tables: {
-    type: Array,
-    default: null
-  }
-});
+interface TableInfo {
+  tableName: string;
+  tableComment: string;
+  columns: Column[];
+  [key: string]: any;
+}
+
+interface MenuOption {
+  menuId: number;
+  menuName: string;
+  children?: MenuOption[];
+  [key: string]: any;
+}
+
+interface GenInfo {
+  tplCategory: string;
+  tplWebType: string;
+  packageName: string;
+  moduleName: string;
+  businessName: string;
+  functionName: string;
+  genType: string;
+  parentMenuId: string;
+  genPath: string;
+  treeCode: string;
+  treeParentCode: string;
+  treeName: string;
+  subTableName: string;
+  subTableFkName: string;
+  columns: Column[];
+  [key: string]: any;
+}
+
+const subColumns = ref<Column[]>([]);
+const menuOptions = ref<MenuOption[]>([]);
+const { proxy } = getCurrentInstance()!;
+
+const props = defineProps<{
+  info: GenInfo;
+  tables: TableInfo[];
+}>();
 
 // 表单校验
 const rules = ref({
@@ -261,19 +295,19 @@ const rules = ref({
   functionName: [{ required: true, message: "请输入生成功能名", trigger: "blur" }]
 });
 
-function subSelectChange(value) {
+function subSelectChange() {
   props.info.subTableFkName = "";
 }
 
-function tplSelectChange(value) {
+function tplSelectChange(value: string) {
   if (value !== "sub") {
     props.info.subTableName = "";
     props.info.subTableFkName = "";
   }
 }
 
-function setSubTableColumns(value) {
-  for (var item in props.tables) {
+function setSubTableColumns(value: string) {
+  for (const item in props.tables) {
     const name = props.tables[item].tableName;
     if (value === name) {
       subColumns.value = props.tables[item].columns;
@@ -285,7 +319,7 @@ function setSubTableColumns(value) {
 /** 查询菜单下拉树结构 */
 function getMenuTreeselect() {
   listMenu().then(response => {
-    menuOptions.value = proxy.handleTree(response.data, "menuId");
+    menuOptions.value = proxy!.handleTree(response.data, "menuId");
   });
 }
 
@@ -293,11 +327,11 @@ onMounted(() => {
   getMenuTreeselect();
 })
 
-watch(() => props.info.subTableName, val => {
+watch(() => props.info.subTableName, (val: string) => {
   setSubTableColumns(val);
 });
 
-watch(() => props.info.tplWebType, val => {
+watch(() => props.info.tplWebType, (val: string) => {
   if (val === '') {
     props.info.tplWebType = "element-plus";
   }

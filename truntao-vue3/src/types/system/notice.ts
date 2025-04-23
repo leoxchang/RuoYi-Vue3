@@ -40,9 +40,3 @@ export interface NoticeDetailResponse {
   msg: string;
   data: Notice;
 }
-
-// 通用响应
-export interface CommonResponse {
-  code: number;
-  msg: string;
-} 
