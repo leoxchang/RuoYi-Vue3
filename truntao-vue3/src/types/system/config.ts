@@ -19,26 +19,3 @@ export interface Config {
   remark?: string;
   createTime?: string;
 }
-
-// 配置列表响应
-export interface ConfigListResponse {
-  code: number;
-  msg: string;
-  data: {
-    rows: Config[];
-    total: number;
-  };
-}
-
-// 配置详情响应
-export interface ConfigDetailResponse {
-  code: number;
-  msg: string;
-  data: Config;
-}
-
-// 通用响应
-export interface Result {
-  code: number;
-  msg: string;
-}

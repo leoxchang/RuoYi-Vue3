@@ -40,11 +40,6 @@ export interface PageResponse<T> {
   total: number;
 }
 
-// 通用列表响应接口
-export interface ListResponse<T> extends Result<T> {
-  data: PageResponse<T>;
-}
-
 // 声明 vite 环境变量
 interface ImportMetaEnv {
   VITE_APP_BASE_API: string;

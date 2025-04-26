@@ -1,62 +1,62 @@
 import request from '@/utils/request'
-import { Config, ConfigQueryParams, ConfigListResponse, ConfigDetailResponse } from '@/types/system/config'
-import { Result } from '@/types/global'
+import {Config, ConfigQueryParams} from '@/types/system/config'
+import {Result, PageResponse} from '@/types/global'
 
 // 查询参数列表
-export function listConfig(query?: ConfigQueryParams): Promise<ConfigListResponse> {
-  return request({
+export function listConfig(query?: ConfigQueryParams) {
+  return request<any, Result<PageResponse<any>>>({
     url: '/system/config/list',
     method: 'get',
     params: query
-  }) as unknown as Promise<ConfigListResponse>
+  })
 }
 
 // 查询参数详细
-export function getConfig(configId: string | number): Promise<ConfigDetailResponse> {
-  return request({
+export function getConfig(configId: string | number) {
+  return request<any, Result<Config>>({
     url: '/system/config/' + configId,
     method: 'get'
-  }) as unknown as Promise<ConfigDetailResponse>
+  })
 }
 
 // 根据参数键名查询参数值
-export function getConfigKey(configKey: string): Promise<ConfigDetailResponse> {
-  return request({
+export function getConfigKey(configKey: string) {
+  return request<any, Result<Config>>({
     url: '/system/config/configKey/' + configKey,
     method: 'get'
-  }) as unknown as Promise<ConfigDetailResponse>
+  })
 }
 
 // 新增参数配置
-export function addConfig(data: Config): Promise<Result<any>> {
-  return request({
+export function addConfig(data: Config) {
+  return request<any, Result<any>>({
     url: '/system/config',
     method: 'post',
     data: data
-  }) as unknown as Promise<Result<any>>
+  })
 }
 
 // 修改参数配置
-export function updateConfig(data: Config): Promise<Result<any>> {
-  return request({
+export function updateConfig(data: Config) {
+  return request<any, Result<any>>({
     url: '/system/config',
     method: 'put',
     data: data
-  }) as unknown as Promise<Result<any>>
+  })
 }
 
 // 删除参数配置
-export function delConfig(configId: string | number | (string | number)[]): Promise<Result<any>> {
-  return request({
+export function delConfig(configId: string | number | (string | number)[]) {
+  return request<any, Result<any>>({
     url: '/system/config/' + configId,
     method: 'delete'
-  }) as unknown as Promise<Result<any>>
+  })
 }
 
 // 刷新参数缓存
-export function refreshCache(): Promise<Result<any>> {
-  return request({
+export function refreshCache() {
+  return request<any, Result<any>>({
     url: '/system/config/refreshCache',
     method: 'delete'
-  }) as unknown as Promise<Result<any>>
+  })
 }

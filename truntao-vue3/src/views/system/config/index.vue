@@ -171,7 +171,8 @@ import {ref, reactive, toRefs, getCurrentInstance} from 'vue';
 import {listConfig, getConfig, delConfig, addConfig, updateConfig, refreshCache} from "@/api/system/config";
 import {parseTime} from '@/utils/truntao';
 import type {FormInstance} from 'element-plus';
-import type {Config, ConfigDetailResponse, ConfigListResponse, ConfigQueryParams} from '@/types/system/config';
+import type {Config, ConfigQueryParams} from '@/types/system/config';
+import type {Result, PageResponse} from "@/types/global";
 
 const {proxy} = getCurrentInstance()!;
 const {sys_yes_no} = proxy!.useDict("sys_yes_no");
@@ -210,7 +211,7 @@ const {queryParams, form, rules} = toRefs(data);
 /** 查询参数列表 */
 function getList() {
   loading.value = true;
-  listConfig(queryParams.value).then((response: ConfigListResponse) => {
+  listConfig(queryParams.value).then((response: Result<PageResponse<any>>) => {
     configList.value = response.data.rows;
     total.value = response.data.total;
     loading.value = false;
@@ -267,7 +268,7 @@ function handleAdd() {
 function handleUpdate(row?: Config) {
   reset();
   const configId = row?.configId || ids.value;
-  getConfig(configId as string | number).then((response: ConfigDetailResponse) => {
+  getConfig(configId as string | number).then((response: Result<Config>) => {
     form.value = response.data;
     open.value = true;
     title.value = "修改参数";

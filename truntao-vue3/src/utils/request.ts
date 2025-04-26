@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosInstance, type InternalAxiosRequestConfig, type AxiosResponse } from 'axios'
 import { ElNotification, ElMessageBox, ElMessage, ElLoading } from 'element-plus'
 import { getToken } from '@/utils/auth'
 import errorCode from '@/utils/errorCode'
@@ -7,25 +7,17 @@ import cache from '@/plugins/cache'
 import { saveAs } from 'file-saver'
 import useUserStore from '@/store/modules/user'
 
-interface CustomAxiosRequestConfig extends AxiosRequestConfig {
-  headers?: {
-    isToken?: boolean;
-    repeatSubmit?: boolean;
-    [key: string]: any;
-  };
-}
-
 let downloadLoadingInstance: any;
 let loading: any;
 let loadingCount = 0;
 // 是否显示重新登录
-export let isReLogin = { show: false };
+export const isReLogin = { show: false };
 
 axios.defaults.headers['Content-Type'] = 'application/json;charset=utf-8'
 // 创建axios实例
 const service: AxiosInstance = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
-  baseURL: ((import.meta as any).env.VITE_APP_BASE_API || '') as string,
+  baseURL: import.meta.env.VITE_APP_BASE_API,
   // 超时
   timeout: 10000
 })
@@ -48,7 +40,7 @@ function closeLoading(): void {
 }
 
 // request拦截器
-service.interceptors.request.use((config: CustomAxiosRequestConfig) => {
+service.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   openLoading()
   // 是否需要设置 token
   const isToken = (config.headers || {}).isToken
@@ -160,7 +152,7 @@ service.interceptors.response.use((res: AxiosResponse) => {
 })
 
 // 通用下载方法
-export function download(url: string, params: any, filename: string, config?: AxiosRequestConfig): Promise<void> {
+export function download(url: string, params: any, filename: string, config?: InternalAxiosRequestConfig): Promise<void> {
   downloadLoadingInstance = ElLoading.service({text: "正在下载数据，请稍候", background: "rgba(0, 0, 0, 0.7)",})
   return service.post(url, params, {
     transformRequest: [(params) => {
