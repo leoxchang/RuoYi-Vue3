@@ -303,16 +303,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, toRefs, getCurrentInstance, nextTick } from 'vue';
-import { addMenu, delMenu, getMenu, listMenu, updateMenu } from "@/api/system/menu";
+import {ref, reactive, toRefs, getCurrentInstance, nextTick} from 'vue';
+import {addMenu, delMenu, getMenu, listMenu, updateMenu} from "@/api/system/menu";
 import SvgIcon from "@/components/SvgIcon";
-import IconSelect from "@/components/IconSelect";
-import { parseTime } from '@/utils/truntao';
-import type { FormInstance } from 'element-plus';
-import type { Menu, MenuQueryParams, MenuListResponse, MenuDetailResponse, MenuTreeOption } from '@/types/system/menu';
+import IconSelect from "@/components/IconSelect/index.vue";
+import {parseTime} from '@/utils/truntao';
+import type {FormInstance} from 'element-plus';
+import type {Menu, MenuQueryParams, MenuTreeOption} from '@/types/system/menu';
 
-const { proxy } = getCurrentInstance()!;
-const { sys_show_hide, sys_normal_disable } = proxy!.useDict("sys_show_hide", "sys_normal_disable");
+const {proxy} = getCurrentInstance()!;
+const {sys_show_hide, sys_normal_disable} = proxy!.useDict("sys_show_hide", "sys_normal_disable");
 
 const menuList = ref<Menu[]>([]);
 const open = ref<boolean>(false);
@@ -322,7 +322,7 @@ const title = ref<string>("");
 const menuOptions = ref<MenuTreeOption[]>([]);
 const isExpandAll = ref<boolean>(false);
 const refreshTable = ref<boolean>(true);
-const iconSelectRef = ref<InstanceType<typeof IconSelect>>();
+const iconSelectRef = ref<IconSelect>();
 const menuRef = ref<FormInstance>();
 const queryRef = ref<FormInstance>();
 
@@ -333,28 +333,28 @@ const data = reactive({
     visible: undefined
   } as MenuQueryParams,
   rules: {
-    menuName: [{ required: true, message: "菜单名称不能为空", trigger: "blur" }],
-    orderNum: [{ required: true, message: "菜单顺序不能为空", trigger: "blur" }],
-    path: [{ required: true, message: "路由地址不能为空", trigger: "blur" }]
+    menuName: [{required: true, message: "菜单名称不能为空", trigger: "blur"}],
+    orderNum: [{required: true, message: "菜单顺序不能为空", trigger: "blur"}],
+    path: [{required: true, message: "路由地址不能为空", trigger: "blur"}]
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const {queryParams, form, rules} = toRefs(data);
 
 /** 查询菜单列表 */
 function getList() {
   loading.value = true;
-  listMenu(queryParams.value).then((response: MenuListResponse) => {
+  listMenu(queryParams.value).then((response) => {
     menuList.value = proxy!.handleTree(response.data, "menuId");
     loading.value = false;
   });
 }
 
 /** 查询菜单下拉树结构 */
-function getTreeselect() {
+function getTreeSelect() {
   menuOptions.value = [];
-  listMenu().then((response: MenuListResponse) => {
-    const menu: MenuTreeOption = { menuId: 0, menuName: "主类目", children: [] };
+  listMenu().then((response) => {
+    const menu: MenuTreeOption = {menuId: 0, menuName: "主类目", children: []};
     menu.children = proxy!.handleTree(response.data, "menuId");
     menuOptions.value.push(menu);
   });
@@ -384,9 +384,9 @@ function reset() {
 }
 
 /** 展示下拉图标 */
-function showSelectIcon() {
+const showSelectIcon = () => {
   iconSelectRef.value?.reset();
-}
+};
 
 /** 选择图标 */
 function selected(name: string) {
@@ -407,7 +407,7 @@ function resetQuery() {
 /** 新增按钮操作 */
 function handleAdd(row?: Menu) {
   reset();
-  getTreeselect();
+  getTreeSelect();
   if (row != null && row.menuId) {
     form.value.parentId = row.menuId;
   } else {
@@ -429,8 +429,8 @@ function toggleExpandAll() {
 /** 修改按钮操作 */
 async function handleUpdate(row: Menu) {
   reset();
-  await getTreeselect();
-  getMenu(row.menuId as string | number).then((response: MenuDetailResponse) => {
+  await getTreeSelect();
+  getMenu(row.menuId as string | number).then((response) => {
     form.value = response.data;
     open.value = true;
     title.value = "修改菜单";
@@ -460,12 +460,13 @@ function submitForm() {
 
 /** 删除按钮操作 */
 function handleDelete(row: Menu) {
-  proxy!.$modal.confirm('是否确认删除名称为"' + row.menuName + '"的数据项?').then(function() {
+  proxy!.$modal.confirm('是否确认删除名称为"' + row.menuName + '"的数据项?').then(function () {
     return delMenu(row.menuId as string | number);
   }).then(() => {
     getList();
     proxy!.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
+  }).catch(() => {
+  });
 }
 
 getList();

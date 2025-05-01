@@ -172,7 +172,7 @@ import {listConfig, getConfig, delConfig, addConfig, updateConfig, refreshCache}
 import {parseTime} from '@/utils/truntao';
 import type {FormInstance} from 'element-plus';
 import type {Config, ConfigQueryParams} from '@/types/system/config';
-import type {Result, PageResponse} from "@/types/global";
+import type {Result, PageResult} from "@/types/global";
 
 const {proxy} = getCurrentInstance()!;
 const {sys_yes_no} = proxy!.useDict("sys_yes_no");
@@ -211,7 +211,7 @@ const {queryParams, form, rules} = toRefs(data);
 /** 查询参数列表 */
 function getList() {
   loading.value = true;
-  listConfig(queryParams.value).then((response: Result<PageResponse<any>>) => {
+  listConfig(queryParams.value).then((response: Result<PageResult<any>>) => {
     configList.value = response.data.rows;
     total.value = response.data.total;
     loading.value = false;

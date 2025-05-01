@@ -23,7 +23,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import icons from './requireIcons'
 
 const props = defineProps({

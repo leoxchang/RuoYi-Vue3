@@ -178,7 +178,7 @@ import { ref, reactive, toRefs, getCurrentInstance } from 'vue';
 import useDictStore from '@/store/modules/dict';
 import { listType, getType, delType, addType, updateType, refreshCache } from "@/api/system/dict/type";
 import type { FormInstance } from 'element-plus';
-import type { DictType, DictTypeQueryParams, DictTypeResponse } from '@/types/system/dict';
+import type { DictType, DictTypeQueryParams } from '@/types/system/dict';
 
 const { proxy } = getCurrentInstance()!;
 const { sys_normal_disable } = proxy!.useDict("sys_normal_disable");
@@ -216,7 +216,7 @@ const { queryParams, form, rules } = toRefs(data);
 /** 查询字典类型列表 */
 function getList() {
   loading.value = true;
-  listType(queryParams.value).then((response: DictTypeResponse) => {
+  listType(queryParams.value).then((response) => {
     typeList.value = response.data.rows;
     total.value = response.data.total;
     loading.value = false;

@@ -1,10 +1,10 @@
 import request from '@/utils/request'
 import {Config, ConfigQueryParams} from '@/types/system/config'
-import {Result, PageResponse} from '@/types/global'
+import {Result, PageResult} from '@/types/global'
 
 // 查询参数列表
 export function listConfig(query?: ConfigQueryParams) {
-  return request<any, Result<PageResponse<any>>>({
+  return request<any, Result<PageResult<any>>>({
     url: '/system/config/list',
     method: 'get',
     params: query

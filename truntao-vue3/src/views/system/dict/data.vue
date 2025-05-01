@@ -198,7 +198,7 @@ import useDictStore from '@/store/modules/dict';
 import { optionSelect as getDictOptionSelect, getType } from "@/api/system/dict/type";
 import { listData, getData, delData, addData, updateData } from "@/api/system/dict/data";
 import type { FormInstance } from 'element-plus';
-import type { DictType, DictData, DictDataQueryParams,  DictDetailResponse } from '@/types/system/dict';
+import type { DictType, DictData, DictDataQueryParams } from '@/types/system/dict';
 
 const { proxy } = getCurrentInstance()!;
 const { sys_normal_disable } = proxy!.useDict("sys_normal_disable");
@@ -248,7 +248,7 @@ const { queryParams, form, rules } = toRefs(data);
 
 /** 查询字典类型详细 */
 function getTypes(dictId: string | number) {
-  getType(dictId).then((response: DictDetailResponse) => {
+  getType(dictId).then((response) => {
     queryParams.value.dictType = response.data.dictType;
     defaultDictType.value = response.data.dictType || '';
     getList();

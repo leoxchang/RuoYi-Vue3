@@ -35,7 +35,7 @@ export interface Result<T> {
 }
 
 // 分页响应接口
-export interface PageResponse<T> {
+export interface PageResult<T> {
   rows: T[];
   total: number;
 }

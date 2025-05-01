@@ -21,17 +21,3 @@ export interface Dept {
   hasChildren?: boolean;
   [key: string]: any;
 }
-
-// 部门列表响应
-export interface DeptListResponse {
-  code: number;
-  data: Dept[];
-  msg: string;
-}
-
-// 部门详情响应
-export interface DeptDetailResponse {
-  code: number;
-  data: Dept;
-  msg: string;
-} 

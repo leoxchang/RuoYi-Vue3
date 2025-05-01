@@ -156,7 +156,8 @@ import {ref, reactive, toRefs, getCurrentInstance, nextTick} from 'vue';
 import {listDept, getDept, delDept, addDept, updateDept, listDeptExcludeChild} from "@/api/system/dept";
 import {parseTime} from '@/utils/truntao';
 import type {FormInstance} from 'element-plus';
-import type {Dept, DeptQueryParams, DeptListResponse, DeptDetailResponse} from '@/types/system/dept';
+import type {Dept, DeptQueryParams} from '@/types/system/dept';
+import type {Result} from "@/types/global";
 
 const {proxy} = getCurrentInstance()!;
 const {sys_normal_disable} = proxy!.useDict("sys_normal_disable");
@@ -255,10 +256,10 @@ function toggleExpandAll() {
 /** 修改按钮操作 */
 function handleUpdate(row: Dept) {
   reset();
-  listDeptExcludeChild(row.deptId!).then((response: DeptListResponse) => {
+  listDeptExcludeChild(row.deptId!).then((response) => {
     deptOptions.value = proxy!.handleTree(response.data, "deptId");
   });
-  getDept(row.deptId!).then((response: DeptDetailResponse) => {
+  getDept(row.deptId!).then((response: Result<Dept>) => {
     form.value = response.data;
     open.value = true;
     title.value = "修改部门";

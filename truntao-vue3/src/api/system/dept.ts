@@ -1,39 +1,35 @@
 import request from '@/utils/request'
-import type {
-  Dept,
-  DeptQueryParams,
-  DeptListResponse,
-  DeptDetailResponse
-} from '@/types/system/dept';
+import type {Dept, DeptQueryParams} from '@/types/system/dept';
+import type { Result} from '@/types/global'
 
 // 查询部门列表
-export function listDept(query?: DeptQueryParams) : Promise<DeptListResponse>{
-  return request<DeptListResponse>({
+export function listDept(query?: DeptQueryParams) {
+  return request<any, Result<Dept[]>>({
     url: '/system/dept/list',
     method: 'get',
     params: query
-  }) as unknown as Promise<DeptListResponse>;
+  });
 }
 
 // 查询部门列表（排除节点）
-export function listDeptExcludeChild(deptId: string | number): Promise<DeptListResponse> {
-  return request({
+export function listDeptExcludeChild(deptId: string | number) {
+  return request<any, Result<Dept[]>>({
     url: '/system/dept/list/exclude/' + deptId,
     method: 'get'
-  }) as unknown as Promise<DeptListResponse>;
+  });
 }
 
 // 查询部门详细
-export function getDept(deptId: string | number): Promise<DeptDetailResponse> {
-  return request({
+export function getDept(deptId: string | number) {
+  return request<any, Result<Dept>>({
     url: '/system/dept/' + deptId,
     method: 'get'
-  }) as unknown as Promise<DeptDetailResponse>;
+  });
 }
 
 // 新增部门
-export function addDept(data: Dept): Promise<any> {
-  return request({
+export function addDept(data: Dept) {
+  return request<any, Result<any>>({
     url: '/system/dept',
     method: 'post',
     data: data
@@ -41,8 +37,8 @@ export function addDept(data: Dept): Promise<any> {
 }
 
 // 修改部门
-export function updateDept(data: Dept): Promise<any> {
-  return request({
+export function updateDept(data: Dept) {
+  return request<any, Result<any>>({
     url: '/system/dept',
     method: 'put',
     data: data
@@ -50,8 +46,8 @@ export function updateDept(data: Dept): Promise<any> {
 }
 
 // 删除部门
-export function delDept(deptId: string | number): Promise<any> {
-  return request({
+export function delDept(deptId: string | number) {
+  return request<any, Result<any>>({
     url: '/system/dept/' + deptId,
     method: 'delete'
   })
