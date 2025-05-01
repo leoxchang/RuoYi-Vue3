@@ -23,20 +23,3 @@ export interface Notice {
   updateTime?: string;
   remark?: string;
 }
-
-// 通知公告列表响应
-export interface NoticeListResponse {
-  code: number;
-  msg: string;
-  data: {
-    rows: Notice[];
-    total: number;
-  };
-}
-
-// 通知公告详情响应
-export interface NoticeDetailResponse {
-  code: number;
-  msg: string;
-  data: Notice;
-}

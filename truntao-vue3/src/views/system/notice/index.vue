@@ -165,7 +165,7 @@ import { ref, reactive, toRefs, getCurrentInstance } from 'vue';
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
 import { parseTime } from '@/utils/truntao';
 import type { FormInstance } from 'element-plus';
-import type { Notice, NoticeQueryParams, NoticeListResponse, NoticeDetailResponse } from '@/types/system/notice';
+import type { Notice, NoticeQueryParams} from '@/types/system/notice';
 
 const { proxy } = getCurrentInstance()!;
 const { sys_notice_status, sys_notice_type } = proxy!.useDict("sys_notice_status", "sys_notice_type");
@@ -202,7 +202,7 @@ const { queryParams, form, rules } = toRefs(data);
 /** 查询公告列表 */
 function getList() {
   loading.value = true;
-  listNotice(queryParams.value).then((response: NoticeListResponse) => {
+  listNotice(queryParams.value).then((response) => {
     noticeList.value = response.data.rows;
     total.value = response.data.total;
     loading.value = false;
@@ -250,7 +250,7 @@ function handleAdd() {
 function handleUpdate(row?: Notice) {
   reset();
   const noticeId = row?.noticeId || ids.value;
-  getNotice(noticeId as string | number).then((response: NoticeDetailResponse) => {
+  getNotice(noticeId as string | number).then((response) => {
     form.value = response.data;
     open.value = true;
     title.value = "修改公告";
