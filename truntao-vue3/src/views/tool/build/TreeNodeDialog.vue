@@ -31,7 +31,7 @@
     </el-dialog>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 const open = defineModel()
 const emit = defineEmits(['confirm'])
 const formData = ref({

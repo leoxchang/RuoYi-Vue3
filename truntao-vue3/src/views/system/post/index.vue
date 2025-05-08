@@ -155,12 +155,12 @@
   </div>
 </template>
 
-<script setup lang="ts" name="Post">
+<script setup lang="ts">
 import { ref, reactive, toRefs, getCurrentInstance } from 'vue';
 import { listPost, getPost, delPost, addPost, updatePost } from "@/api/system/post";
 import { parseTime } from '@/utils/truntao';
 import type { FormInstance } from 'element-plus';
-import type { Post, PostQueryParams, PostListResponse, PostDetailResponse } from '@/types/system/post';
+import type { Post, PostQueryParams} from '@/types/system/post';
 
 const { proxy } = getCurrentInstance()!;
 const { sys_normal_disable } = proxy!.useDict("sys_normal_disable");
@@ -204,7 +204,7 @@ const { queryParams, form, rules } = toRefs(data);
 /** 查询岗位列表 */
 function getList() {
   loading.value = true;
-  listPost(queryParams.value).then((response: PostListResponse) => {
+  listPost(queryParams.value).then((response) => {
     postList.value = response.data.rows;
     total.value = response.data.total;
     loading.value = false;
@@ -260,7 +260,7 @@ function handleAdd() {
 function handleUpdate(row?: Post) {
   reset();
   const postId = row?.postId || ids.value;
-  getPost(postId as string | number).then((response: PostDetailResponse) => {
+  getPost(postId as string | number).then((response) => {
     form.value = response.data;
     open.value = true;
     title.value = "修改岗位";

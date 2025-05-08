@@ -20,7 +20,7 @@
     </el-dialog>
   </div>
 </template>
-<script setup>
+<script setup lang="ts">
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { watch } from 'vue'
 

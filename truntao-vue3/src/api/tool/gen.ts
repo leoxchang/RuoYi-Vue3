@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import {Result, ListResponse} from "@/types/global";
+import {Result} from "@/types/global";
 import {GenTableAll} from "@/types/tool/gen";
 
 // 定义接口类型
@@ -12,56 +12,56 @@ interface TableData {
 }
 
 // 查询生成表数据
-export function listTable(query: Query): Promise<ListResponse<any>> {
-  return request({
+export function listTable(query: Query) {
+  return request<any, Result<any[]>>({
     url: '/tool/gen/list',
     method: 'get',
     params: query
-  }) as unknown as Promise<ListResponse<any>>
+  })
 }
 
 // 查询db数据库列表
-export function listDbTable(query: Query): Promise<ListResponse<any>> {
-  return request({
+export function listDbTable(query: Query) {
+  return request<any, Result<any[]>>({
     url: '/tool/gen/db/list',
     method: 'get',
     params: query
-  }) as unknown as Promise<ListResponse<any>>
+  })
 }
 
 // 查询表详细信息
-export function getGenTable(tableId: string | string[] | number): Promise<Result<GenTableAll>> {
-  return request({
+export function getGenTable(tableId: string | string[] | number) {
+  return request<any, Result<GenTableAll>>({
     url: '/tool/gen/' + tableId,
     method: 'get'
-  }) as unknown as Promise<Result<GenTableAll>>
+  })
 }
 
 // 修改代码生成信息
-export function updateGenTable(data: TableData): Promise<Result<any>> {
-  return request({
+export function updateGenTable(data: TableData) {
+  return request<any, Result<any>>({
     url: '/tool/gen',
     method: 'put',
     data: data
-  }) as unknown as Promise<Result<any>>
+  })
 }
 
 // 导入表
-export function importTable(data: TableData): Promise<Result<any>> {
-  return request({
+export function importTable(data: TableData) {
+  return request<any, Result<any>>({
     url: '/tool/gen/importTable',
     method: 'post',
     params: data
-  }) as unknown as Promise<Result<any>>
+  })
 }
 
 // 创建表
-export function createTable(data: TableData): Promise<Result<any>> {
-  return request({
+export function createTable(data: TableData) {
+  return request<any, Result<any>>({
     url: '/tool/gen/createTable',
     method: 'post',
     params: data
-  }) as unknown as Promise<Result<any>>
+  })
 }
 
 // 预览生成代码

@@ -475,11 +475,10 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import draggable from "vuedraggable/dist/vuedraggable.common"
-import { isNumberStr } from '@/utils/index'
+import { isNumberStr } from '@/utils'
 import IconsDialog from './IconsDialog'
-import TreeNodeDialog from './TreeNodeDialog'
 import { inputComponents, selectComponents } from '@/utils/generator/config'
 
 const { proxy } = getCurrentInstance()

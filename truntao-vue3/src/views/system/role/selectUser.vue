@@ -78,7 +78,7 @@ const { sys_normal_disable } = proxy!.useDict("sys_normal_disable");
 const userList = ref<User[]>([]);
 const visible = ref(false);
 const total = ref<number>(0);
-const userIds = ref<Array<string | number>>([]);
+const userIds = ref<string[]>([]);
 const loading = ref<boolean>(true);
 const queryRef = ref<FormInstance>();
 
@@ -115,8 +115,8 @@ function handleSelectionChange(selection) {
 function getList() {
   loading.value = true;
   unallocatedUserList(queryParams.value).then(response => {
-    userList.value = response.data.data.rows;
-    total.value = response.data.data.total;
+    userList.value = response.data.rows;
+    total.value = response.data.total;
     loading.value = false;
   });
 }
@@ -145,7 +145,7 @@ function handleSelectUser() {
     proxy!.$modal.msgError("请选择要分配的用户");
     return;
   }
-  authUserSelectAll({ roleId: roleId as string | number, userIds: userIds.value }).then(res => {
+  authUserSelectAll({ roleId: roleId, userIds: userIds.value }).then(res => {
     proxy!.$modal.msgSuccess(res.data.msg);
     if (res.data.code === 200) {
       visible.value = false;

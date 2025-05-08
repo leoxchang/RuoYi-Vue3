@@ -1,33 +1,28 @@
 import request from '@/utils/request'
-import { parseStrEmpty } from "@/utils/truntao";
-import type {
-  User,
-  UserQueryParams,
-  UserListResponse,
-  UserDetailResponse,
-  DeptTreeResponse
-} from '@/types/system/user';
+import {parseStrEmpty} from "@/utils/truntao";
+import type {DeptOption, User, UserQueryParams,} from '@/types/system/user';
+import {PageResult, Result} from "@/types/global";
 
 // 查询用户列表
-export function listUser(query: UserQueryParams): Promise<UserListResponse> {
-  return request({
+export function listUser(query: UserQueryParams) {
+  return request<any, Result<PageResult<User>>>({
     url: '/system/user/list',
     method: 'get',
     params: query
-  }) as unknown as Promise<UserListResponse>
+  })
 }
 
 // 查询用户详细
-export function getUser(userId?: string | number): Promise<UserDetailResponse> {
-  return request({
+export function getUser(userId?: string | number) {
+  return request<any, Result<User>>({
     url: '/system/user/' + parseStrEmpty(userId),
     method: 'get'
-  }) as unknown as Promise<UserDetailResponse>
+  })
 }
 
 // 新增用户
-export function addUser(data: User): Promise<any> {
-  return request({
+export function addUser(data: User) {
+  return request<any, Result<any>>({
     url: '/system/user',
     method: 'post',
     data: data
@@ -35,8 +30,8 @@ export function addUser(data: User): Promise<any> {
 }
 
 // 修改用户
-export function updateUser(data: User): Promise<any> {
-  return request({
+export function updateUser(data: User) {
+  return request<any, Result<any>>({
     url: '/system/user',
     method: 'put',
     data: data
@@ -44,20 +39,20 @@ export function updateUser(data: User): Promise<any> {
 }
 
 // 删除用户
-export function delUser(userId: string | number | (string | number)[]): Promise<any> {
-  return request({
+export function delUser(userId: string | number | (string | number)[]) {
+  return request<any, Result<any>>({
     url: '/system/user/' + userId,
     method: 'delete'
   })
 }
 
 // 用户密码重置
-export function resetUserPwd(userId: string | number, password: string): Promise<any> {
+export function resetUserPwd(userId: string | number, password: string) {
   const data = {
     userId,
     password
   }
-  return request({
+  return request<any, Result<any>>({
     url: '/system/user/resetPwd',
     method: 'put',
     data: data
@@ -65,12 +60,12 @@ export function resetUserPwd(userId: string | number, password: string): Promise
 }
 
 // 用户状态修改
-export function changeUserStatus(userId: string | number, status: string): Promise<any> {
+export function changeUserStatus(userId: string | number, status: string) {
   const data = {
     userId,
     status
   }
-  return request({
+  return request<any, Result<any>>({
     url: '/system/user/changeStatus',
     method: 'put',
     data: data
@@ -106,12 +101,12 @@ export function updateUserProfile(data: User): Promise<any> {
 }
 
 // 用户密码重置
-export function updateUserPwd(oldPassword: string, newPassword: string): Promise<any> {
+export function updateUserPwd(oldPassword: string, newPassword: string) {
   const data = {
     oldPassword,
     newPassword
   }
-  return request({
+  return request<any, Result<any>>({
     url: '/system/user/profile/updatePwd',
     method: 'put',
     data: data
@@ -119,11 +114,11 @@ export function updateUserPwd(oldPassword: string, newPassword: string): Promise
 }
 
 // 用户头像上传
-export function uploadAvatar(data: FormData): Promise<any> {
-  return request({
+export function uploadAvatar(data: FormData) {
+  return request<any, Result<any>>({
     url: '/system/user/profile/avatar',
     method: 'post',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     data: data
   })
 }
@@ -137,8 +132,8 @@ export function getAuthRole(userId: string | number): Promise<any> {
 }
 
 // 保存授权角色
-export function updateAuthRole(data: any): Promise<any> {
-  return request({
+export function updateAuthRole(data: any) {
+  return request<any, Result<any>>({
     url: '/system/user/authRole',
     method: 'put',
     params: data
@@ -146,9 +141,9 @@ export function updateAuthRole(data: any): Promise<any> {
 }
 
 // 查询部门下拉树结构
-export function deptTreeSelect(): Promise<DeptTreeResponse> {
-  return request({
+export function deptTreeSelect() {
+  return request<any, Result<DeptOption[]>>({
     url: '/system/user/deptTree',
     method: 'get'
-  }) as unknown as Promise<DeptTreeResponse>
+  })
 }

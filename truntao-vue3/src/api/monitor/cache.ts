@@ -1,8 +1,9 @@
 import request from '@/utils/request'
+import {Result} from "@/types/global";
 
 // 查询缓存详细
 export function getCache() {
-  return request({
+  return request<any,Result<any>>({
     url: '/monitor/cache',
     method: 'get'
   })
@@ -10,7 +11,7 @@ export function getCache() {
 
 // 查询缓存名称列表
 export function listCacheName() {
-  return request({
+  return request<any,Result<any>>({
     url: '/monitor/cache/getNames',
     method: 'get'
   })

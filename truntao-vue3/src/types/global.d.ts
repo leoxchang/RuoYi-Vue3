@@ -1,4 +1,6 @@
 // 扩展 ComponentPublicInstance 类型
+import {ElMessageBoxShortcutMethod} from "element-plus/es/components/message-box/src/message-box.type";
+
 declare module 'vue' {
   interface ComponentCustomProperties {
     $modal: {
@@ -23,6 +25,8 @@ declare module 'vue' {
     $tab: {
       closeOpenPage: (obj: { path: string }) => void;
     };
+    $alert:ElMessageBoxShortcutMethod;
+    $prompt: ElMessageBoxShortcutMethod;
     parseTime: (time?: object | string | number | null, pattern?: string) => string | null;
   }
 }

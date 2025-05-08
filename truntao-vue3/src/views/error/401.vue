@@ -25,7 +25,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import errImage from "@/assets/401_images/401.gif";
 
 let { proxy } = getCurrentInstance();

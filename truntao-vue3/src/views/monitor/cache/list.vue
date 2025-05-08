@@ -154,8 +154,8 @@
   </div>
 </template>
 
-<script setup name="CacheList">
-import { listCacheName, listCacheKey, getCacheValue, clearCacheName, clearCacheKey, clearCacheAll } from "@/api/monitor/cache";
+<script setup lang="ts">
+import { listCacheName, listCacheKey, getCacheValue, clearCacheName, clearCacheKey, clearCacheAll } from "@/api/monitor/cache.js";
 
 const { proxy } = getCurrentInstance();
 

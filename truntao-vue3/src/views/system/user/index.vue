@@ -282,7 +282,7 @@
                     :key="item.roleId"
                     :label="item.roleName"
                     :value="item.roleId"
-                    :disabled="item.status == 1"
+                    :disabled="item.status == '1'"
                 ></el-option>
               </el-select>
             </el-form-item>
@@ -362,9 +362,6 @@ import type {
   RoleOption,
   UploadConfig,
   ColumnConfig,
-  UserListResponse,
-  UserDetailResponse,
-  DeptTreeResponse
 } from '@/types/system/user';
 
 const router = useRouter();
@@ -462,7 +459,7 @@ watch(deptName, (val: string) => {
 /** 查询用户列表 */
 function getList() {
   loading.value = true;
-  listUser(queryParams.value).then((res: UserListResponse) => {
+  listUser(queryParams.value).then((res) => {
     loading.value = false;
     userList.value = res.data.rows;
     total.value = res.data.total;
@@ -471,7 +468,7 @@ function getList() {
 
 /** 查询部门下拉树结构 */
 function getDeptTree() {
-  deptTreeSelect().then((response: DeptTreeResponse) => {
+  deptTreeSelect().then((response) => {
     deptOptions.value = response.data;
     enabledDeptOptions.value = filterDisabledDept(JSON.parse(JSON.stringify(response.data)));
   });
@@ -507,7 +504,7 @@ function resetQuery() {
   dateRange.value = [];
   proxy!.resetForm("queryRef");
   queryParams.value.deptId = undefined;
-  deptTreeRef.value?.setCurrentKey(null);
+  deptTreeRef.value?.setCurrentKey();
   handleQuery();
 }
 
@@ -599,7 +596,7 @@ const handleFileSuccess = (response: any, file: any) => {
   upload.open = false;
   upload.isUploading = false;
   uploadRef.value.handleRemove(file);
-  proxy!.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", {dangerouslyUseHTMLString: true});
+  proxy?.$alert("<div style='overflow: auto;overflow-x: hidden;max-height: 70vh;padding: 10px 20px 0;'>" + response.msg + "</div>", "导入结果", {dangerouslyUseHTMLString: true});
   getList();
 };
 
@@ -636,7 +633,7 @@ function cancel() {
 /** 新增按钮操作 */
 function handleAdd() {
   reset();
-  getUser().then((response: UserDetailResponse) => {
+  getUser().then((response) => {
     postOptions.value = response.data.posts;
     roleOptions.value = response.data.roles;
     open.value = true;
@@ -649,7 +646,7 @@ function handleAdd() {
 function handleUpdate(row?: User) {
   reset();
   const userId = row?.userId || ids.value[0];
-  getUser(userId).then((response: UserDetailResponse) => {
+  getUser(userId).then((response) => {
     form.value = response.data.user;
     postOptions.value = response.data.posts;
     roleOptions.value = response.data.roles;

@@ -29,30 +29,13 @@ export interface Role {
   admin?: boolean;
 }
 
-// 角色列表响应
-export interface RoleListResponse {
-  code: number;
-  msg: string;
-  data: {
-    rows: Role[];
-    total: number;
-  };
-}
-
-// 角色详情响应
-export interface RoleDetailResponse {
-  code: number;
-  msg: string;
-  data: Role;
-}
-
 // 已分配用户查询参数
 export interface AllocatedUserQueryParams {
   pageNum?: number;
   pageSize?: number;
   roleId?: string | number;
   userName?: string;
-  phonenumber?: string;
+  phoneNumber?: string;
 }
 
 // 未分配用户查询参数
@@ -64,19 +47,9 @@ export interface User {
   userName?: string;
   nickName?: string;
   email?: string;
-  phonenumber?: string;
+  phoneNumber?: string;
   sex?: string;
   status?: string;
   createTime?: string;
   remark?: string;
-}
-
-// 用户列表响应
-export interface UserListResponse {
-  code: number;
-  msg: string;
-  data: {
-    rows: User[];
-    total: number;
-  };
 }

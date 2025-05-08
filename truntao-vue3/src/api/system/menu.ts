@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type {MenuQueryParams, Menu, MenuTreeOption} from '@/types/system/menu'
+import {MenuQueryParams, Menu, MenuTreeOption, RoleMenu} from '@/types/system/menu'
 import type {Result} from '@/types/global'
 
 // 查询菜单列表
@@ -21,7 +21,7 @@ export function getMenu(menuId: string | number) {
 
 // 查询菜单下拉树结构
 export function treeSelect() {
-  return request<any, Result<MenuTreeOption>>({
+  return request<any, Result<MenuTreeOption[]>>({
     url: '/system/menu/tree-select',
     method: 'get'
   })
@@ -29,7 +29,7 @@ export function treeSelect() {
 
 // 根据角色ID查询菜单下拉树结构
 export function roleMenuTreeSelect(roleId: string | number) {
-  return request<any, Result<MenuTreeOption>>({
+  return request<any, Result<RoleMenu>>({
     url: '/system/menu/role-menu-tree-select/' + roleId,
     method: 'get'
   })

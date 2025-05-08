@@ -34,24 +34,8 @@ export interface MenuTreeOption {
   menuName: string;
   children?: MenuTreeOption[];
 }
-//
-// // 菜单列表响应
-// export interface MenuListResponse {
-//   code: number;
-//   msg: string;
-//   data: Menu[];
-// }
-//
-// // 菜单详情响应
-// export interface MenuDetailResponse {
-//   code: number;
-//   msg: string;
-//   data: Menu;
-// }
-//
-// // 菜单树选择响应
-// export interface MenuTreeSelectResponse {
-//   code: number;
-//   msg: string;
-//   data: MenuTreeOption[];
-// }
+
+export interface RoleMenu {
+  checkedKeys: number[];
+  menus: MenuTreeOption[]
+}

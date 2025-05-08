@@ -60,36 +60,6 @@ export interface RoleOption {
   [key: string]: any;
 }
 
-// 用户列表响应
-export interface UserListResponse {
-  code: number;
-  data: {
-    rows: User[];
-    total: number;
-  };
-  msg: string;
-}
-
-// 用户详情响应
-export interface UserDetailResponse {
-  code: number;
-  data: {
-    user: User;
-    posts: PostOption[];
-    roles: RoleOption[];
-    postIds: (number | string)[];
-    roleIds: (number | string)[];
-  };
-  msg: string;
-}
-
-// 部门树响应
-export interface DeptTreeResponse {
-  code: number;
-  data: DeptOption[];
-  msg: string;
-}
-
 // 上传配置
 export interface UploadConfig {
   open: boolean;
@@ -107,4 +77,4 @@ export interface ColumnConfig {
   key: number;
   label: string;
   visible: boolean;
-} 
+}
