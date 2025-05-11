@@ -131,25 +131,61 @@
   </div>
 </template>
 
-<script setup name="LoginInfo">
-import {list, delLoginInfo, cleanLoginInfo, unlockLoginInfo} from "@/api/monitor/logininfo";
+<script setup lang="ts">
+import { ref, getCurrentInstance, onMounted } from 'vue';
+import { list, delLoginInfo, cleanLoginInfo, unlockLoginInfo } from "@/api/monitor/logininfo";
 
-const {proxy} = getCurrentInstance();
-const {sys_common_status} = proxy.useDict("sys_common_status");
+interface DictItem {
+  value: string;
+  label: string;
+  [key: string]: any;
+}
 
-const loginInfoList = ref([]);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const selectName = ref("");
-const total = ref(0);
-const dateRange = ref([]);
-const defaultSort = ref({prop: "loginTime", order: "descending"});
+interface LoginInfoItem {
+  infoId: number | string;
+  userName: string;
+  ipaddr: string;
+  loginLocation: string;
+  browser: string;
+  os: string;
+  status: string;
+  msg: string;
+  loginTime: string;
+  [key: string]: any;
+}
+
+interface QueryParams {
+  pageNum: number;
+  pageSize: number;
+  ipaddr?: string;
+  userName?: string;
+  status?: string;
+  orderByColumn?: string;
+  isAsc?: string;
+  [key: string]: any;
+}
+
+interface SortColumn {
+  prop: string;
+  order: string;
+}
+
+const { proxy } = getCurrentInstance()!;
+const { sys_common_status } = proxy?.useDict("sys_common_status");
+
+const loginInfoList = ref<LoginInfoItem[]>([]);
+const loading = ref<boolean>(true);
+const showSearch = ref<boolean>(true);
+const ids = ref<(number | string)[]>([]);
+const single = ref<boolean>(true);
+const multiple = ref<boolean>(true);
+const selectName = ref<string>("");
+const total = ref<number>(0);
+const dateRange = ref<string[]>([]);
+const defaultSort = ref<SortColumn>({ prop: "loginTime", order: "descending" });
 
 // 查询参数
-const queryParams = ref({
+const queryParams = ref<QueryParams>({
   pageNum: 1,
   pageSize: 10,
   ipaddr: undefined,
@@ -160,9 +196,9 @@ const queryParams = ref({
 });
 
 /** 查询登录日志列表 */
-function getList() {
+function getList(): void {
   loading.value = true;
-  list(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
+  list(proxy?.addDateRange(queryParams.value, dateRange.value)).then(response => {
     loginInfoList.value = response.data.rows;
     total.value = response.data.total;
     loading.value = false;
@@ -170,74 +206,76 @@ function getList() {
 }
 
 /** 搜索按钮操作 */
-function handleQuery() {
+function handleQuery(): void {
   queryParams.value.pageNum = 1;
   getList();
 }
 
 /** 重置按钮操作 */
-function resetQuery() {
+function resetQuery(): void {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  proxy?.resetForm("queryRef");
   queryParams.value.pageNum = 1;
-  proxy.$refs["loginInfoRef"].sort(defaultSort.value.prop, defaultSort.value.order);
+  proxy?.$refs["loginInfoRef"].sort(defaultSort.value.prop, defaultSort.value.order);
 }
 
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
+function handleSelectionChange(selection: LoginInfoItem[]): void {
   ids.value = selection.map(item => item.infoId);
   multiple.value = !selection.length;
   single.value = selection.length !== 1;
-  selectName.value = selection.map(item => item.userName);
+  selectName.value = selection.map(item => item.userName).join(",");
 }
 
 /** 排序触发事件 */
-function handleSortChange(column, prop, order) {
+function handleSortChange(column: { prop: string; order: string }): void {
   queryParams.value.orderByColumn = column.prop;
   queryParams.value.isAsc = column.order;
   getList();
 }
 
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const infoIds = row.infoId || ids.value;
-  proxy.$modal.confirm('是否确认删除访问编号为"' + infoIds + '"的数据项?').then(function () {
+function handleDelete(row?: LoginInfoItem): void {
+  const infoIds = row?.infoId || ids.value;
+  proxy?.$modal.confirm('是否确认删除访问编号为"' + infoIds + '"的数据项?').then(function () {
     return delLoginInfo(infoIds);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
+    proxy?.$modal.msgSuccess("删除成功");
   }).catch(() => {
   });
 }
 
 /** 清空按钮操作 */
-function handleClean() {
-  proxy.$modal.confirm("是否确认清空所有登录日志数据项?").then(function () {
+function handleClean(): void {
+  proxy?.$modal.confirm("是否确认清空所有登录日志数据项?").then(function () {
     return cleanLoginInfo();
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("清空成功");
+    proxy?.$modal.msgSuccess("清空成功");
   }).catch(() => {
   });
 }
 
 /** 解锁按钮操作 */
-function handleUnlock() {
+function handleUnlock(): void {
   const username = selectName.value;
-  proxy.$modal.confirm('是否确认解锁用户"' + username + '"数据项?').then(function () {
+  proxy?.$modal.confirm('是否确认解锁用户"' + username + '"数据项?').then(function () {
     return unlockLoginInfo(username);
   }).then(() => {
-    proxy.$modal.msgSuccess("用户" + username + "解锁成功");
+    proxy?.$modal.msgSuccess("用户" + username + "解锁成功");
   }).catch(() => {
   });
 }
 
 /** 导出按钮操作 */
-function handleExport() {
-  proxy.download("monitor/login-info/export", {
+function handleExport(): void {
+  proxy?.download("monitor/login-info/export", {
     ...queryParams.value,
   }, `loginInfo_${new Date().getTime()}.xlsx`);
 }
 
-getList();
+onMounted(() => {
+  getList();
+});
 </script>

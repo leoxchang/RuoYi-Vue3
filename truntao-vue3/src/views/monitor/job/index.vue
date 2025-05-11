@@ -255,22 +255,22 @@
                </el-col>
                <el-col :span="12">
                   <el-form-item label="任务状态：">
-                     <div v-if="form.status == 0">正常</div>
-                     <div v-else-if="form.status == 1">暂停</div>
+                     <div v-if="form.status == '0'">正常</div>
+                     <div v-else-if="form.status == '1'">暂停</div>
                   </el-form-item>
                </el-col>
                <el-col :span="12">
                   <el-form-item label="是否并发：">
-                     <div v-if="form.concurrent == 0">允许</div>
-                     <div v-else-if="form.concurrent == 1">禁止</div>
+                     <div v-if="form.concurrent == '0'">允许</div>
+                     <div v-else-if="form.concurrent == '1'">禁止</div>
                   </el-form-item>
                </el-col>
                <el-col :span="12">
                   <el-form-item label="执行策略：">
-                     <div v-if="form.misfirePolicy == 0">默认策略</div>
-                     <div v-else-if="form.misfirePolicy == 1">立即执行</div>
-                     <div v-else-if="form.misfirePolicy == 2">执行一次</div>
-                     <div v-else-if="form.misfirePolicy == 3">放弃执行</div>
+                     <div v-if="form.misfirePolicy == '0'">默认策略</div>
+                     <div v-else-if="form.misfirePolicy == '1'">立即执行</div>
+                     <div v-else-if="form.misfirePolicy == '2'">执行一次</div>
+                     <div v-else-if="form.misfirePolicy == '3'">放弃执行</div>
                   </el-form-item>
                </el-col>
             </el-row>
@@ -284,46 +284,99 @@
    </div>
 </template>
 
-<script setup name="Job">
+<script setup lang="ts">
+import { ref, reactive, toRefs, getCurrentInstance, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } from "@/api/monitor/job";
-import Crontab from '@/components/Crontab'
-const router = useRouter();
-const { proxy } = getCurrentInstance();
-const { sys_job_group, sys_job_status } = proxy.useDict("sys_job_group", "sys_job_status");
+import Crontab from '@/components/Crontab';
 
-const jobList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
-const openView = ref(false);
-const openCron = ref(false);
-const expression = ref("");
+interface JobItem {
+  jobId: number | string;
+  jobName: string;
+  jobGroup: string;
+  invokeTarget: string;
+  cronExpression: string;
+  misfirePolicy: string;
+  concurrent: string;
+  status: string;
+  createTime?: string;
+  nextValidTime?: string | number;
+  [key: string]: any;
+}
+
+interface QueryParams {
+  pageNum: number;
+  pageSize: number;
+  jobName?: string;
+  jobGroup?: string;
+  status?: string;
+  [key: string]: any;
+}
+
+interface FormData {
+  jobId?: number | string;
+  jobName?: string;
+  jobGroup?: string;
+  invokeTarget?: string;
+  cronExpression?: string;
+  misfirePolicy?: string;
+  concurrent?: string;
+  status?: string;
+  createTime?: string;
+  nextValidTime?: string | number;
+  [key: string]: any;
+}
+
+interface RuleItem {
+  required: boolean;
+  message: string;
+  trigger: string;
+}
+
+interface FormRules {
+  jobName: RuleItem[];
+  invokeTarget: RuleItem[];
+  cronExpression: RuleItem[];
+  [key: string]: RuleItem[];
+}
+
+const router = useRouter();
+const { proxy } = getCurrentInstance()!;
+const { sys_job_group, sys_job_status } = proxy?.useDict("sys_job_group", "sys_job_status");
+
+const jobList = ref<JobItem[]>([]);
+const open = ref<boolean>(false);
+const loading = ref<boolean>(true);
+const showSearch = ref<boolean>(true);
+const ids = ref<(number | string)[]>([]);
+const single = ref<boolean>(true);
+const multiple = ref<boolean>(true);
+const total = ref<number>(0);
+const title = ref<string>("");
+const openView = ref<boolean>(false);
+const openCron = ref<boolean>(false);
+const expression = ref<string>("");
 
 const data = reactive({
-  form: {},
+  form: {} as FormData,
   queryParams: {
     pageNum: 1,
     pageSize: 10,
     jobName: undefined,
     jobGroup: undefined,
     status: undefined
-  },
+  } as QueryParams,
   rules: {
     jobName: [{ required: true, message: "任务名称不能为空", trigger: "blur" }],
     invokeTarget: [{ required: true, message: "调用目标字符串不能为空", trigger: "blur" }],
     cronExpression: [{ required: true, message: "cron执行表达式不能为空", trigger: "change" }]
-  }
+  } as FormRules
 });
 
 const { queryParams, form, rules } = toRefs(data);
 
 /** 查询定时任务列表 */
-function getList() {
+function getList(): void {
   loading.value = true;
   listJob(queryParams.value).then(response => {
     jobList.value = response.data.rows;
@@ -333,90 +386,73 @@ function getList() {
 }
 
 /** 任务组名字典翻译 */
-function jobGroupFormat(row, column) {
-  return proxy.selectDictLabel(sys_job_group.value, row.jobGroup);
+function jobGroupFormat(row: FormData): string|undefined {
+  return proxy?.selectDictLabel(sys_job_group.value, row.jobGroup);
 }
 
 /** 取消按钮 */
-function cancel() {
+function cancel(): void {
   open.value = false;
   reset();
 }
 
 /** 表单重置 */
-function reset() {
+function reset(): void {
   form.value = {
     jobId: undefined,
     jobName: undefined,
     jobGroup: undefined,
     invokeTarget: undefined,
     cronExpression: undefined,
-    misfirePolicy: 1,
-    concurrent: 1,
+    misfirePolicy: "1",
+    concurrent: "1",
     status: "0"
   };
-  proxy.resetForm("jobRef");
+  proxy?.resetForm("jobRef");
 }
 
 /** 搜索按钮操作 */
-function handleQuery() {
+function handleQuery(): void {
   queryParams.value.pageNum = 1;
   getList();
 }
 
 /** 重置按钮操作 */
-function resetQuery() {
-  proxy.resetForm("queryRef");
+function resetQuery(): void {
+  proxy?.resetForm("queryRef");
   handleQuery();
 }
 
 // 多选框选中数据
-function handleSelectionChange(selection) {
+function handleSelectionChange(selection: JobItem[]): void {
   ids.value = selection.map(item => item.jobId);
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 }
 
-// 更多操作触发
-function handleCommand(command, row) {
-  switch (command) {
-    case "handleRun":
-      handleRun(row);
-      break;
-    case "handleView":
-      handleView(row);
-      break;
-    case "handleJobLog":
-      handleJobLog(row);
-      break;
-    default:
-      break;
-  }
-}
-
 // 任务状态修改
-function handleStatusChange(row) {
+function handleStatusChange(row: JobItem): void {
   let text = row.status === "0" ? "启用" : "停用";
-  proxy.$modal.confirm('确认要"' + text + '""' + row.jobName + '"任务吗?').then(function () {
+  proxy?.$modal.confirm('确认要"' + text + '""' + row.jobName + '"任务吗?').then(function () {
     return changeJobStatus(row.jobId, row.status);
   }).then(() => {
-    proxy.$modal.msgSuccess(text + "成功");
+    proxy?.$modal.msgSuccess(text + "成功");
   }).catch(function () {
     row.status = row.status === "0" ? "1" : "0";
   });
 }
 
 /* 立即执行一次 */
-function handleRun(row) {
-  proxy.$modal.confirm('确认要立即执行一次"' + row.jobName + '"任务吗?').then(function () {
+function handleRun(row: JobItem): void {
+  proxy?.$modal.confirm('确认要立即执行一次"' + row.jobName + '"任务吗?').then(function () {
     return runJob(row.jobId, row.jobGroup);
   }).then(() => {
-    proxy.$modal.msgSuccess("执行成功");})
+    proxy?.$modal.msgSuccess("执行成功");})
   .catch(() => {});
 }
 
 /** 任务详细信息 */
-function handleView(row) {
+function handleView(row: JobItem): void {
   getJob(row.jobId).then(response => {
     form.value = response.data;
     openView.value = true;
@@ -424,32 +460,33 @@ function handleView(row) {
 }
 
 /** cron表达式按钮操作 */
-function handleShowCron() {
-  expression.value = form.value.cronExpression;
+function handleShowCron(): void {
+  expression.value = form.value.cronExpression || "";
   openCron.value = true;
 }
 
 /** 确定后回传值 */
-function crontabFill(value) {
+function crontabFill(value: string): void {
   form.value.cronExpression = value;
 }
+
 /** 任务日志列表查询 */
-function handleJobLog(row) {
-  const jobId = row.jobId || 0;
-  router.push('/monitor/job-log/index/' + jobId)
+function handleJobLog(row?: JobItem): void {
+  const jobId = row?.jobId || 0;
+  router.push('/monitor/job-log/index/' + jobId);
 }
 
 /** 新增按钮操作 */
-function handleAdd() {
+function handleAdd(): void {
   reset();
   open.value = true;
   title.value = "添加任务";
 }
 
 /** 修改按钮操作 */
-function handleUpdate(row) {
+function handleUpdate(row?: JobItem): void {
   reset();
-  const jobId = row.jobId || ids.value;
+  const jobId = row?.jobId || ids.value;
   getJob(jobId).then(response => {
     form.value = response.data;
     open.value = true;
@@ -458,18 +495,18 @@ function handleUpdate(row) {
 }
 
 /** 提交按钮 */
-function submitForm() {
-  proxy.$refs["jobRef"].validate(valid => {
+function submitForm(): void {
+  proxy?.$refs["jobRef"].validate((valid: boolean) => {
     if (valid) {
       if (form.value.jobId !== undefined) {
-        updateJob(form.value).then(response => {
-          proxy.$modal.msgSuccess("修改成功");
+        updateJob(form.value).then(() => {
+          proxy?.$modal.msgSuccess("修改成功");
           open.value = false;
           getList();
         });
       } else {
-        addJob(form.value).then(response => {
-          proxy.$modal.msgSuccess("新增成功");
+        addJob(form.value).then(() => {
+          proxy?.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
         });
@@ -479,22 +516,24 @@ function submitForm() {
 }
 
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const jobIds = row.jobId || ids.value;
-  proxy.$modal.confirm('是否确认删除定时任务编号为"' + jobIds + '"的数据项?').then(function () {
+function handleDelete(row?: JobItem): void {
+  const jobIds = row?.jobId || ids.value;
+  proxy?.$modal.confirm('是否确认删除定时任务编号为"' + jobIds + '"的数据项?').then(function () {
     return delJob(jobIds);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
+    proxy?.$modal.msgSuccess("删除成功");
   }).catch(() => {});
 }
 
 /** 导出按钮操作 */
-function handleExport() {
-  proxy.download("monitor/job/export", {
+function handleExport(): void {
+  proxy?.download("monitor/job/export", {
     ...queryParams.value,
   }, `job_${new Date().getTime()}.xlsx`);
 }
 
-getList();
+onMounted(() => {
+  getList();
+});
 </script>

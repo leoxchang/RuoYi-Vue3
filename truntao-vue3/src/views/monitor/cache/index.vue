@@ -65,21 +65,51 @@
 </template>
 
 <script setup lang="ts">
+import { ref, getCurrentInstance, onMounted } from 'vue';
 import { getCache } from '@/api/monitor/cache';
 import * as echarts from 'echarts';
 
-const cache = ref([]);
-const commandstats = ref(null);
-const usedmemory = ref(null);
-const { proxy } = getCurrentInstance();
+interface CacheInfo {
+  redis_version: string;
+  redis_mode: string;
+  tcp_port: number;
+  connected_clients: number;
+  uptime_in_days: number;
+  used_memory_human: string;
+  used_cpu_user_children: string;
+  maxmemory_human: string;
+  aof_enabled: string;
+  rdb_last_bgsave_status: string;
+  instantaneous_input_kbps: number;
+  instantaneous_output_kbps: number;
+  [key: string]: any;
+}
 
-function getList() {
-  proxy.$modal.loading("正在加载缓存监控数据，请稍候！");
+interface CommandStat {
+  name: string;
+  value: number;
+  [key: string]: any;
+}
+
+interface CacheData {
+  info: CacheInfo;
+  dbSize: number;
+  commandStats: CommandStat[];
+  [key: string]: any;
+}
+
+const cache = ref<CacheData>({} as CacheData);
+const commandstats = ref<HTMLElement | null>(null);
+const usedmemory = ref<HTMLElement | null>(null);
+const { proxy } = getCurrentInstance()!;
+
+function getList(): void {
+  proxy?.$modal.loading("正在加载缓存监控数据，请稍候！");
   getCache().then(response => {
-    proxy.$modal.closeLoading();
+    proxy?.$modal.closeLoading();
     cache.value = response.data;
 
-    const commandstatsIntance = echarts.init(commandstats.value, "macarons");
+    const commandstatsIntance = echarts.init(commandstats.value as HTMLElement, "macarons");
     commandstatsIntance.setOption({
       tooltip: {
         trigger: "item",
@@ -98,7 +128,7 @@ function getList() {
         }
       ]
     });
-    const usedmemoryInstance = echarts.init(usedmemory.value, "macarons");
+    const usedmemoryInstance = echarts.init(usedmemory.value as HTMLElement, "macarons");
     usedmemoryInstance.setOption({
       tooltip: {
         formatter: "{b} <br/>{a} : " + cache.value.info.used_memory_human
@@ -120,13 +150,15 @@ function getList() {
           ]
         }
       ]
-    })
+    });
     window.addEventListener("resize", () => {
       commandstatsIntance.resize();
       usedmemoryInstance.resize();
     });
-  })
+  });
 }
 
-getList();
+onMounted(() => {
+  getList();
+});
 </script>

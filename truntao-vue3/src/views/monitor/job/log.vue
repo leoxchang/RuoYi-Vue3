@@ -170,8 +170,8 @@
    </div>
 </template>
 
-<script setup name="JobLog">
-import { getJob } from "@/api/monitor/job";
+<script setup>
+import { getJob } from "@/api/monitor/job.ts";
 import { listJobLog, delJobLog, cleanJobLog } from "@/api/monitor/jobLog";
 
 const { proxy } = getCurrentInstance();

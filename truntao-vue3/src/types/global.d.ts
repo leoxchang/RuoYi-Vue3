@@ -11,6 +11,7 @@ declare module 'vue' {
       msgInfo: (message: string) => void;
       confirm: (message: string) => Promise<void>;
       alert: (message: string, title: string, options?: any) => void;
+      closeLoading: () => void;
     };
     $refs: {
       [key: string]: any;
@@ -25,9 +26,11 @@ declare module 'vue' {
     $tab: {
       closeOpenPage: (obj: { path: string }) => void;
     };
-    $alert:ElMessageBoxShortcutMethod;
+    $alert: ElMessageBoxShortcutMethod;
     $prompt: ElMessageBoxShortcutMethod;
     parseTime: (time?: object | string | number | null, pattern?: string) => string | null;
+    selectDictLabel: (value: string, dictType: string | undefined) => string | undefined;
+    addDateRange: (params: any, dateRange: string[]) => any;
   }
 }
 
@@ -53,4 +56,9 @@ interface ImportMetaEnv {
 
 interface ImportMeta {
   readonly env: ImportMetaEnv;
+}
+
+export interface PageQuery {
+  pageNum: number;
+  pageSize: number;
 }

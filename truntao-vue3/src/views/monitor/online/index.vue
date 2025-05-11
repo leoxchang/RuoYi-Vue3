@@ -63,54 +63,75 @@
   </div>
 </template>
 
-<script setup name="Online">
-import {forceLogout, list as initData} from "@/api/monitor/online";
+<script setup lang="ts" name="Online">
+import { ref, getCurrentInstance, onMounted } from 'vue';
+import { forceLogout, list as initData } from "@/api/monitor/online";
 
-const {proxy} = getCurrentInstance();
+interface OnlineUser {
+  tokenId: string;
+  userName: string;
+  deptName: string;
+  ipaddr: string;
+  loginLocation: string;
+  browser: string;
+  os: string;
+  loginTime: string;
+  [key: string]: any;
+}
 
-const onlineList = ref([]);
-const loading = ref(true);
-const total = ref(0);
-const pageNum = ref(1);
-const pageSize = ref(10);
+interface QueryParams {
+  ipaddr?: string;
+  userName?: string;
+  [key: string]: any;
+}
 
-const queryParams = ref({
+const { proxy } = getCurrentInstance()!;
+
+const onlineList = ref<OnlineUser[]>([]);
+const loading = ref<boolean>(true);
+const total = ref<number>(0);
+const pageNum = ref<number>(1);
+const pageSize = ref<number>(10);
+
+const queryParams = ref<QueryParams>({
   ipaddr: undefined,
   userName: undefined
 });
 
 /** 查询登录日志列表 */
-function getList() {
+function getList(): void {
   loading.value = true;
   initData(queryParams.value).then(response => {
     onlineList.value = response.data;
-    total.value = response.data.total;
+    total.value = response.data.length;
     loading.value = false;
   });
 }
 
 /** 搜索按钮操作 */
-function handleQuery() {
+function handleQuery(): void {
   pageNum.value = 1;
   getList();
 }
 
 /** 重置按钮操作 */
-function resetQuery() {
-  proxy.resetForm("queryRef");
+function resetQuery(): void {
+  proxy?.resetForm("queryRef");
   handleQuery();
 }
 
 /** 强退按钮操作 */
-function handleForceLogout(row) {
-  proxy.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?').then(function () {
+function handleForceLogout(row: OnlineUser): void {
+  proxy?.$modal.confirm('是否确认强退名称为"' + row.userName + '"的用户?').then(function () {
     return forceLogout(row.tokenId);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
+    proxy?.$modal.msgSuccess("删除成功");
   }).catch(() => {
   });
 }
 
-getList();
+onMounted(() => {
+  getList();
+});
 </script>

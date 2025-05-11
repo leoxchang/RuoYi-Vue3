@@ -140,7 +140,7 @@
         </el-table-column>
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
-            <el-button link type="primary" icon="View" @click="handleView(scope.row, scope.index)" v-hasPermi="['monitor:operlog:query']">
+            <el-button link type="primary" icon="View" @click="handleView(scope.row)" v-hasPermi="['monitor:operlog:query']">
               详细
             </el-button>
           </template>
@@ -205,26 +205,86 @@
   </div>
 </template>
 
-<script setup name="Operlog">
+<script setup lang="ts">
+import {ref, reactive, toRefs, getCurrentInstance, onMounted} from 'vue';
 import {list, delOperLog, cleanOperLog} from "@/api/monitor/operlog";
 
-const {proxy} = getCurrentInstance();
-const {sys_oper_type, sys_common_status} = proxy.useDict("sys_oper_type", "sys_common_status");
+interface OperLogItem {
+  operId: number | string;
+  title: string;
+  businessType: string;
+  operName: string;
+  operIp: string;
+  operLocation: string;
+  operUrl: string;
+  requestMethod: string;
+  method: string;
+  operParam: string;
+  jsonResult: string;
+  status: number;
+  errorMsg?: string;
+  costTime: number;
+  operTime: string;
 
-const operLogList = ref([]);
-const open = ref(false);
-const loading = ref(true);
-const showSearch = ref(true);
-const ids = ref([]);
-const single = ref(true);
-const multiple = ref(true);
-const total = ref(0);
-const title = ref("");
-const dateRange = ref([]);
-const defaultSort = ref({prop: "operTime", order: "descending"});
+  [key: string]: any;
+}
+
+interface QueryParams {
+  pageNum: number;
+  pageSize: number;
+  operIp?: string;
+  title?: string;
+  operName?: string;
+  businessType?: string;
+  status?: string;
+  orderByColumn?: string;
+  isAsc?: string;
+
+  [key: string]: any;
+}
+
+interface FormData {
+  operId?: number | string;
+  title?: string;
+  businessType?: string;
+  operName?: string;
+  operIp?: string;
+  operLocation?: string;
+  operUrl?: string;
+  requestMethod?: string;
+  method?: string;
+  operParam?: string;
+  jsonResult?: string;
+  status?: number;
+  errorMsg?: string;
+  costTime?: number;
+  operTime?: string;
+
+  [key: string]: any;
+}
+
+interface SortColumn {
+  prop: string;
+  order: string;
+}
+
+const {proxy} = getCurrentInstance()!;
+const {sys_oper_type, sys_common_status} = proxy?.useDict("sys_oper_type", "sys_common_status");
+
+const operLogList = ref<OperLogItem[]>([]);
+const open = ref<boolean>(false);
+const loading = ref<boolean>(true);
+const showSearch = ref<boolean>(true);
+const ids = ref<(number | string)[]>([]);
+const single = ref<boolean>(true);
+const multiple = ref<boolean>(true);
+const total = ref<number>(0);
+const title = ref<string>("");
+const dateRange = ref<string[]>([]);
+const defaultSort = ref<SortColumn>({prop: "operTime", order: "descending"});
 
 const data = reactive({
-  form: {},
+  form: {} as FormData,
   queryParams: {
     pageNum: 1,
     pageSize: 10,
@@ -233,15 +293,15 @@ const data = reactive({
     operName: undefined,
     businessType: undefined,
     status: undefined
-  }
+  } as QueryParams
 });
 
 const {queryParams, form} = toRefs(data);
 
 /** 查询登录日志 */
-function getList() {
+function getList(): void {
   loading.value = true;
-  list(proxy.addDateRange(queryParams.value, dateRange.value)).then(response => {
+  list(proxy?.addDateRange(queryParams.value, dateRange.value)).then(response => {
     operLogList.value = response.data.rows;
     total.value = response.data.total;
     loading.value = false;
@@ -249,72 +309,74 @@ function getList() {
 }
 
 /** 操作日志类型字典翻译 */
-function typeFormat(row, column) {
-  return proxy.selectDictLabel(sys_oper_type.value, row.businessType);
+function typeFormat(row: FormData): string | undefined {
+  return proxy?.selectDictLabel(sys_oper_type.value, row.businessType);
 }
 
 /** 搜索按钮操作 */
-function handleQuery() {
+function handleQuery(): void {
   queryParams.value.pageNum = 1;
   getList();
 }
 
 /** 重置按钮操作 */
-function resetQuery() {
+function resetQuery(): void {
   dateRange.value = [];
-  proxy.resetForm("queryRef");
+  proxy?.resetForm("queryRef");
   queryParams.value.pageNum = 1;
-  proxy.$refs["operlogRef"].sort(defaultSort.value.prop, defaultSort.value.order);
+  proxy?.$refs["operlogRef"].sort(defaultSort.value.prop, defaultSort.value.order);
 }
 
 /** 多选框选中数据 */
-function handleSelectionChange(selection) {
+function handleSelectionChange(selection: OperLogItem[]): void {
   ids.value = selection.map(item => item.operId);
   multiple.value = !selection.length;
 }
 
 /** 排序触发事件 */
-function handleSortChange(column, prop, order) {
+function handleSortChange(column: SortColumn): void {
   queryParams.value.orderByColumn = column.prop;
   queryParams.value.isAsc = column.order;
   getList();
 }
 
 /** 详细按钮操作 */
-function handleView(row) {
+function handleView(row: OperLogItem): void {
   open.value = true;
   form.value = row;
 }
 
 /** 删除按钮操作 */
-function handleDelete(row) {
-  const operIds = row.operId || ids.value;
-  proxy.$modal.confirm('是否确认删除日志编号为"' + operIds + '"的数据项?').then(function () {
+function handleDelete(row?: OperLogItem): void {
+  const operIds = row?.operId || ids.value;
+  proxy?.$modal.confirm('是否确认删除日志编号为"' + operIds + '"的数据项?').then(function () {
     return delOperLog(operIds);
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("删除成功");
+    proxy?.$modal.msgSuccess("删除成功");
   }).catch(() => {
   });
 }
 
 /** 清空按钮操作 */
-function handleClean() {
-  proxy.$modal.confirm("是否确认清空所有操作日志数据项?").then(function () {
+function handleClean(): void {
+  proxy?.$modal.confirm("是否确认清空所有操作日志数据项?").then(function () {
     return cleanOperLog();
   }).then(() => {
     getList();
-    proxy.$modal.msgSuccess("清空成功");
+    proxy?.$modal.msgSuccess("清空成功");
   }).catch(() => {
   });
 }
 
 /** 导出按钮操作 */
-function handleExport() {
-  proxy.download("monitor/operlog/export", {
+function handleExport(): void {
+  proxy?.download("monitor/operlog/export", {
     ...queryParams.value,
   }, `config_${new Date().getTime()}.xlsx`);
 }
 
-getList();
+onMounted(() => {
+  getList();
+});
 </script>

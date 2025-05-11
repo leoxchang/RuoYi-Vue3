@@ -3,7 +3,7 @@ import {Result} from "@/types/global";
 
 // 查询缓存详细
 export function getCache() {
-  return request<any,Result<any>>({
+  return request<any, Result<any>>({
     url: '/monitor/cache',
     method: 'get'
   })
@@ -11,14 +11,14 @@ export function getCache() {
 
 // 查询缓存名称列表
 export function listCacheName() {
-  return request<any,Result<any>>({
+  return request<any, Result<any>>({
     url: '/monitor/cache/getNames',
     method: 'get'
   })
 }
 
 // 查询缓存键名列表
-export function listCacheKey(cacheName) {
+export function listCacheKey(cacheName: string) {
   return request({
     url: '/monitor/cache/getKeys/' + cacheName,
     method: 'get'
@@ -26,7 +26,7 @@ export function listCacheKey(cacheName) {
 }
 
 // 查询缓存内容
-export function getCacheValue(cacheName, cacheKey) {
+export function getCacheValue(cacheName: string, cacheKey: string) {
   return request({
     url: '/monitor/cache/getValue/' + cacheName + '/' + cacheKey,
     method: 'get'
@@ -34,7 +34,7 @@ export function getCacheValue(cacheName, cacheKey) {
 }
 
 // 清理指定名称缓存
-export function clearCacheName(cacheName) {
+export function clearCacheName(cacheName: string) {
   return request({
     url: '/monitor/cache/clearCacheName/' + cacheName,
     method: 'delete'
@@ -42,7 +42,7 @@ export function clearCacheName(cacheName) {
 }
 
 // 清理指定键名缓存
-export function clearCacheKey(cacheKey) {
+export function clearCacheKey(cacheKey: string) {
   return request({
     url: '/monitor/cache/clearCacheKey/' + cacheKey,
     method: 'delete'

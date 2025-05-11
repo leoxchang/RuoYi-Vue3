@@ -169,19 +169,81 @@
   </div>
 </template>
 
-<script setup>
-import { getServer } from '@/api/monitor/server'
+<script setup lang="ts" name="Server">
+import { ref, getCurrentInstance, onMounted } from 'vue';
+import { getServer } from '@/api/monitor/server';
 
-const server = ref([]);
-const { proxy } = getCurrentInstance();
+interface CpuInfo {
+  cpuNum: number;
+  used: number;
+  sys: number;
+  free: number;
+  [key: string]: any;
+}
 
-function getList() {
-  proxy.$modal.loading("正在加载服务监控数据，请稍候！");
+interface MemInfo {
+  total: number;
+  used: number;
+  free: number;
+  usage: number;
+  [key: string]: any;
+}
+
+interface JvmInfo {
+  total: number;
+  used: number;
+  free: number;
+  usage: number;
+  name: string;
+  version: string;
+  startTime: string;
+  runTime: string;
+  home: string;
+  inputArgs: string;
+  [key: string]: any;
+}
+
+interface SysInfo {
+  computerName: string;
+  computerIp: string;
+  osName: string;
+  osArch: string;
+  userDir: string;
+  [key: string]: any;
+}
+
+interface SysFileInfo {
+  dirName: string;
+  sysTypeName: string;
+  typeName: string;
+  total: string;
+  free: string;
+  used: string;
+  usage: number;
+  [key: string]: any;
+}
+
+interface ServerInfo {
+  cpu?: CpuInfo;
+  mem?: MemInfo;
+  jvm?: JvmInfo;
+  sys?: SysInfo;
+  sysFiles?: SysFileInfo[];
+  [key: string]: any;
+}
+
+const server = ref<ServerInfo>({});
+const { proxy } = getCurrentInstance()!;
+
+function getList(): void {
+  proxy?.$modal.loading("正在加载服务监控数据，请稍候！");
   getServer().then(response => {
     server.value = response.data;
-    proxy.$modal.closeLoading();
+    proxy?.$modal.closeLoading();
   });
 }
 
-getList();
+onMounted(() => {
+  getList();
+});
 </script>
