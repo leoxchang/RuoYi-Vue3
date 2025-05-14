@@ -1,19 +1,20 @@
 <template>
   <div class="upload-file">
     <el-upload
-      multiple
-      :action="uploadFileUrl"
-      :before-upload="handleBeforeUpload"
-      :file-list="fileList"
-      :limit="limit"
-      :on-error="handleUploadError"
-      :on-exceed="handleExceed"
-      :on-success="handleUploadSuccess"
-      :show-file-list="false"
-      :headers="headers"
-      class="upload-file-uploader"
-      ref="fileUpload"
-      v-if="!disabled"
+        multiple
+        :action="uploadFileUrl"
+        :before-upload="handleBeforeUpload"
+        :file-list="fileList"
+        :data="data"
+        :limit="limit"
+        :on-error="handleUploadError"
+        :on-exceed="handleExceed"
+        :on-success="handleUploadSuccess"
+        :show-file-list="false"
+        :headers="headers"
+        class="upload-file-uploader"
+        ref="fileUpload"
+        v-if="!disabled"
     >
       <!-- 上传按钮 -->
       <el-button type="primary">选取文件</el-button>
@@ -21,8 +22,8 @@
     <!-- 上传提示 -->
     <div class="el-upload__tip" v-if="showTip && !disabled">
       请上传
-      <template v-if="fileSize"> 大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b> </template>
-      <template v-if="fileType"> 格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b> </template>
+      <template v-if="fileSize"> 大小不超过 <b style="color: #f56c6c">{{ fileSize }}MB</b></template>
+      <template v-if="fileType"> 格式为 <b style="color: #f56c6c">{{ fileType.join("/") }}</b></template>
       的文件
     </div>
     <!-- 文件列表 -->
@@ -40,11 +41,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
-import { getToken } from "@/utils/auth";
-import type { FileItem, FileUploadProps, UploadResponse, FileUploadInstance } from './index.d';
+import {ref, computed, watch, getCurrentInstance} from 'vue';
+import {getToken} from "@/utils/auth";
+import type {FileItem, FileUploadProps, UploadResponse, FileUploadInstance} from './index.d';
 
 const props = withDefaults(defineProps<FileUploadProps>(), {
+  action: "/common/upload",
   limit: 5,
   fileSize: 5,
   fileType: () => ["doc", "docx", "xls", "xlsx", "ppt", "pptx", "txt", "pdf"],
@@ -56,15 +58,16 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
 }>();
 
+const {proxy} = getCurrentInstance()!;
 const fileUpload = ref<FileUploadInstance>();
 const number = ref(0);
 const uploadList = ref<FileItem[]>([]);
 const baseUrl = import.meta.env.VITE_APP_BASE_API;
-const uploadFileUrl = ref(import.meta.env.VITE_APP_BASE_API + "/common/upload"); // 上传文件服务器地址
-const headers = ref({ Authorization: "Bearer " + getToken() });
+const uploadFileUrl = ref(import.meta.env.VITE_APP_BASE_API + props.action); // 上传文件服务器地址
+const headers = ref({Authorization: "Bearer " + getToken()});
 const fileList = ref<FileItem[]>([]);
 const showTip = computed(
-  () => props.isShowTip && (props.fileType || props.fileSize)
+    () => props.isShowTip && (props.fileType || props.fileSize)
 );
 
 watch(() => props.modelValue, val => {
@@ -75,7 +78,7 @@ watch(() => props.modelValue, val => {
     // 然后将数组转为对象数组
     fileList.value = list.map(item => {
       if (typeof item === "string") {
-        item = { name: item, url: item };
+        item = {name: item, url: item};
       }
       item.uid = item.uid || new Date().getTime() + temp++;
       return item;
@@ -84,7 +87,7 @@ watch(() => props.modelValue, val => {
     fileList.value = [];
     return [];
   }
-}, { deep: true, immediate: true });
+}, {deep: true, immediate: true});
 
 // 上传前校检格式和大小
 function handleBeforeUpload(file: File): boolean {
@@ -94,47 +97,48 @@ function handleBeforeUpload(file: File): boolean {
     const fileExt = fileName[fileName.length - 1];
     const isTypeOk = props.fileType.indexOf(fileExt) >= 0;
     if (!isTypeOk) {
-      proxy.$modal.msgError(`文件格式不正确，请上传${props.fileType.join("/")}格式文件!`);
+      proxy?.$modal.msgError(`文件格式不正确，请上传${props.fileType.join("/")}格式文件!`);
       return false;
     }
   }
   // 校检文件名是否包含特殊字符
   if (file.name.includes(',')) {
-    proxy.$modal.msgError('文件名不正确，不能包含英文逗号!');
+    proxy?.$modal.msgError('文件名不正确，不能包含英文逗号!');
     return false;
   }
   // 校检文件大小
   if (props.fileSize) {
     const isLt = file.size / 1024 / 1024 < props.fileSize;
     if (!isLt) {
-      proxy.$modal.msgError(`上传文件大小不能超过 ${props.fileSize} MB!`);
+      proxy?.$modal.msgError(`上传文件大小不能超过 ${props.fileSize} MB!`);
       return false;
     }
   }
-  proxy.$modal.loading("正在上传文件，请稍候...");
+  proxy?.$modal.loading("正在上传文件，请稍候...");
   number.value++;
   return true;
 }
 
 // 文件个数超出
 function handleExceed() {
-  proxy.$modal.msgError(`上传文件数量不能超过 ${props.limit} 个!`);
+  proxy?.$modal.msgError(`上传文件数量不能超过 ${props.limit} 个!`);
 }
 
 // 上传失败
 function handleUploadError() {
-  proxy.$modal.msgError("上传文件失败");
+  proxy?.$modal.msgError("上传文件失败");
+  proxy?.$modal.closeLoading();
 }
 
 // 上传成功回调
 function handleUploadSuccess(res: UploadResponse, file: File) {
   if (res.code === 200) {
-    uploadList.value.push({ name: res.data.fileName, url: res.data.fileName });
+    uploadList.value.push({name: res.data.fileName, url: res.data.fileName});
     uploadedSuccessfully();
   } else {
     number.value--;
-    proxy.$modal.closeLoading();
-    proxy.$modal.msgError(res.msg);
+    proxy?.$modal.closeLoading();
+    proxy?.$modal.msgError(res.msg);
     fileUpload.value?.handleRemove(file);
     uploadedSuccessfully();
   }
@@ -153,7 +157,7 @@ function uploadedSuccessfully() {
     uploadList.value = [];
     number.value = 0;
     emit("update:modelValue", listToString(fileList.value));
-    proxy.$modal.closeLoading();
+    proxy?.$modal.closeLoading();
   }
 }
 
@@ -183,18 +187,21 @@ function listToString(list: FileItem[], separator: string = ","): string {
 .upload-file-uploader {
   margin-bottom: 5px;
 }
+
 .upload-file-list .el-upload-list__item {
   border: 1px solid #e4e7ed;
   line-height: 2;
   margin-bottom: 10px;
   position: relative;
 }
+
 .upload-file-list .ele-upload-list__item-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
   color: inherit;
 }
+
 .ele-upload-list__item-content-action .el-link {
   margin-right: 10px;
 }

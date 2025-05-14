@@ -6,6 +6,8 @@ export interface FileItem {
 
 export interface FileUploadProps {
   modelValue?: string | string[] | FileItem[];
+  action?: string;
+  data: object;
   limit?: number;
   fileSize?: number;
   fileType?: string[];
@@ -23,4 +25,4 @@ export interface UploadResponse {
 
 export interface FileUploadInstance {
   handleRemove: (file: File) => void;
-} 
+}
