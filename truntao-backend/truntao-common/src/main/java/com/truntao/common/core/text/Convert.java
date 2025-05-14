@@ -463,7 +463,7 @@ public class Convert {
 
     /**
      * 转换为boolean<br>
-     * String支持的值为：true、false、yes、ok、no，1,0 如果给定的值为空，或者转换失败，返回默认值<br>
+     * String支持的值为：true、false、yes、ok、no、1、0、是、否, 如果给定的值为空，或者转换失败，返回默认值<br>
      * 转换失败不会报错
      *
      * @param value        被转换的值
@@ -483,8 +483,8 @@ public class Convert {
         }
         valueStr = valueStr.trim().toLowerCase();
         return switch (valueStr) {
-            case "true", "yes", "ok", "1" -> true;
-            case "false", "no", "0" -> false;
+            case "true", "yes", "ok", "1", "是" -> true;
+            case "false", "no", "0", "否" -> false;
             default -> defaultValue;
         };
     }
