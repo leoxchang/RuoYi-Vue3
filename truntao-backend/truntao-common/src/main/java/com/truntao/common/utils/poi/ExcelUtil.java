@@ -368,7 +368,7 @@ public class ExcelUtil<T> {
                     Class<?> fieldType = field.getType();
                     if (String.class == fieldType) {
                         String s = Convert.toStr(val);
-                        if (StringUtils.endsWith(s, ".0")) {
+                        if (s.matches("^\\d+\\.0$")) {
                             val = StringUtils.substringBefore(s, ".0");
                         } else {
                             String dateFormat = field.getAnnotation(Excel.class).dateFormat();
