@@ -16,12 +16,15 @@
         prefix-icon="Search"
         placeholder="菜单搜索，支持标题、URL模糊查询"
           clearable
+          @keyup.enter="selectActiveResult"
+          @keydown.up.prevent="navigateResult('up')"
+          @keydown.down.prevent="navigateResult('down')"
       >
         </el-input>
 
       <div class="result-wrap">
         <el-scrollbar>
-          <div class="search-item" tabindex="1" v-for="item in options" :key="item.path">
+          <div class="search-item" tabindex="1" v-for="(item, index) in options" :key="item.path" :style="activeStyle(index)" @mouseenter="activeIndex = index" @mouseleave="activeIndex = -1">
             <div class="left">
               <svg-icon class="menu-icon" :icon-class="item.icon" />
             </div>
@@ -33,6 +36,7 @@
                 {{ item.path }}
               </div>
             </div>
+            <svg-icon icon-class="enter" v-show="index === activeIndex"/>
           </div>
         </el-scrollbar>
       </div>
@@ -44,6 +48,7 @@
 import Fuse from 'fuse.js'
 import {getNormalPath} from '@/utils/truntao'
 import {isHttp} from '@/utils/validate'
+import useSettingsStore from '@/store/modules/settings'
 import usePermissionStore from '@/store/modules/permission'
 import {ref, computed, nextTick, onMounted, watch, watchEffect} from 'vue'
 import {useRouter} from 'vue-router'
@@ -59,10 +64,12 @@ interface SearchOption {
 const search = ref<string>('')
 const options = ref<SearchOption[]>([])
 const searchPool = ref<Array<{ path: string, title: string[], query?: string }>>([])
+const activeIndex = ref(-1)
 const show = ref<boolean>(false)
 const fuse = ref<Fuse<any> | undefined>(undefined)
 const headerSearchSelectRef = ref<any>(null)
 const router = useRouter()
+const theme = computed(() => useSettingsStore().theme)
 const routes = computed(() => usePermissionStore().defaultRoutes)
 
 function click() {
@@ -77,6 +84,7 @@ function close() {
   search.value = ''
   options.value = []
   show.value = false
+  activeIndex.value = -1
 }
 
 function change(val) {
@@ -160,12 +168,36 @@ function generateRoutes(routes, basePath = '', prefixTitle: string[] = []) {
 }
 
 function querySearch(query) {
+  activeIndex.value = -1
   if (query !== '' && fuse.value) {
     options.value = fuse.value.search(query).map((item) => item.item) ?? searchPool.value
   } else {
     options.value = searchPool.value
   }
 }
+
+function activeStyle(index) {
+  if (index !== activeIndex.value) return {}
+  return {
+    "background-color": theme.value,
+    "color": "#fff"
+  }
+}
+
+function navigateResult(direction) {
+  if (direction === "up") {
+    activeIndex.value = activeIndex.value <= 0 ? options.value.length - 1 : activeIndex.value - 1
+  } else if (direction === "down") {
+    activeIndex.value = activeIndex.value >= options.value.length - 1 ? 0 : activeIndex.value + 1
+  }
+}
+
+function selectActiveResult() {
+  if (options.value.length > 0 && activeIndex.value >= 0) {
+    change(options.value[activeIndex.value])
+  }
+}
+
 
 onMounted(() => {
   searchPool.value = generateRoutes(routes.value);
@@ -187,11 +219,13 @@ watch(searchPool, (list) => {
 }
 .result-wrap {
   height: 280px;
-  margin: 10px 0;
+  margin: 6px 0;
 
   .search-item {
     display: flex;
     height: 48px;
+    align-items: center;
+    padding-right: 10px;
 
     .left {
       width: 60px;
@@ -200,15 +234,16 @@ watch(searchPool, (list) => {
       .menu-icon {
         width: 18px;
         height: 18px;
-        margin-top: 5px;
       }
     }
     .search-info {
       padding-left: 5px;
+      margin-top: 10px;
       width: 100%;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+      flex: 1;
 
       .menu-title,
       .menu-path {
