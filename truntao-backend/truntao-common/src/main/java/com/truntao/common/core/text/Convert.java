@@ -670,11 +670,18 @@ public class Convert {
 
         if (obj instanceof String stringVal) {
             return stringVal;
-        } else if (obj instanceof byte[] byteArrayVal) {
-            return str(byteArrayVal, charset);
-        } else if (obj instanceof Byte[] byteArrayVal) {
-            byte[] bytes = ArrayUtils.toPrimitive(byteArrayVal);
-            return str(bytes, charset);
+        } else if (obj instanceof byte[] || obj instanceof Byte[]) {
+            if (obj instanceof byte[] bytesVal) {
+                return str(bytesVal, charset);
+            } else {
+                Byte[] bytes = (Byte[]) obj;
+                int length = bytes.length;
+                byte[] dest = new byte[length];
+                for (int i = 0; i < length; i++) {
+                    dest[i] = bytes[i];
+                }
+                return str(dest, charset);
+            }
         } else if (obj instanceof ByteBuffer byteBufferVal) {
             return str(byteBufferVal, charset);
         }
