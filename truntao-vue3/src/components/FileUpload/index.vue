@@ -213,7 +213,7 @@ function listToString(list, separator) {
 }
 // 初始化拖拽排序
 onMounted(() => {
-  if (props.drag) {
+  if (props.drag && !props.disabled) {
     nextTick(() => {
       const element = document.querySelector('.upload-file-list')
       Sortable.create(element, {
