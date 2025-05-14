@@ -1,19 +1,41 @@
 <template>
-  <div :class="{ 'show': show }" class="header-search">
+  <div  class="header-search">
     <svg-icon class-name="search-icon" icon-class="search" @click.stop="click"/>
-    <el-select
-        ref="headerSearchSelectRef"
-        v-model="search"
-        :remote-method="querySearch"
-        filterable
-        default-first-option
-        remote
-        placeholder="Search"
-        class="header-search-select"
-        @change="change"
+    <el-dialog
+        v-model="show"
+        width="600"
+        @close="close"
+        :show-close="false"
+        append-to-body
     >
-      <el-option v-for="option in options" :key="option.item.path" :value="option.item" :label="option.item.title.join(' > ')"/>
-    </el-select>
+      <el-input
+        v-model="search"
+        ref="headerSearchSelectRef"
+        size="large"
+        @input="querySearch"
+        prefix-icon="Search"
+        placeholder="菜单搜索，支持标题、URL模糊查询"
+      >
+        </el-input>
+
+      <div class="result-wrap">
+        <el-scrollbar>
+          <div class="search-item" tabindex="1" v-for="item in options" :key="item.path">
+            <div class="left">
+              <svg-icon class="menu-icon" :icon-class="item.icon" />
+            </div>
+            <div class="search-info" @click="change(item)">
+              <div class="menu-title">
+                {{ item.title.join("/") }}
+              </div>
+              <div class="menu-path">
+                {{ item.path }}
+              </div>
+            </div>
+          </div>
+        </el-scrollbar>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -33,38 +55,39 @@ interface SearchOption {
   }
 }
 
-const search = ref<string>('');
-const options = ref<SearchOption[]>([]);
-const searchPool = ref<Array<{ path: string, title: string[], query?: string }>>([]);
-const show = ref<boolean>(false);
-const fuse = ref<Fuse<any> | undefined>(undefined);
-const headerSearchSelectRef = ref<any>(null);
-const router = useRouter();
-const routes = computed(() => usePermissionStore().defaultRoutes);
+const search = ref<string>('')
+const options = ref<SearchOption[]>([])
+const searchPool = ref<Array<{ path: string, title: string[], query?: string }>>([])
+const show = ref<boolean>(false)
+const fuse = ref<Fuse<any> | undefined>(undefined)
+const headerSearchSelectRef = ref<any>(null)
+const router = useRouter()
+const routes = computed(() => usePermissionStore().defaultRoutes)
 
 function click() {
   show.value = !show.value
   if (show.value) {
     headerSearchSelectRef.value && headerSearchSelectRef.value.focus()
+    options.value = searchPool.value
   }
 }
-
 function close() {
   headerSearchSelectRef.value && headerSearchSelectRef.value.blur()
+  search.value = ''
   options.value = []
   show.value = false
 }
 
 function change(val) {
-  const path = val.path;
-  const query = val.query;
+  const path = val.path
+  const query = val.query
   if (isHttp(path)) {
     // http(s):// 路径新窗口打开
     const pindex = path.indexOf("http");
-    window.open(path.substr(pindex, path.length), "_blank");
+    window.open(path.substr(pindex, path.length), "_blank")
   } else {
     if (query) {
-      router.push({path: path, query: JSON.parse(query)});
+      router.push({path: path, query: JSON.parse(query)})
     } else {
       router.push(path)
     }
@@ -104,15 +127,16 @@ function generateRoutes(routes, basePath = '', prefixTitle: string[] = []) {
     if (r.hidden) {
       continue
     }
-    const p = r.path.length > 0 && r.path[0] === '/' ? r.path : '/' + r.path;
+    const p = r.path.length > 0 && r.path[0] === '/' ? r.path : '/' + r.path
     const data: { path: string, title: string[], query?: string } = {
       path: !isHttp(r.path) ? getNormalPath(basePath + p) : r.path,
-      title: [...prefixTitle]
+      title: [...prefixTitle],
+      icon: ''
     }
 
     if (r.meta && r.meta.title) {
       data.title = [...data.title, r.meta.title]
-
+      data.icon = r.meta.icon
       if (r.redirect !== 'noRedirect') {
         // only push the routes with title
         // special case: need to exclude parent router without redirect
@@ -136,9 +160,9 @@ function generateRoutes(routes, basePath = '', prefixTitle: string[] = []) {
 
 function querySearch(query) {
   if (query !== '' && fuse.value) {
-    options.value = fuse.value.search(query)
+    options.value = fuse.value.search(query).map((item) => item.item) ?? searchPool.value
   } else {
-    options.value = []
+    options.value = searchPool.value
   }
 }
 
@@ -146,17 +170,6 @@ onMounted(() => {
   searchPool.value = generateRoutes(routes.value);
 })
 
-watchEffect(() => {
-  searchPool.value = generateRoutes(routes.value)
-})
-
-watch(show, (value) => {
-  if (value) {
-    document.body.addEventListener('click', close)
-  } else {
-    document.body.removeEventListener('click', close)
-  }
-})
 
 watch(searchPool, (list) => {
   initFuse(list)
@@ -165,40 +178,50 @@ watch(searchPool, (list) => {
 
 <style lang='scss' scoped>
 .header-search {
-  font-size: 0 !important;
-
   .search-icon {
     cursor: pointer;
     font-size: 18px;
     vertical-align: middle;
   }
+}
+.result-wrap {
+  height: 280px;
+  margin: 10px 0;
 
-  .header-search-select {
-    font-size: 18px;
-    transition: width 0.2s;
-    width: 0;
-    overflow: hidden;
-    background: transparent;
-    border-radius: 0;
-    display: inline-block;
-    vertical-align: middle;
+  .search-item {
+    display: flex;
+    height: 48px;
 
-    :deep(.el-input__inner) {
-      border-radius: 0;
-      border: 0;
-      padding-left: 0;
-      padding-right: 0;
-      box-shadow: none !important;
-      border-bottom: 1px solid #d9d9d9;
-      vertical-align: middle;
+    .left {
+      width: 60px;
+      text-align: center;
+
+      .menu-icon {
+        width: 18px;
+        height: 18px;
+        margin-top: 5px;
+      }
+    }
+    .search-info {
+      padding-left: 5px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+
+      .menu-title,
+      .menu-path {
+        height: 20px;
+      }
+      .menu-path {
+        color: #ccc;
+        font-size: 10px;
+      }
     }
   }
 
-  &.show {
-    .header-search-select {
-      width: 210px;
-      margin-left: 10px;
-    }
+  search-item:hover {
+    cursor: pointer;
   }
 }
 </style>
