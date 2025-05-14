@@ -49,6 +49,8 @@
 <script setup>
 import { getToken } from "@/utils/auth";
 import {isExternal} from "@/utils/validate";
+import Sortable from 'sortablejs'
+
 
 const props = defineProps({
   modelValue: [String, Object, Array],
@@ -81,6 +83,11 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+  // 拖动排序
+  drag: {
+    type: Boolean,
+    default: true
+  }
 });
 
 const { proxy } = getCurrentInstance();
@@ -218,6 +225,21 @@ function listToString(list, separator) {
   }
   return strs != "" ? strs.substr(0, strs.length - 1) : "";
 }
+// 初始化拖拽排序
+onMounted(() => {
+  if (props.drag) {
+    nextTick(() => {
+      const element = document.querySelector('.el-upload-list')
+      Sortable.create(element, {
+        onEnd: (evt) => {
+          const movedItem = fileList.value.splice(evt.oldIndex, 1)[0]
+          fileList.value.splice(evt.newIndex, 0, movedItem)
+          emit('update:modelValue', listToString(fileList.value))
+        }
+      })
+    })
+  }
+})
 </script>
 
 <style scoped lang="scss">
