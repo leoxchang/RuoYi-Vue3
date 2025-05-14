@@ -13,6 +13,7 @@ export interface FileUploadProps {
   fileType?: string[];
   isShowTip?: boolean;
   disabled?: boolean;
+  drag: boolean;
 }
 
 export interface UploadResponse {

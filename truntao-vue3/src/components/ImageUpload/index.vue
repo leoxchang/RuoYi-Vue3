@@ -51,8 +51,9 @@
 <script setup lang="ts">
 import {getToken} from "@/utils/auth";
 import {isExternal} from "@/utils/validate";
-import {getCurrentInstance, ref, computed, watch} from "vue";
+import {getCurrentInstance, ref, computed, watch,,onMounted,nextTick} from "vue";
 import type {UploadFile, UploadRawFile} from 'element-plus';
+import Sortable from 'sortablejs'
 
 interface Props {
   modelValue: string | object | Array<any>;
@@ -62,6 +63,7 @@ interface Props {
   fileSize?: number;
   fileType?: string[];
   isShowTip?: boolean;
+  drag: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -69,7 +71,8 @@ const props = withDefaults(defineProps<Props>(), {
   limit: 5,
   fileSize: 5,
   fileType: () => ["png", "jpg", "jpeg"],
-  isShowTip: true
+  isShowTip: true,
+  drag: true
 });
 
 interface Emits {
@@ -211,6 +214,21 @@ function listToString(list: Array<{ url: string }>, separator?: string): string 
   }
   return strs != "" ? strs.substr(0, strs.length - 1) : "";
 }
+// 初始化拖拽排序
+onMounted(() => {
+  if (props.drag) {
+    nextTick(() => {
+      const element = document.querySelector('.el-upload-list')
+      Sortable.create(element, {
+        onEnd: (evt) => {
+          const movedItem = fileList.value.splice(evt.oldIndex, 1)[0]
+          fileList.value.splice(evt.newIndex, 0, movedItem)
+          emit('update:modelValue', listToString(fileList.value))
+        }
+      })
+    })
+  }
+})
 </script>
 
 <style scoped lang="scss">
