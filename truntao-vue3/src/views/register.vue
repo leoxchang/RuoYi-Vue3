@@ -1,7 +1,7 @@
 <template>
   <div class="register">
     <el-form ref="registerRef" :model="registerForm" :rules="registerRules" class="register-form">
-      <h3 class="title">后台管理系统</h3>
+      <h3 class="title">{{ title }}</h3>
       <el-form-item prop="username">
         <el-input
             v-model="registerForm.username"
@@ -97,6 +97,7 @@ interface RegisterForm {
   uuid: string;
 }
 
+const title = import.meta.env.VITE_APP_TITLE;
 const router = useRouter();
 const registerRef = ref<FormInstance>();
 

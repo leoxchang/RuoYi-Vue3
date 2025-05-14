@@ -141,7 +141,7 @@ xss:
   urlPatterns: /system/*,/monitor/*,/tool/*
 #logback path
 logback:
-  path: /Users/zhangxinlei/logs
+  path: /Users/qiezi999/logs
 
 #springdoc配置
 springdoc:
