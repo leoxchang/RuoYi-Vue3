@@ -6,13 +6,8 @@
       </el-tab-pane>
       <el-tab-pane label="字段信息" name="columnInfo">
         <el-table ref="dragTable" :data="columns" row-key="columnId" :max-height="tableHeight">
-          <el-table-column label="序号" type="index" min-width="5%"/>
-          <el-table-column
-            label="字段列名"
-            prop="columnName"
-            min-width="10%"
-            :show-overflow-tooltip="true"
-          />
+          <el-table-column label="序号" type="index" min-width="5%" class-name="allowDrag" />
+          <el-table-column label="字段列名" prop="columnName" min-width="10%" :show-overflow-tooltip="true" class-name="allowDrag"/>
           <el-table-column label="字段描述" min-width="10%">
             <template #default="scope">
               <el-input v-model="scope.row.columnComment"></el-input>
@@ -127,7 +122,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, getCurrentInstance } from 'vue';
+import { ref, getCurrentInstance, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { getGenTable, updateGenTable } from "@/api/tool/gen";
 import { optionSelect as getDictOptionSelect } from "@/api/system/dict/type";
@@ -135,25 +130,25 @@ import basicInfoForm from "./basicInfoForm.vue";
 import genInfoForm from "./genInfoForm.vue";
 import { Column, TableInfo } from "@/types/tool/gen";
 import {DictType} from "@/types/system/dict";
-
+import Sortable from 'sortablejs'
 
 
 const route = useRoute();
 const { proxy } = getCurrentInstance()!;
 
-const activeName = ref("columnInfo");
-const tableHeight = ref(document.documentElement.scrollHeight - 245 + "px");
-const tables = ref<any[]>([]);
-const columns = ref<Column[]>([]);
-const dictOptions = ref<DictType[]>([]);
-const info = ref<TableInfo>({});
+const activeName = ref("columnInfo")
+const tableHeight = ref(document.documentElement.scrollHeight - 245 + "px")
+const tables = ref<any[]>([])
+const columns = ref<Column[]>([])
+const dictOptions = ref<DictType[]>([])
+const info = ref<TableInfo>({})
 
 /** 提交按钮 */
 function submitForm() {
-  const basicForm = proxy!.$refs.basicInfo.$refs.basicInfoForm;
-  const genForm = proxy!.$refs.genInfo.$refs.genInfoForm;
+  const basicForm = proxy!.$refs.basicInfo.$refs.basicInfoForm
+  const genForm = proxy!.$refs.genInfo.$refs.genInfoForm
   Promise.all([basicForm, genForm].map(getFormPromise)).then(res => {
-    const validateResult = res.every(item => !!item);
+    const validateResult = res.every(item => !!item)
     if (validateResult) {
       const genTable = {...info.value};
       genTable.columns = columns.value;
@@ -162,45 +157,60 @@ function submitForm() {
         treeName: info.value.treeName,
         treeParentCode: info.value.treeParentCode,
         parentMenuId: info.value.parentMenuId
-      };
+      }
       updateGenTable(genTable).then(res => {
-        proxy!.$modal.msgSuccess(res.msg);
+        proxy!.$modal.msgSuccess(res.msg)
         if (res.code === 200) {
-          close();
+          close()
         }
-      });
+      })
     } else {
-      proxy!.$modal.msgError("表单校验未通过，请重新检查提交内容");
+      proxy!.$modal.msgError("表单校验未通过，请重新检查提交内容")
     }
-  });
+  })
 }
 
 function getFormPromise(form: any): Promise<boolean> {
   return new Promise(resolve => {
     form.validate((res: boolean) => {
-      resolve(res);
-    });
-  });
+      resolve(res)
+    })
+  })
 }
 
 function close() {
-  const obj = { path: "/tool/gen", query: { t: Date.now(), pageNum: route.query.pageNum } };
-  proxy!.$tab.closeOpenPage(obj);
+  const obj = { path: "/tool/gen", query: { t: Date.now(), pageNum: route.query.pageNum } }
+  proxy!.$tab.closeOpenPage(obj)
 }
 
 (() => {
-  const tableId = route.params && route.params.tableId;
+  const tableId = route.params && route.params.tableId
   if (tableId) {
     // 获取表详细信息
     getGenTable(tableId).then(res => {
-      columns.value = res.data.rows;
-      info.value = res.data.info;
-      tables.value = res.data.tables;
-    });
+      columns.value = res.data.rows
+      info.value = res.data.info
+      tables.value = res.data.tables
+    })
     /** 查询字典下拉列表 */
     getDictOptionSelect().then(response => {
-      dictOptions.value = response.data;
-    });
+      dictOptions.value = response.data
+    })
   }
-})();
+})()
+
+// 拖动排序
+onMounted(() => {
+  const element = document.querySelector('.el-table__body > tbody')
+  Sortable.create(element, {
+    handle: ".allowDrag",
+    onEnd: (evt) => {
+      const targetRow = columns.value.splice(evt.oldIndex, 1)[0]
+      columns.value.splice(evt.newIndex, 0, targetRow)
+      for (const index in columns.value) {
+        columns.value[index].sort = parseInt(index) + 1
+      }
+    }
+  })
+})
 </script>

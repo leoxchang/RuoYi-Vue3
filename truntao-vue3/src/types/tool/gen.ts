@@ -36,6 +36,7 @@ export interface Column {
   isRequired: string;
   htmlType: string;
   dictType: string;
+  sort: number;
 }
 
 export interface TableInfo {
