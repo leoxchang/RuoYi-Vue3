@@ -1,6 +1,7 @@
 package com.truntao.common.utils.spring;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.aop.framework.Advised;
 import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -105,7 +106,12 @@ public final class SpringUtils implements BeanFactoryPostProcessor, ApplicationC
      */
     @SuppressWarnings("unchecked")
     public static <T> T getAopProxy(T invoker) {
-        return (T) AopContext.currentProxy();
+        Object proxy = AopContext.currentProxy();
+        if (((Advised) proxy).getTargetSource().getTargetClass() == invoker.getClass())
+        {
+            return (T) proxy;
+        }
+        return invoker;
     }
 
     /**
