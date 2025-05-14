@@ -21,7 +21,7 @@ export function getData(dictCode: string | number) {
 
 // 根据字典类型查询字典数据信息
 export function getDicts(dictType: string) {
-  return request<any, Result<DictData>[]>({
+  return request<any, Result<DictData[]>>({
     url: '/system/dict/data/type/' + dictType,
     method: 'get'
   })

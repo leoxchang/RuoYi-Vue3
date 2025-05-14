@@ -289,20 +289,7 @@ import { ref, reactive, toRefs, getCurrentInstance, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } from "@/api/monitor/job";
 import Crontab from '@/components/Crontab';
-
-interface JobItem {
-  jobId: number | string;
-  jobName: string;
-  jobGroup: string;
-  invokeTarget: string;
-  cronExpression: string;
-  misfirePolicy: string;
-  concurrent: string;
-  status: string;
-  createTime?: string;
-  nextValidTime?: string | number;
-  [key: string]: any;
-}
+import { JobItem } from '@/types/monitor/job';
 
 interface QueryParams {
   pageNum: number;
