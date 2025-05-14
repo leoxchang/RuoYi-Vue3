@@ -235,7 +235,7 @@ function listToString(list, separator) {
 onMounted(() => {
   if (props.drag && !props.disabled) {
     nextTick(() => {
-      const element = document.querySelector('.el-upload-list')
+      const element = proxy.$refs.imageUpload?.$el?.querySelector('.el-upload-list')
       Sortable.create(element, {
         onEnd: (evt) => {
           const movedItem = fileList.value.splice(evt.oldIndex, 1)[0]
