@@ -1,4 +1,16 @@
-export default {
+interface Settings {
+  title: string;
+  sideTheme: string;
+  showSettings: boolean;
+  topNav: boolean;
+  tagsView: boolean;
+  fixedHeader: boolean;
+  sidebarLogo: boolean;
+  dynamicTitle: boolean;
+  errorLog: string | string[];
+}
+
+const settings: Settings = {
   /**
    * 网页标题
    */
@@ -45,3 +57,5 @@ export default {
    */
   errorLog: 'production'
 }
+
+export default settings;

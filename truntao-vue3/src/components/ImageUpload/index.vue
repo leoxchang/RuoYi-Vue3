@@ -52,7 +52,7 @@
 <script setup lang="ts">
 import {getToken} from "@/utils/auth";
 import {isExternal} from "@/utils/validate";
-import {getCurrentInstance, ref, computed, watch,,onMounted,nextTick} from "vue";
+import {getCurrentInstance, ref, computed, watch,onMounted,nextTick} from "vue";
 import type {UploadFile, UploadRawFile} from 'element-plus';
 import Sortable from 'sortablejs'
 
@@ -64,7 +64,7 @@ interface Props {
   fileSize?: number;
   fileType?: string[];
   isShowTip?: boolean;
-  disable: boolean,
+  disabled: boolean,
   drag: boolean;
 }
 
