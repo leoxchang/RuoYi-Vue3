@@ -160,7 +160,7 @@ import type {Dept, DeptQueryParams} from '@/types/system/dept';
 import type {Result} from "@/types/global";
 
 const {proxy} = getCurrentInstance()!;
-const {sys_normal_disable} = proxy!.useDict("sys_normal_disable");
+const {sys_normal_disable} = proxy!.useDict("sys_normal_disable")?.get('sys_normal_disable');
 
 const deptList = ref<Dept[]>([]);
 const open = ref<boolean>(false);

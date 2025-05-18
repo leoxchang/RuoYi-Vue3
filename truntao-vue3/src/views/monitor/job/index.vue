@@ -329,7 +329,10 @@ interface FormRules {
 
 const router = useRouter();
 const { proxy } = getCurrentInstance()!;
-const { sys_job_group, sys_job_status } = proxy?.useDict("sys_job_group", "sys_job_status");
+const dict = proxy?.useDict("sys_job_group", "sys_job_status");
+const sys_job_group = dict?.get("sys_job_group");
+const sys_job_status = dict?.get("sys_job_status");
+
 
 const jobList = ref<JobItem[]>([]);
 const open = ref<boolean>(false);

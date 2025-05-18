@@ -3,22 +3,19 @@ import useDictStore from '@/store/modules/dict'
 import {getDicts} from '@/api/system/dict/data'
 import DictData from "@/components/DictData";
 
-interface DictData {
+export interface DictData {
   label: string | undefined;
   value: string | undefined;
   elTagType: string | undefined;
   elTagClass: string | undefined;
 }
 
-interface DictMap {
-  [key: string]: DictData[];
-}
 
 /**
  * 获取字典数据
  */
 export function useDict(...args: string[]) {
-  const res = ref<DictMap>({});
+  const res = ref<Map<string,DictData>>(new Map());
   return (() => {
     args.forEach((dictType) => {
       res.value[dictType] = [];

@@ -22,7 +22,7 @@ declare module 'vue' {
     download: (url: string, params?: any, filename?: string) => void;
     resetForm: (formRef: string) => void;
     handleTree: (data: any[], id: string, parentId?: string, children?: string) => any[];
-    useDict: (...args: string[]) => any;
+    useDict: (...args: string[]) => Map<string,DictData>;
     $tab: {
       closeOpenPage: (obj: { path: string }) => void;
     };
