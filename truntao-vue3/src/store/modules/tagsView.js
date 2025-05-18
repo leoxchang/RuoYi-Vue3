@@ -1,4 +1,4 @@
-import {getStore,setStore} from "@/utils/tag-store.js";
+import {getStore,setStore} from "@/utils/tag-store";
 
 const useTagsViewStore = defineStore(
   'tags-view',

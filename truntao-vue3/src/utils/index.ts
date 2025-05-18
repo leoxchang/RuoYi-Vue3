@@ -3,7 +3,7 @@ import { parseTime } from './truntao'
 /**
  * 表格时间格式化
  */
-export function formatDate(cellValue) {
+export function formatDate(cellValue: any): string {
   if (cellValue == null || cellValue == "") return "";
   var date = new Date(cellValue)
   var year = date.getFullYear()
@@ -20,16 +20,16 @@ export function formatDate(cellValue) {
  * @param {string} option
  * @returns {string}
  */
-export function formatTime(time, option) {
+export function formatTime(time: number | string, option?: string): string {
   if (('' + time).length === 10) {
-    time = parseInt(time) * 1000
+    time = parseInt(time as string) * 1000
   } else {
     time = +time
   }
   const d = new Date(time)
   const now = Date.now()
 
-  const diff = (now - d) / 1000
+  const diff = (now - d.getTime()) / 1000
 
   if (diff < 30) {
     return '刚刚'
@@ -62,10 +62,10 @@ export function formatTime(time, option) {
  * @param {string} url
  * @returns {Object}
  */
-export function getQueryObject(url) {
+export function getQueryObject(url?: string): Record<string, string> {
   url = url == null ? window.location.href : url
   const search = url.substring(url.lastIndexOf('?') + 1)
-  const obj = {}
+  const obj: Record<string, string> = {}
   const reg = /([^?&=]+)=([^?&=]*)/g
   search.replace(reg, (rs, $1, $2) => {
     const name = decodeURIComponent($1)
@@ -81,7 +81,7 @@ export function getQueryObject(url) {
  * @param {string} input value
  * @returns {number} output value
  */
-export function byteLength(str) {
+export function byteLength(str: string): number {
   // returns the byte length of an utf8 string
   let s = str.length
   for (var i = str.length - 1; i >= 0; i--) {
@@ -97,8 +97,8 @@ export function byteLength(str) {
  * @param {Array} actual
  * @returns {Array}
  */
-export function cleanArray(actual) {
-  const newArray = []
+export function cleanArray(actual: any[]): any[] {
+  const newArray: any[] = []
   for (let i = 0; i < actual.length; i++) {
     if (actual[i]) {
       newArray.push(actual[i])
@@ -111,7 +111,7 @@ export function cleanArray(actual) {
  * @param {Object} json
  * @returns {Array}
  */
-export function param(json) {
+export function param(json: Record<string, any>): string {
   if (!json) return ''
   return cleanArray(
     Object.keys(json).map(key => {
@@ -125,12 +125,12 @@ export function param(json) {
  * @param {string} url
  * @returns {Object}
  */
-export function param2Obj(url) {
+export function param2Obj(url: string): Record<string, string> {
   const search = decodeURIComponent(url.split('?')[1]).replace(/\+/g, ' ')
   if (!search) {
     return {}
   }
-  const obj = {}
+  const obj: Record<string, string> = {}
   const searchArr = search.split('&')
   searchArr.forEach(v => {
     const index = v.indexOf('=')
@@ -147,7 +147,7 @@ export function param2Obj(url) {
  * @param {string} val
  * @returns {string}
  */
-export function html2Text(val) {
+export function html2Text(val: string): string {
   const div = document.createElement('div')
   div.innerHTML = val
   return div.textContent || div.innerText
@@ -159,7 +159,7 @@ export function html2Text(val) {
  * @param {(Object|Array)} source
  * @returns {Object}
  */
-export function objectMerge(target, source) {
+export function objectMerge(target: Record<string, any>, source: Record<string, any> | any[]): Record<string, any> {
   if (typeof target !== 'object') {
     target = {}
   }
@@ -181,7 +181,7 @@ export function objectMerge(target, source) {
  * @param {HTMLElement} element
  * @param {string} className
  */
-export function toggleClass(element, className) {
+export function toggleClass(element: HTMLElement, className: string): void {
   if (!element || !className) {
     return
   }
@@ -201,11 +201,11 @@ export function toggleClass(element, className) {
  * @param {string} type
  * @returns {Date}
  */
-export function getTime(type) {
+export function getTime(type: string): number {
   if (type === 'start') {
     return new Date().getTime() - 3600 * 1000 * 24 * 90
   } else {
-    return new Date(new Date().toDateString())
+    return new Date(new Date().toDateString()).getTime()
   }
 }
 
@@ -215,8 +215,8 @@ export function getTime(type) {
  * @param {boolean} immediate
  * @return {*}
  */
-export function debounce(func, wait, immediate) {
-  let timeout, args, context, timestamp, result
+export function debounce(func: Function, wait: number, immediate: boolean): (...args: any[]) => any {
+  let timeout: NodeJS.Timeout | null, args: any[], context: any, timestamp: number, result: any
 
   const later = function() {
     // 据上一次触发时间间隔
@@ -230,12 +230,12 @@ export function debounce(func, wait, immediate) {
       // 如果设定为immediate===true，因为开始边界已经调用过了此处无需调用
       if (!immediate) {
         result = func.apply(context, args)
-        if (!timeout) context = args = null
+        if (!timeout) context = args = []
       }
     }
   }
 
-  return function(...args) {
+  return function(this: any, ...args: any[]): any {
     context = this
     timestamp = +new Date()
     const callNow = immediate && !timeout
@@ -243,7 +243,7 @@ export function debounce(func, wait, immediate) {
     if (!timeout) timeout = setTimeout(later, wait)
     if (callNow) {
       result = func.apply(context, args)
-      context = args = null
+      context = args = []
     }
 
     return result
@@ -257,11 +257,11 @@ export function debounce(func, wait, immediate) {
  * @param {Object} source
  * @returns {Object}
  */
-export function deepClone(source) {
+export function deepClone(source: any): any {
   if (!source && typeof source !== 'object') {
-    throw new Error('error arguments', 'deepClone')
+    throw new Error('error arguments')
   }
-  const targetObj = source.constructor === Array ? [] : {}
+  const targetObj: any = source.constructor === Array ? [] : {}
   Object.keys(source).forEach(keys => {
     if (source[keys] && typeof source[keys] === 'object') {
       targetObj[keys] = deepClone(source[keys])
@@ -276,16 +276,16 @@ export function deepClone(source) {
  * @param {Array} arr
  * @returns {Array}
  */
-export function uniqueArr(arr) {
+export function uniqueArr<T>(arr: T[]): T[] {
   return Array.from(new Set(arr))
 }
 
 /**
  * @returns {string}
  */
-export function createUniqueString() {
+export function createUniqueString(): string {
   const timestamp = +new Date() + ''
-  const randomNum = parseInt((1 + Math.random()) * 65536) + ''
+  const randomNum = parseInt((1 + Math.random()) * 65536 + '') + ''
   return (+(randomNum + timestamp)).toString(32)
 }
 
@@ -295,7 +295,7 @@ export function createUniqueString() {
  * @param {string} cls
  * @returns {boolean}
  */
-export function hasClass(ele, cls) {
+export function hasClass(ele: HTMLElement, cls: string): boolean {
   return !!ele.className.match(new RegExp('(\\s|^)' + cls + '(\\s|$)'))
 }
 
@@ -304,7 +304,7 @@ export function hasClass(ele, cls) {
  * @param {HTMLElement} elm
  * @param {string} cls
  */
-export function addClass(ele, cls) {
+export function addClass(ele: HTMLElement, cls: string): void {
   if (!hasClass(ele, cls)) ele.className += ' ' + cls
 }
 
@@ -313,27 +313,52 @@ export function addClass(ele, cls) {
  * @param {HTMLElement} elm
  * @param {string} cls
  */
-export function removeClass(ele, cls) {
+export function removeClass(ele: HTMLElement, cls: string): void {
   if (hasClass(ele, cls)) {
     const reg = new RegExp('(\\s|^)' + cls + '(\\s|$)')
     ele.className = ele.className.replace(reg, ' ')
   }
 }
 
-export function makeMap(str, expectsLowerCase) {
+export function makeMap(str: string, expectsLowerCase?: boolean): (val: string) => boolean {
   const map = Object.create(null)
   const list = str.split(',')
   for (let i = 0; i < list.length; i++) {
     map[list[i]] = true
   }
   return expectsLowerCase
-    ? val => map[val.toLowerCase()]
-    : val => map[val]
+    ? val => !!map[val.toLowerCase()]
+    : val => !!map[val]
 }
 
 export const exportDefault = 'export default '
 
-export const beautifierConf = {
+interface BeautifierConfig {
+  indent_size: string;
+  indent_char: string;
+  max_preserve_newlines: string;
+  preserve_newlines: boolean;
+  keep_array_indentation: boolean;
+  break_chained_methods: boolean;
+  indent_scripts: string;
+  brace_style: string;
+  space_before_conditional: boolean;
+  unescape_strings: boolean;
+  jslint_happy: boolean;
+  end_with_newline: boolean;
+  wrap_line_length: string;
+  indent_inner_html: boolean;
+  comma_first: boolean;
+  e4x: boolean;
+  indent_empty_lines: boolean;
+}
+
+interface BeautifierConf {
+  html: BeautifierConfig;
+  js: BeautifierConfig;
+}
+
+export const beautifierConf: BeautifierConf = {
   html: {
     indent_size: '2',
     indent_char: ' ',
@@ -375,16 +400,15 @@ export const beautifierConf = {
 }
 
 // 首字母大小
-export function titleCase(str) {
+export function titleCase(str: string): string {
   return str.replace(/( |^)[a-z]/g, L => L.toUpperCase())
 }
 
 // 下划转驼峰
-export function camelCase(str) {
+export function camelCase(str: string): string {
   return str.replace(/_[a-z]/g, str1 => str1.substr(-1).toUpperCase())
 }
 
-export function isNumberStr(str) {
+export function isNumberStr(str: string): boolean {
   return /^[+-]?(0|([1-9]\d*))(\.\d+)?$/g.test(str)
 }
-

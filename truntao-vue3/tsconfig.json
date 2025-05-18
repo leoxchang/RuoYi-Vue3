@@ -19,6 +19,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitAny": false,
+    // 移除 types 配置或者修改为您需要的其他类型
     "types": ["node"],
     "typeRoots": [
       "./node_modules/@types",
@@ -28,19 +29,10 @@
       "@/*": ["src/*"],
       "~/*": ["/*"]
     },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "outDir": "dist/ts",
+    "rootDir": "src"
   },
-  "include": [
-    "src/**/*",
-    "src/**/*.d.ts",
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue"
-  ],
+  "include": ["src"],
   "exclude": ["dist", "target", "node_modules"]
 }

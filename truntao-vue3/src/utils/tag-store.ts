@@ -1,29 +1,56 @@
 import { validateNull } from '@/utils/validate'
 
 const keyName = 'truntao' + '-'
+
+interface TagItem {
+  title: string;
+  name: string;
+  path: string;
+  query?: any;
+  meta?: any;
+  fullPath?: string;
+  params?: any;
+  [key: string]: any;
+}
+
+interface StoreObject {
+  dataType: string;
+  content: any;
+  type?: boolean;
+  datetime: number;
+}
+
+interface StoreParams {
+  name: string;
+  content?: any[];
+  type?: boolean;
+  debug?: boolean;
+}
+
 /**
  * 存储localStorage
  */
-export const setStore = (params = {}) => {
+export const setStore = (params: StoreParams) => {
   let {
     name,
     content,
     type
   } = params
   name = keyName + name
-  let tags = []
-  for (let row of content) {
-    let tag = {}
-    tag.title = row.meta.title || 'no-name'
-    tag.name = row.name || ''
-    tag.path = row.path || ''
+  let tags: TagItem[] = []
+  for (let row of content || []) {
+    let tag: TagItem = {
+      title: row.meta?.title || 'no-name',
+      name: row.name || '',
+      path: row.path || ''
+    }
     tag.query = row.query
     tag.meta = row.meta
     tag.fullPath = row.fullPath
     tag.params = row.params
     tags.push(tag)
   }
-  let obj = {
+  let obj: StoreObject = {
     dataType: typeof (tags),
     content: tags,
     type: type,
@@ -35,18 +62,18 @@ export const setStore = (params = {}) => {
     window.localStorage.setItem(name, JSON.stringify(obj))
   }
 }
+
 /**
  * 获取localStorage
  */
-
-export const getStore = (params = {}) => {
+export const getStore = (params: StoreParams) => {
   let {
     name,
     debug
   } = params
   name = keyName + name
-  let obj = {},
-    content
+  let obj: any = {},
+    content: any
   obj = window.sessionStorage.getItem(name)
   if (validateNull(obj)) obj = window.localStorage.getItem(name)
   if (validateNull(obj)) return
@@ -69,10 +96,11 @@ export const getStore = (params = {}) => {
   }
   return content
 }
+
 /**
  * 删除localStorage
  */
-export const removeStore = (params = {}) => {
+export const removeStore = (params: StoreParams) => {
   let {
     name,
     type
@@ -83,51 +111,58 @@ export const removeStore = (params = {}) => {
   } else {
     window.localStorage.removeItem(name)
   }
+}
 
+interface StoreItem {
+  name: string | null;
+  content: any;
 }
 
 /**
  * 获取全部localStorage
  */
-export const getAllStore = (params = {}) => {
-  let list = []
+export const getAllStore = (params: StoreParams) => {
+  let list: StoreItem[] = []
   let {
     type
   } = params
   if (type) {
     for (let i = 0; i <= window.sessionStorage.length; i++) {
-      list.push({
-        name: window.sessionStorage.key(i),
-        content: getStore({
-          name: window.sessionStorage.key(i),
-          type: 'session'
+      const key = window.sessionStorage.key(i)
+      if (key) {
+        list.push({
+          name: key,
+          content: getStore({
+            name: key,
+            type: true
+          })
         })
-      })
+      }
     }
   } else {
     for (let i = 0; i <= window.localStorage.length; i++) {
-      list.push({
-        name: window.localStorage.key(i),
-        content: getStore({
-          name: window.localStorage.key(i)
+      const key = window.localStorage.key(i)
+      if (key) {
+        list.push({
+          name: key,
+          content: getStore({
+            name: key
+          })
         })
-      })
-
+      }
     }
   }
   return list
-
 }
 
 /**
  * 清空全部localStorage
  */
-export const clearStore = (params = {}) => {
+export const clearStore = (params: StoreParams) => {
   let { type } = params
   if (type) {
     window.sessionStorage.clear()
   } else {
     window.localStorage.clear()
   }
-
 }

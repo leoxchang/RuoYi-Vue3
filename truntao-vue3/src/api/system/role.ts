@@ -92,7 +92,7 @@ export function unallocatedUserList(query: UnallocatedUserQueryParams) {
 }
 
 // 取消用户授权角色
-export function authUserCancel(data: { userId: string | number; roleId: string | number | undefined }) {
+export function authUserCancel(data: { userId: string | number; roleId: string | string[] | number | undefined }) {
   return request<any, Result<any>>({
     url: '/system/role/authUser/cancel',
     method: 'put',
@@ -101,7 +101,7 @@ export function authUserCancel(data: { userId: string | number; roleId: string |
 }
 
 // 批量取消用户授权角色
-export function authUserCancelAll(data: { userIds: string, roleId: string | number | undefined }) {
+export function authUserCancelAll(data: { userIds: string, roleId: string| string[] | number | undefined }) {
   return request<any, Result<any>>({
     url: '/system/role/authUser/cancelAll',
     method: 'put',

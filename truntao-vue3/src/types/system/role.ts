@@ -33,13 +33,14 @@ export interface Role {
 export interface AllocatedUserQueryParams {
   pageNum?: number;
   pageSize?: number;
-  roleId?: string | number;
+  roleId?: string | number | undefined;
   userName?: string;
   phoneNumber?: string;
 }
 
 // 未分配用户查询参数
-export interface UnallocatedUserQueryParams extends AllocatedUserQueryParams {}
+export interface UnallocatedUserQueryParams extends AllocatedUserQueryParams {
+}
 
 // 用户对象
 export interface User {
