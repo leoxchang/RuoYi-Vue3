@@ -1,4 +1,106 @@
-export const formConf = {
+interface FormConf {
+  formRef: string;
+  formModel: string;
+  size: string;
+  labelPosition: string;
+  labelWidth: number;
+  formRules: string;
+  gutter: number;
+  disabled: boolean;
+  span: number;
+  formBtns: boolean;
+}
+
+interface ComponentOption {
+  label: string;
+  value: number;
+}
+
+interface ComponentProps {
+  props: {
+    multiple: boolean;
+  };
+}
+
+interface CascaderOption {
+  id: number;
+  value: number;
+  label: string;
+  children?: CascaderOption[];
+}
+
+interface BaseComponent {
+  label: string;
+  tag?: string;
+  tagIcon: string;
+  placeholder?: string;
+  defaultValue?: any;
+  span?: number;
+  labelWidth?: number | null;
+  style?: Record<string, any>;
+  clearable?: boolean;
+  disabled?: boolean;
+  required?: boolean;
+  regList?: any[];
+  changeTag?: boolean;
+  document: string;
+  [key: string]: any;
+}
+
+interface InputComponent extends BaseComponent {
+  type?: string;
+  prepend?: string;
+  append?: string;
+  'prefix-icon'?: string;
+  'suffix-icon'?: string;
+  maxlength?: number | null;
+  'show-word-limit'?: boolean;
+  readonly?: boolean;
+}
+
+interface SelectComponent extends BaseComponent {
+  filterable?: boolean;
+  multiple?: boolean;
+  options?: ComponentOption[];
+}
+
+interface CascaderComponent extends BaseComponent {
+  props: ComponentProps;
+  'show-all-levels'?: boolean;
+  filterable?: boolean;
+  options?: CascaderOption[];
+  dataType: string;
+  labelKey: string;
+  valueKey: string;
+  childrenKey: string;
+  separator: string;
+}
+
+interface LayoutComponent {
+  layout: string;
+  tagIcon: string;
+  type?: string;
+  justify?: string;
+  align?: string;
+  label: string;
+  layoutTree?: boolean;
+  children?: any[];
+  document: string;
+  changeTag?: boolean;
+  labelWidth?: number | null;
+  tag?: string;
+  span?: number;
+  default?: string;
+  icon?: string;
+  size?: string;
+  disabled?: boolean;
+}
+
+interface TriggerMap {
+  [key: string]: string;
+}
+
+export const formConf: FormConf = {
   formRef: 'formRef',
   formModel: 'formData',
   size: 'default',
@@ -11,7 +113,7 @@ export const formConf = {
   formBtns: true,
 }
 
-export const inputComponents = [
+export const inputComponents: InputComponent[] = [
   {
     label: '单行文本',
     tag: 'el-input',
@@ -106,7 +208,7 @@ export const inputComponents = [
   },
 ]
 
-export const selectComponents = [
+export const selectComponents: (SelectComponent | CascaderComponent)[] = [
   {
     label: '下拉选择',
     tag: 'el-select',
@@ -409,7 +511,7 @@ export const selectComponents = [
   },
 ]
 
-export const layoutComponents = [
+export const layoutComponents: LayoutComponent[] = [
   {
     layout: 'rowFormItem',
     tagIcon: 'row',
@@ -439,7 +541,7 @@ export const layoutComponents = [
 ]
 
 // 组件rule的触发方式，无触发方式的组件不生成rule
-export const trigger = {
+export const trigger: TriggerMap = {
   'el-input': 'blur',
   'el-input-number': 'blur',
   'el-select': 'change',

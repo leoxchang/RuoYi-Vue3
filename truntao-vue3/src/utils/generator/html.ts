@@ -1,10 +1,115 @@
 /* eslint-disable max-len */
 import { trigger } from './config'
 
-let confGlobal
-let someSpanIsNot24
+interface FormConfig {
+  formRef: string;
+  formModel: string;
+  size: string;
+  labelPosition: string;
+  labelWidth: number;
+  formRules: string;
+  gutter: number;
+  disabled: boolean | string;
+  span: number;
+  formBtns: boolean;
+  fields: FormElement[];
+  [key: string]: any;
+}
 
-export function dialogWrapper(str) {
+interface FormElement {
+  layout: string;
+  tag?: string;
+  labelWidth?: number;
+  span?: number;
+  required?: boolean;
+  vModel?: string;
+  label?: string;
+  children?: FormElement[];
+  type?: string;
+  justify?: string;
+  align?: string;
+  gutter?: number;
+  style?: Record<string, string>;
+  clearable?: boolean;
+  placeholder?: string;
+  disabled?: boolean;
+  maxlength?: number;
+  'show-word-limit'?: boolean;
+  readonly?: boolean;
+  'prefix-icon'?: string;
+  'suffix-icon'?: string;
+  'show-password'?: boolean;
+  prepend?: string;
+  append?: string;
+  autosize?: {
+    minRows: number;
+    maxRows: number;
+  };
+  'controls-position'?: string;
+  min?: number | string;
+  max?: number | string;
+  step?: number | string;
+  'step-strictly'?: boolean;
+  precision?: number;
+  filterable?: boolean;
+  multiple?: boolean;
+  options?: Array<{
+    label: string;
+    value: any;
+    disabled?: boolean;
+  }>;
+  optionType?: string;
+  border?: boolean;
+  size?: string;
+  'active-text'?: string;
+  'inactive-text'?: string;
+  'active-color'?: string;
+  'inactive-color'?: string;
+  'active-value'?: any;
+  'inactive-value'?: any;
+  props?: any;
+  'show-all-levels'?: boolean;
+  separator?: string;
+  range?: boolean;
+  'show-stops'?: boolean;
+  'is-range'?: boolean;
+  'range-separator'?: string;
+  'start-placeholder'?: string;
+  'end-placeholder'?: string;
+  format?: string;
+  'value-format'?: string;
+  'picker-options'?: any;
+  'allow-half'?: boolean;
+  'show-text'?: boolean;
+  'show-score'?: boolean;
+  'show-alpha'?: boolean;
+  'color-format'?: string;
+  action?: string;
+  accept?: string;
+  name?: string;
+  'auto-upload'?: boolean;
+  showTip?: boolean;
+  buttonText?: string;
+  fileSize?: number;
+  sizeUnit?: string;
+  'list-type'?: string;
+  default?: string;
+  icon?: string;
+  [key: string]: any;
+}
+
+interface AttrBuilderResult {
+  vModel: string;
+  clearable: string;
+  placeholder: string;
+  width: string;
+  disabled: string;
+}
+
+let confGlobal: FormConfig | null = null
+let someSpanIsNot24 = false
+
+export function dialogWrapper(str: string): string {
   return `<el-dialog v-model="dialogVisible"  @open="onOpen" @close="onClose" title="Dialog Titile">
     ${str}
     <template #footer>
@@ -14,7 +119,7 @@ export function dialogWrapper(str) {
   </el-dialog>`
 }
 
-export function vueTemplate(str) {
+export function vueTemplate(str: string): string {
   return `<template>
     <div class="app-container">
       ${str}
@@ -22,19 +127,19 @@ export function vueTemplate(str) {
   </template>`
 }
 
-export function vueScript(str) {
+export function vueScript(str: string): string {
   return `<script setup>
     ${str}
   </script>`
 }
 
-export function cssStyle(cssStr) {
+export function cssStyle(cssStr: string): string {
   return `<style>
     ${cssStr}
   </style>`
 }
 
-function buildFormTemplate(conf, child, type) {
+function buildFormTemplate(conf: FormConfig, child: string, type: string): string {
   let labelPosition = ''
   if (conf.labelPosition !== 'right') {
     labelPosition = `label-position="${conf.labelPosition}"`
@@ -52,7 +157,7 @@ function buildFormTemplate(conf, child, type) {
   return str
 }
 
-function buildFromBtns(conf, type) {
+function buildFromBtns(conf: FormConfig, type: string): string {
   let str = ''
   if (conf.formBtns && type === 'file') {
     str = `<el-form-item>
@@ -69,7 +174,7 @@ function buildFromBtns(conf, type) {
 }
 
 // span不为24的用el-col包裹
-function colWrapper(element, str) {
+function colWrapper(element: FormElement, str: string): string {
   if (someSpanIsNot24 || element.span !== 24) {
     return `<el-col :span="${element.span}">
       ${str}
@@ -78,26 +183,26 @@ function colWrapper(element, str) {
   return str
 }
 
-const layouts = {
-  colFormItem(element) {
+const layouts: Record<string, (element: FormElement) => string> = {
+  colFormItem(element: FormElement): string {
     let labelWidth = ''
-    if (element.labelWidth && element.labelWidth !== confGlobal.labelWidth) {
+    if (element.labelWidth && confGlobal && element.labelWidth !== confGlobal.labelWidth) {
       labelWidth = `label-width="${element.labelWidth}px"`
     }
-    const required = !trigger[element.tag] && element.required ? 'required' : ''
-    const tagDom = tags[element.tag] ? tags[element.tag](element) : null
+    const required = !trigger[element.tag as string] && element.required ? 'required' : ''
+    const tagDom = element.tag && tags[element.tag] ? tags[element.tag](element) : null
     let str = `<el-form-item ${labelWidth} label="${element.label}" prop="${element.vModel}" ${required}>
         ${tagDom}
       </el-form-item>`
     str = colWrapper(element, str)
     return str
   },
-  rowFormItem(element) {
+  rowFormItem(element: FormElement): string {
     const type = element.type === 'default' ? '' : `type="${element.type}"`
     const justify = element.type === 'default' ? '' : `justify="${element.justify}"`
     const align = element.type === 'default' ? '' : `align="${element.align}"`
     const gutter = element.gutter ? `gutter="${element.gutter}"` : ''
-    const children = element.children.map(el => layouts[el.layout](el))
+    const children = element.children ? element.children.map(el => layouts[el.layout](el)) : []
     let str = `<el-row ${type} ${justify} ${align} ${gutter}>
       ${children.join('\n')}
     </el-row>`
@@ -106,10 +211,10 @@ const layouts = {
   }
 }
 
-const tags = {
-  'el-button': el => {
+const tags: Record<string, (el: FormElement) => string> = {
+  'el-button': (el: FormElement): string => {
     const {
-      tag, disabled
+      disabled
     } = attrBuilder(el)
     const type = el.type ? `type="${el.type}"` : ''
     const icon = el.icon ? `icon="${el.icon}"` : ''
@@ -119,7 +224,7 @@ const tags = {
     if (child) child = `\n${child}\n` // 换行
     return `<${el.tag} ${type} ${icon} ${size} ${disabled}>${child}</${el.tag}>`
   },
-  'el-input': el => {
+  'el-input': (el: FormElement): string => {
     const {
       disabled, vModel, clearable, placeholder, width
     } = attrBuilder(el)
@@ -138,7 +243,7 @@ const tags = {
     if (child) child = `\n${child}\n` // 换行
     return `<${el.tag} ${vModel} ${type} ${placeholder} ${maxlength} ${showWordLimit} ${readonly} ${disabled} ${clearable} ${prefixIcon} ${suffixIcon} ${showPassword} ${autosize} ${width}>${child}</${el.tag}>`
   },
-  'el-input-number': el => {
+  'el-input-number': (el: FormElement): string => {
     const { disabled, vModel, placeholder } = attrBuilder(el)
     const controlsPosition = el['controls-position'] ? `controls-position=${el['controls-position']}` : ''
     const min = el.min ? `:min='${el.min}'` : ''
@@ -149,7 +254,7 @@ const tags = {
 
     return `<${el.tag} ${vModel} ${placeholder} ${step} ${stepStrictly} ${precision} ${controlsPosition} ${min} ${max} ${disabled}></${el.tag}>`
   },
-  'el-select': el => {
+  'el-select': (el: FormElement): string => {
     const {
       disabled, vModel, clearable, placeholder, width
     } = attrBuilder(el)
@@ -160,17 +265,17 @@ const tags = {
     if (child) child = `\n${child}\n` // 换行
     return `<${el.tag} ${vModel} ${placeholder} ${disabled} ${multiple} ${filterable} ${clearable} ${width}>${child}</${el.tag}>`
   },
-  'el-radio-group': el => {
+  'el-radio-group': (el: FormElement): string => {
     const { disabled, vModel } = attrBuilder(el)
-    const size = `size="${el.size}"`
+    const size = el.size ? `size="${el.size}"` : ''
     let child = buildElRadioGroupChild(el)
 
     if (child) child = `\n${child}\n` // 换行
     return `<${el.tag} ${vModel} ${size} ${disabled}>${child}</${el.tag}>`
   },
-  'el-checkbox-group': el => {
+  'el-checkbox-group': (el: FormElement): string => {
     const { disabled, vModel } = attrBuilder(el)
-    const size = `size="${el.size}"`
+    const size = el.size ? `size="${el.size}"` : ''
     const min = el.min ? `:min="${el.min}"` : ''
     const max = el.max ? `:max="${el.max}"` : ''
     let child = buildElCheckboxGroupChild(el)
@@ -178,7 +283,7 @@ const tags = {
     if (child) child = `\n${child}\n` // 换行
     return `<${el.tag} ${vModel} ${min} ${max} ${size} ${disabled}>${child}</${el.tag}>`
   },
-  'el-switch': el => {
+  'el-switch': (el: FormElement): string => {
     const { disabled, vModel } = attrBuilder(el)
     const activeText = el['active-text'] ? `active-text="${el['active-text']}"` : ''
     const inactiveText = el['inactive-text'] ? `inactive-text="${el['inactive-text']}"` : ''
@@ -189,7 +294,7 @@ const tags = {
 
     return `<${el.tag} ${vModel} ${activeText} ${inactiveText} ${activeColor} ${inactiveColor} ${activeValue} ${inactiveValue} ${disabled}></${el.tag}>`
   },
-  'el-cascader': el => {
+  'el-cascader': (el: FormElement): string => {
     const {
       disabled, vModel, clearable, placeholder, width
     } = attrBuilder(el)
@@ -201,7 +306,7 @@ const tags = {
 
     return `<${el.tag} ${vModel} ${options} ${props} ${width} ${showAllLevels} ${placeholder} ${separator} ${filterable} ${clearable} ${disabled}></${el.tag}>`
   },
-  'el-slider': el => {
+  'el-slider': (el: FormElement): string => {
     const { disabled, vModel } = attrBuilder(el)
     const min = el.min ? `:min='${el.min}'` : ''
     const max = el.max ? `:max='${el.max}'` : ''
@@ -211,7 +316,7 @@ const tags = {
 
     return `<${el.tag} ${min} ${max} ${step} ${vModel} ${range} ${showStops} ${disabled}></${el.tag}>`
   },
-  'el-time-picker': el => {
+  'el-time-picker': (el: FormElement): string => {
     const {
       disabled, vModel, clearable, placeholder, width
     } = attrBuilder(el)
@@ -225,7 +330,7 @@ const tags = {
 
     return `<${el.tag} ${vModel} ${isRange} ${format} ${valueFormat} ${pickerOptions} ${width} ${placeholder} ${startPlaceholder} ${endPlaceholder} ${rangeSeparator} ${clearable} ${disabled}></${el.tag}>`
   },
-  'el-date-picker': el => {
+  'el-date-picker': (el: FormElement): string => {
     const {
       disabled, vModel, clearable, placeholder, width
     } = attrBuilder(el)
@@ -239,24 +344,23 @@ const tags = {
 
     return `<${el.tag} ${type} ${vModel} ${format} ${valueFormat} ${width} ${placeholder} ${startPlaceholder} ${endPlaceholder} ${rangeSeparator} ${clearable} ${readonly} ${disabled}></${el.tag}>`
   },
-  'el-rate': el => {
+  'el-rate': (el: FormElement): string => {
     const { disabled, vModel } = attrBuilder(el)
-    const max = el.max ? `:max='${el.max}'` : ''
     const allowHalf = el['allow-half'] ? 'allow-half' : ''
     const showText = el['show-text'] ? 'show-text' : ''
     const showScore = el['show-score'] ? 'show-score' : ''
 
     return `<${el.tag} ${vModel} ${allowHalf} ${showText} ${showScore} ${disabled}></${el.tag}>`
   },
-  'el-color-picker': el => {
+  'el-color-picker': (el: FormElement): string => {
     const { disabled, vModel } = attrBuilder(el)
-    const size = `size="${el.size}"`
+    const size = el.size ? `size="${el.size}"` : ''
     const showAlpha = el['show-alpha'] ? 'show-alpha' : ''
     const colorFormat = el['color-format'] ? `color-format="${el['color-format']}"` : ''
 
     return `<${el.tag} ${vModel} ${size} ${showAlpha} ${colorFormat} ${disabled}></${el.tag}>`
   },
-  'el-upload': el => {
+  'el-upload': (el: FormElement): string => {
     const disabled = el.disabled ? ':disabled=\'true\'' : ''
     const action = el.action ? `:action="${el.vModel}Action"` : ''
     const multiple = el.multiple ? 'multiple' : ''
@@ -274,9 +378,9 @@ const tags = {
   }
 }
 
-function attrBuilder(el) {
+function attrBuilder(el: FormElement): AttrBuilderResult {
   return {
-    vModel: `v-model="${confGlobal.formModel}.${el.vModel}"`,
+    vModel: confGlobal ? `v-model="${confGlobal.formModel}.${el.vModel}"` : '',
     clearable: el.clearable ? 'clearable' : '',
     placeholder: el.placeholder ? `placeholder="${el.placeholder}"` : '',
     width: el.style && el.style.width ? ':style="{width: \'100%\'}"' : '',
@@ -285,8 +389,8 @@ function attrBuilder(el) {
 }
 
 // el-buttin 子级
-function buildElButtonChild(conf) {
-  const children = []
+function buildElButtonChild(conf: FormElement): string {
+  const children: string[] = []
   if (conf.default) {
     children.push(conf.default)
   }
@@ -294,8 +398,8 @@ function buildElButtonChild(conf) {
 }
 
 // el-input innerHTML
-function buildElInputChild(conf) {
-  const children = []
+function buildElInputChild(conf: FormElement): string {
+  const children: string[] = []
   if (conf.prepend) {
     children.push(`<template slot="prepend">${conf.prepend}</template>`)
   }
@@ -305,16 +409,16 @@ function buildElInputChild(conf) {
   return children.join('\n')
 }
 
-function buildElSelectChild(conf) {
-  const children = []
+function buildElSelectChild(conf: FormElement): string {
+  const children: string[] = []
   if (conf.options && conf.options.length) {
     children.push(`<el-option v-for="(item, index) in ${conf.vModel}Options" :key="index" :label="item.label" :value="item.value" :disabled="item.disabled"></el-option>`)
   }
   return children.join('\n')
 }
 
-function buildElRadioGroupChild(conf) {
-  const children = []
+function buildElRadioGroupChild(conf: FormElement): string {
+  const children: string[] = []
   if (conf.options && conf.options.length) {
     const tag = conf.optionType === 'button' ? 'el-radio-button' : 'el-radio'
     const border = conf.border ? 'border' : ''
@@ -323,8 +427,8 @@ function buildElRadioGroupChild(conf) {
   return children.join('\n')
 }
 
-function buildElCheckboxGroupChild(conf) {
-  const children = []
+function buildElCheckboxGroupChild(conf: FormElement): string {
+  const children: string[] = []
   if (conf.options && conf.options.length) {
     const tag = conf.optionType === 'button' ? 'el-checkbox-button' : 'el-checkbox'
     const border = conf.border ? 'border' : ''
@@ -333,16 +437,16 @@ function buildElCheckboxGroupChild(conf) {
   return children.join('\n')
 }
 
-function buildElUploadChild(conf) {
-  const list = []
+function buildElUploadChild(conf: FormElement): string {
+  const list: string[] = []
   if (conf['list-type'] === 'picture-card') list.push('<i class="el-icon-plus"></i>')
   else list.push(`<el-button size="small" type="primary" icon="el-icon-upload">${conf.buttonText}</el-button>`)
   if (conf.showTip) list.push(`<div slot="tip" class="el-upload__tip">只能上传不超过 ${conf.fileSize}${conf.sizeUnit} 的${conf.accept}文件</div>`)
   return list.join('\n')
 }
 
-export function makeUpHtml(conf, type) {
-  const htmlList = []
+export function makeUpHtml(conf: FormConfig, type: string): string {
+  const htmlList: string[] = []
   confGlobal = conf
   someSpanIsNot24 = conf.fields.some(item => item.span !== 24)
   conf.fields.forEach(el => {
