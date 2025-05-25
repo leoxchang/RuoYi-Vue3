@@ -1,21 +1,16 @@
 package com.truntao.common.filter;
 
+import com.truntao.common.enums.HttpMethod;
+import jakarta.servlet.*;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.AntPathMatcher;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-
-import com.truntao.common.enums.HttpMethod;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.AntPathMatcher;
 
 /**
  * 防止XSS攻击的过滤器

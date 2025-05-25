@@ -1,13 +1,12 @@
 package com.truntao.system.domain.ro;
 
-import java.util.Date;
-
 import com.truntao.common.core.domain.entity.SysUser;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import javax.validation.constraints.Pattern;
+import java.util.Date;
 
 /**
  * 用户信息对象 sys_user

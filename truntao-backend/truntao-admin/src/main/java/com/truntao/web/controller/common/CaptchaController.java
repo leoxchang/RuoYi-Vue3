@@ -1,25 +1,25 @@
 package com.truntao.web.controller.common;
 
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import javax.annotation.Resource;
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
-
 import cn.hutool.core.codec.Base64;
-import com.truntao.common.core.domain.R;
-import com.truntao.system.domain.dto.CaptchaDTO;
-import org.springframework.util.FastByteArrayOutputStream;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.google.code.kaptcha.Producer;
 import com.truntao.common.config.TruntaoConfig;
 import com.truntao.common.constant.CacheConstants;
 import com.truntao.common.constant.Constants;
+import com.truntao.common.core.domain.R;
 import com.truntao.common.core.redis.RedisCache;
 import com.truntao.common.utils.uuid.IdUtils;
+import com.truntao.system.domain.dto.CaptchaDTO;
 import com.truntao.system.service.ISysConfigService;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.util.FastByteArrayOutputStream;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 验证码操作处理

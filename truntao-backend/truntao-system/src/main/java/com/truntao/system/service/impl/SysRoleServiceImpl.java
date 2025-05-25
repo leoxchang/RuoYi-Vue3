@@ -1,17 +1,9 @@
 package com.truntao.system.service.impl;
 
-import java.util.*;
-
 import com.github.pagehelper.Page;
-import com.truntao.common.core.domain.dto.SysRoleDTO;
-import com.truntao.system.domain.ro.SysRoleParam;
-import com.truntao.system.domain.ro.SysRoleUpdateParam;
-import com.truntao.system.service.ISysRoleService;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import com.truntao.common.annotation.DataScope;
 import com.truntao.common.constant.UserConstants;
+import com.truntao.common.core.domain.dto.SysRoleDTO;
 import com.truntao.common.core.domain.entity.SysRole;
 import com.truntao.common.exception.ServiceException;
 import com.truntao.common.utils.SecurityUtils;
@@ -19,12 +11,19 @@ import com.truntao.common.utils.spring.SpringUtils;
 import com.truntao.system.domain.po.SysRoleDept;
 import com.truntao.system.domain.po.SysRoleMenu;
 import com.truntao.system.domain.po.SysUserRole;
+import com.truntao.system.domain.ro.SysRoleParam;
+import com.truntao.system.domain.ro.SysRoleUpdateParam;
 import com.truntao.system.mapper.SysRoleDeptMapper;
 import com.truntao.system.mapper.SysRoleMapper;
 import com.truntao.system.mapper.SysRoleMenuMapper;
 import com.truntao.system.mapper.SysUserRoleMapper;
+import com.truntao.system.service.ISysRoleService;
+import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * 角色 业务层处理

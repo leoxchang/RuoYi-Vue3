@@ -1,44 +1,37 @@
 package com.truntao.generator.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-
 import com.alibaba.druid.DbType;
 import com.alibaba.druid.sql.SQLUtils;
 import com.alibaba.druid.sql.ast.SQLStatement;
 import com.alibaba.druid.sql.dialect.mysql.ast.statement.MySqlCreateTableStatement;
 import com.github.pagehelper.Page;
+import com.truntao.common.annotation.Log;
+import com.truntao.common.core.controller.BaseController;
 import com.truntao.common.core.domain.R;
 import com.truntao.common.core.page.PageDTO;
+import com.truntao.common.core.text.Convert;
+import com.truntao.common.enums.BusinessType;
 import com.truntao.common.utils.SecurityUtils;
 import com.truntao.common.utils.sql.SqlUtil;
 import com.truntao.generator.config.GenConfig;
-import com.truntao.generator.domain.po.GenTable;
 import com.truntao.generator.domain.dto.GenTableAllDTO;
 import com.truntao.generator.domain.dto.GenTableColumnDTO;
 import com.truntao.generator.domain.dto.GenTableDTO;
+import com.truntao.generator.domain.po.GenTable;
 import com.truntao.generator.domain.ro.GenTableParam;
+import com.truntao.generator.service.IGenTableColumnService;
+import com.truntao.generator.service.IGenTableService;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.truntao.common.annotation.Log;
-import com.truntao.common.core.controller.BaseController;
-import com.truntao.common.core.text.Convert;
-import com.truntao.common.enums.BusinessType;
-import com.truntao.generator.service.IGenTableColumnService;
-import com.truntao.generator.service.IGenTableService;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 代码生成 操作处理

@@ -1,12 +1,11 @@
 package com.truntao.quartz.domain.ro;
 
-import lombok.Data;
 import com.truntao.quartz.domain.po.SysJob;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 
 /**
  * 定时任务调度对象 sys_job

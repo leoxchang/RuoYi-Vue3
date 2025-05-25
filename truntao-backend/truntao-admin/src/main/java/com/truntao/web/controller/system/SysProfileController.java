@@ -1,34 +1,28 @@
 package com.truntao.web.controller.system;
 
 import cn.hutool.core.codec.Base64;
-import com.truntao.common.constant.Constants;
-import com.truntao.common.core.domain.R;
-import com.truntao.common.core.domain.dto.SysUserDTO;
-import com.truntao.system.domain.dto.AvatarDTO;
-import com.truntao.system.domain.dto.ProfileDTO;
-import com.truntao.system.domain.ro.SysPasswordParam;
-import com.truntao.system.domain.ro.SysUserUpdateParam;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 import com.truntao.common.annotation.Log;
 import com.truntao.common.config.TruntaoConfig;
+import com.truntao.common.constant.Constants;
 import com.truntao.common.core.controller.BaseController;
+import com.truntao.common.core.domain.R;
+import com.truntao.common.core.domain.dto.SysUserDTO;
 import com.truntao.common.core.domain.model.LoginUser;
 import com.truntao.common.enums.BusinessType;
 import com.truntao.common.utils.SecurityUtils;
 import com.truntao.common.utils.file.FileUploadUtils;
 import com.truntao.common.utils.file.MimeTypeUtils;
 import com.truntao.framework.web.service.TokenService;
+import com.truntao.system.domain.dto.AvatarDTO;
+import com.truntao.system.domain.dto.ProfileDTO;
+import com.truntao.system.domain.ro.SysPasswordParam;
+import com.truntao.system.domain.ro.SysUserUpdateParam;
 import com.truntao.system.service.ISysUserService;
+import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import java.io.File;
 
 /**

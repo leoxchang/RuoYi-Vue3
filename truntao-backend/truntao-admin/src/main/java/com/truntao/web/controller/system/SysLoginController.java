@@ -1,32 +1,31 @@
 package com.truntao.web.controller.system;
 
-import java.io.File;
-import java.util.List;
-import java.util.Set;
-
 import cn.hutool.core.codec.Base64;
+import com.truntao.common.constant.Constants;
 import com.truntao.common.core.domain.R;
 import com.truntao.common.core.domain.dto.SysMenuDTO;
 import com.truntao.common.core.domain.dto.SysUserDTO;
+import com.truntao.common.core.domain.model.LoginBody;
 import com.truntao.common.core.domain.model.LoginUser;
+import com.truntao.common.utils.SecurityUtils;
 import com.truntao.common.utils.file.FileUploadUtils;
+import com.truntao.framework.web.service.SysLoginService;
+import com.truntao.framework.web.service.SysPermissionService;
 import com.truntao.framework.web.service.TokenService;
 import com.truntao.system.domain.dto.LoginDTO;
 import com.truntao.system.domain.dto.LoginUserInfoDTO;
 import com.truntao.system.domain.vo.RouterVo;
+import com.truntao.system.service.ISysMenuService;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.truntao.common.constant.Constants;
-import com.truntao.common.core.domain.model.LoginBody;
-import com.truntao.common.utils.SecurityUtils;
-import com.truntao.framework.web.service.SysLoginService;
-import com.truntao.framework.web.service.SysPermissionService;
-import com.truntao.system.service.ISysMenuService;
 
-import javax.annotation.Resource;
+import java.io.File;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 登录验证

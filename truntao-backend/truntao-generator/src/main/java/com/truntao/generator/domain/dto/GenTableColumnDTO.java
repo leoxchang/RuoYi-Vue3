@@ -2,10 +2,10 @@ package com.truntao.generator.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.truntao.generator.domain.po.GenTableColumn;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 
-import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.Objects;
 

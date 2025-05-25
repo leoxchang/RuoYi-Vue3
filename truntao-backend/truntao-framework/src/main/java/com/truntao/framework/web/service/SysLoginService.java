@@ -1,9 +1,22 @@
 package com.truntao.framework.web.service;
 
-import javax.annotation.Resource;
-
+import com.truntao.common.constant.CacheConstants;
+import com.truntao.common.constant.Constants;
+import com.truntao.common.constant.UserConstants;
 import com.truntao.common.core.domain.entity.SysUser;
+import com.truntao.common.core.domain.model.LoginUser;
+import com.truntao.common.core.redis.RedisCache;
+import com.truntao.common.exception.ServiceException;
+import com.truntao.common.exception.user.*;
+import com.truntao.common.utils.DateUtils;
+import com.truntao.common.utils.MessageUtils;
+import com.truntao.common.utils.ip.IpUtils;
+import com.truntao.framework.manager.AsyncManager;
+import com.truntao.framework.manager.factory.AsyncFactory;
+import com.truntao.framework.security.context.AuthenticationContextHolder;
 import com.truntao.system.mapper.SysUserMapper;
+import com.truntao.system.service.ISysConfigService;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,24 +24,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import com.truntao.common.constant.CacheConstants;
-import com.truntao.common.constant.Constants;
-import com.truntao.common.constant.UserConstants;
-import com.truntao.common.core.domain.model.LoginUser;
-import com.truntao.common.core.redis.RedisCache;
-import com.truntao.common.exception.ServiceException;
-import com.truntao.common.exception.user.BlackListException;
-import com.truntao.common.exception.user.CaptchaException;
-import com.truntao.common.exception.user.CaptchaExpireException;
-import com.truntao.common.exception.user.UserNotExistsException;
-import com.truntao.common.exception.user.UserPasswordNotMatchException;
-import com.truntao.common.utils.DateUtils;
-import com.truntao.common.utils.MessageUtils;
-import com.truntao.common.utils.ip.IpUtils;
-import com.truntao.framework.manager.AsyncManager;
-import com.truntao.framework.manager.factory.AsyncFactory;
-import com.truntao.framework.security.context.AuthenticationContextHolder;
-import com.truntao.system.service.ISysConfigService;
 
 /**
  * 登录校验方法

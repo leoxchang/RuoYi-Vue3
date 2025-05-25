@@ -1,32 +1,31 @@
 package com.truntao.system.service.impl;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
 import com.github.pagehelper.Page;
-import com.truntao.common.constant.Constants;
-import com.truntao.common.core.domain.dto.SysDeptDTO;
-import com.truntao.system.domain.ro.SysDeptParam;
-import com.truntao.system.domain.ro.SysDeptUpdateParam;
-import com.truntao.system.mapper.SysDeptMapper;
-import com.truntao.system.mapper.SysRoleMapper;
-import com.truntao.system.service.ISysDeptService;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.stereotype.Service;
 import com.truntao.common.annotation.DataScope;
+import com.truntao.common.constant.Constants;
 import com.truntao.common.constant.UserConstants;
 import com.truntao.common.core.domain.TreeSelect;
+import com.truntao.common.core.domain.dto.SysDeptDTO;
 import com.truntao.common.core.domain.entity.SysDept;
 import com.truntao.common.core.domain.entity.SysRole;
 import com.truntao.common.core.text.Convert;
 import com.truntao.common.exception.ServiceException;
 import com.truntao.common.utils.SecurityUtils;
 import com.truntao.common.utils.spring.SpringUtils;
+import com.truntao.system.domain.ro.SysDeptParam;
+import com.truntao.system.domain.ro.SysDeptUpdateParam;
+import com.truntao.system.mapper.SysDeptMapper;
+import com.truntao.system.mapper.SysRoleMapper;
+import com.truntao.system.service.ISysDeptService;
+import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 部门管理 服务实现

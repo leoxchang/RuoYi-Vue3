@@ -2,8 +2,8 @@ package ${packageName}.controller;
 
 import java.util.List;
 import com.github.pagehelper.Page;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.security.access.prepost.PreAuthorize;

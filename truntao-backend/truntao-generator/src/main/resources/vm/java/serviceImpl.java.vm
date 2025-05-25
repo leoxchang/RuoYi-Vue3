@@ -23,7 +23,7 @@ import ${packageName}.service.I${ClassName}Service;
 import ${packageName}.domain.dto.${ClassName}DTO;
 import ${packageName}.domain.ro.${ClassName}Param;
 import ${packageName}.domain.ro.${ClassName}UpdateParam;
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * ${functionName}Service业务层处理

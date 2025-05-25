@@ -18,15 +18,15 @@
     <dependencies>
 
         <!-- SpringBoot Web容器 -->
-         <dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-             <exclusions>
-                 <exclusion>
-                     <artifactId>spring-boot-starter-tomcat</artifactId>
-                     <groupId>org.springframework.boot</groupId>
-                 </exclusion>
-             </exclusions>
+            <exclusions>
+                <exclusion>
+                    <artifactId>spring-boot-starter-tomcat</artifactId>
+                    <groupId>org.springframework.boot</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!--使用undertow容器替换tomcat容器-->
@@ -44,7 +44,7 @@
         <!-- 阿里数据库连接池 -->
         <dependency>
             <groupId>com.alibaba</groupId>
-            <artifactId>druid-spring-boot-starter</artifactId>
+            <artifactId>druid-spring-boot-3-starter</artifactId>
         </dependency>
 
         <!-- 验证码 -->
@@ -69,6 +69,10 @@
         <dependency>
             <groupId>com.truntao</groupId>
             <artifactId>truntao-system</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
         </dependency>
     </dependencies>
 

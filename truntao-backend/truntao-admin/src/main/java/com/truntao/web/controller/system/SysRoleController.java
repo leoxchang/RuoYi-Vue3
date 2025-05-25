@@ -1,41 +1,34 @@
 package com.truntao.web.controller.system;
 
-import java.util.List;
-import java.util.Objects;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
-
 import com.github.pagehelper.Page;
+import com.truntao.common.annotation.Log;
+import com.truntao.common.core.controller.BaseController;
 import com.truntao.common.core.domain.R;
 import com.truntao.common.core.domain.dto.SysRoleDTO;
 import com.truntao.common.core.domain.dto.SysUserDTO;
-import com.truntao.common.core.page.PageDTO;
-import com.truntao.system.domain.dto.DeptTreeDTO;
-import com.truntao.system.domain.ro.SysDeptParam;
-import com.truntao.system.domain.ro.SysRoleParam;
-import com.truntao.system.domain.ro.SysRoleUpdateParam;
-import com.truntao.system.domain.ro.SysUserParam;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.truntao.common.annotation.Log;
-import com.truntao.common.core.controller.BaseController;
 import com.truntao.common.core.domain.model.LoginUser;
+import com.truntao.common.core.page.PageDTO;
 import com.truntao.common.enums.BusinessType;
 import com.truntao.common.utils.poi.ExcelUtil;
 import com.truntao.framework.web.service.SysPermissionService;
 import com.truntao.framework.web.service.TokenService;
+import com.truntao.system.domain.dto.DeptTreeDTO;
 import com.truntao.system.domain.po.SysUserRole;
+import com.truntao.system.domain.ro.SysDeptParam;
+import com.truntao.system.domain.ro.SysRoleParam;
+import com.truntao.system.domain.ro.SysRoleUpdateParam;
+import com.truntao.system.domain.ro.SysUserParam;
 import com.truntao.system.service.ISysDeptService;
 import com.truntao.system.service.ISysRoleService;
 import com.truntao.system.service.ISysUserService;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 角色信息

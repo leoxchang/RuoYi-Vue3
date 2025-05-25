@@ -1,23 +1,22 @@
 package com.truntao.system.service.impl;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
 import com.github.pagehelper.Page;
+import com.truntao.common.constant.UserConstants;
+import com.truntao.common.exception.ServiceException;
 import com.truntao.common.utils.SecurityUtils;
-import com.truntao.system.domain.po.SysPost;
 import com.truntao.system.domain.dto.SysPostDTO;
+import com.truntao.system.domain.po.SysPost;
 import com.truntao.system.domain.ro.SysPostParam;
 import com.truntao.system.domain.ro.SysPostUpdateParam;
 import com.truntao.system.mapper.SysPostMapper;
 import com.truntao.system.mapper.SysUserPostMapper;
 import com.truntao.system.service.ISysPostService;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
-import com.truntao.common.constant.UserConstants;
-import com.truntao.common.exception.ServiceException;
 
-import javax.annotation.Resource;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * 岗位信息 服务层处理

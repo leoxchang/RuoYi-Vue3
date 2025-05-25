@@ -1,13 +1,19 @@
 package com.truntao.framework.config;
 
+import com.truntao.framework.config.properties.PermitAllUrlProperties;
+import com.truntao.framework.security.filter.JwtAuthenticationTokenFilter;
+import com.truntao.framework.security.handle.AuthenticationEntryPointImpl;
+import com.truntao.framework.security.handle.LogoutSuccessHandlerImpl;
+import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,19 +21,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
-import com.truntao.framework.config.properties.PermitAllUrlProperties;
-import com.truntao.framework.security.filter.JwtAuthenticationTokenFilter;
-import com.truntao.framework.security.handle.AuthenticationEntryPointImpl;
-import com.truntao.framework.security.handle.LogoutSuccessHandlerImpl;
-
-import javax.annotation.Resource;
 
 /**
  * spring security配置
  *
  * @author truntao
  */
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 @Configuration
 public class SecurityConfig {
 
@@ -80,32 +80,43 @@ public class SecurityConfig {
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         // 注解标记允许匿名访问的url
-        ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry registry =
-                httpSecurity.authorizeRequests();
-        permitAllUrl.getUrls().forEach(url -> registry.antMatchers(url).permitAll());
+        httpSecurity.authorizeHttpRequests(authorizeHttpRequestsCustomizer -> {
+            permitAllUrl.getUrls().forEach(url -> authorizeHttpRequestsCustomizer.requestMatchers(url).permitAll());
+        });
+
 
         httpSecurity
                 // CSRF禁用，因为不使用session
-                .csrf().disable()
-                // 禁用HTTP响应标头
-                .headers().cacheControl().disable().frameOptions().sameOrigin().and()
+                .csrf(AbstractHttpConfigurer::disable)
+                .headers(httpSecurityHeadersConfigurer -> {
+                    // 禁用HTTP响应标头
+                    httpSecurityHeadersConfigurer.cacheControl(HeadersConfigurer.CacheControlConfig::disable)
+                            .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)
+                            .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable);
+                })
                 // 认证失败处理类
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+                .exceptionHandling(exceptionHandlingCustomizer -> {
+                    exceptionHandlingCustomizer.authenticationEntryPoint(unauthorizedHandler);
+                })
                 // 基于token，所以不需要session
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
+                .sessionManagement(sessionManagementCustomizer -> {
+                    sessionManagementCustomizer.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                })
                 // 过滤请求
-                .authorizeRequests()
-                // 对于登录login 注册register 验证码captchaImage 允许匿名访问
-                .antMatchers("/login", "/register", "/captchaImage").permitAll()
-                // 静态资源，可匿名访问
-                .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()
-                .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/*/api-docs/swagger-config", "/druid/**").permitAll()
-                // 除上面外的所有请求全部需要鉴权认证
-                .anyRequest().authenticated()
-                .and()
-                .headers().frameOptions().disable();
+                .authorizeHttpRequests(authorizeHttpRequestsCustomizer -> {
+                    // 对于登录login 注册register 验证码captchaImage 允许匿名访问
+                    authorizeHttpRequestsCustomizer.requestMatchers("/login", "/register", "/captchaImage").permitAll()
+                            // 静态资源，可匿名访问
+                            .requestMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js",
+                                    "/profile/**").permitAll()
+                            .requestMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs"
+                                    , "/*/api-docs/swagger-config", "/druid/**").permitAll()
+                            .anyRequest().authenticated();
+                });
         // 添加Logout filter
-        httpSecurity.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
+        httpSecurity.logout(logoutCustomizer -> {
+            logoutCustomizer.logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
+        });
         // 添加JWT filter
         httpSecurity.addFilterBefore(authenticationTokenFilter, UsernamePasswordAuthenticationFilter.class);
         // 添加CORS filter

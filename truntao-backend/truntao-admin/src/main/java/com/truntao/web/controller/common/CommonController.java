@@ -1,16 +1,18 @@
 package com.truntao.web.controller.common;
 
-import java.util.ArrayList;
-import java.util.List;
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import cn.hutool.core.text.CharSequenceUtil;
+import com.truntao.common.config.TruntaoConfig;
+import com.truntao.common.constant.Constants;
 import com.truntao.common.core.domain.R;
 import com.truntao.common.exception.ServiceException;
+import com.truntao.common.utils.file.FileUploadUtils;
+import com.truntao.common.utils.file.FileUtils;
+import com.truntao.framework.config.ServerConfig;
 import com.truntao.system.domain.dto.UploadFileDTO;
 import com.truntao.system.domain.dto.UploadFilesDTO;
+import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,11 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import com.truntao.common.config.TruntaoConfig;
-import com.truntao.common.constant.Constants;
-import com.truntao.common.utils.file.FileUploadUtils;
-import com.truntao.common.utils.file.FileUtils;
-import com.truntao.framework.config.ServerConfig;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 通用请求处理

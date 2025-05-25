@@ -2,10 +2,10 @@ package com.truntao.generator.domain.ro;
 
 import com.truntao.generator.domain.po.GenTable;
 import com.truntao.generator.domain.po.GenTableColumn;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
 import java.util.List;
 import java.util.Map;
 

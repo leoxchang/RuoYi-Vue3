@@ -1,13 +1,13 @@
 package com.truntao.common.utils.ip;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import javax.servlet.http.HttpServletRequest;
-
 import com.truntao.common.utils.ServletUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * 获取IP方法

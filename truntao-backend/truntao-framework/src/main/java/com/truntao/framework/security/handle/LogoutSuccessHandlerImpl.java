@@ -1,21 +1,20 @@
 package com.truntao.framework.security.handle;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import com.truntao.common.core.domain.R;
-import com.truntao.common.utils.MessageUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import com.alibaba.fastjson2.JSON;
 import com.truntao.common.constant.Constants;
+import com.truntao.common.core.domain.R;
 import com.truntao.common.core.domain.model.LoginUser;
+import com.truntao.common.utils.MessageUtils;
 import com.truntao.common.utils.ServletUtils;
 import com.truntao.framework.manager.AsyncManager;
 import com.truntao.framework.manager.factory.AsyncFactory;
 import com.truntao.framework.web.service.TokenService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 import java.util.Objects;
 

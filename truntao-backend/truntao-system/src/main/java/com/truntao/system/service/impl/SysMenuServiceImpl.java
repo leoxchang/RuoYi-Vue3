@@ -1,8 +1,11 @@
 package com.truntao.system.service.impl;
 
-import java.util.*;
-
+import com.truntao.common.constant.Constants;
+import com.truntao.common.constant.UserConstants;
+import com.truntao.common.core.domain.TreeSelect;
 import com.truntao.common.core.domain.dto.SysMenuDTO;
+import com.truntao.common.core.domain.entity.SysMenu;
+import com.truntao.common.core.domain.entity.SysRole;
 import com.truntao.common.utils.SecurityUtils;
 import com.truntao.system.domain.ro.SysMenuParam;
 import com.truntao.system.domain.ro.SysMenuUpdateParam;
@@ -12,16 +15,12 @@ import com.truntao.system.mapper.SysMenuMapper;
 import com.truntao.system.mapper.SysRoleMapper;
 import com.truntao.system.mapper.SysRoleMenuMapper;
 import com.truntao.system.service.ISysMenuService;
+import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import com.truntao.common.constant.Constants;
-import com.truntao.common.constant.UserConstants;
-import com.truntao.common.core.domain.TreeSelect;
-import com.truntao.common.core.domain.entity.SysMenu;
-import com.truntao.common.core.domain.entity.SysRole;
 
-import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * 菜单 业务层处理

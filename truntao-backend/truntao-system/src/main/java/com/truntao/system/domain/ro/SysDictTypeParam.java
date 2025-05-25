@@ -1,11 +1,10 @@
 package com.truntao.system.domain.ro;
 
-import lombok.Data;
 import com.truntao.common.core.domain.entity.SysDictType;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
 
 /**
  * 字典类型对象 sys_dict_type

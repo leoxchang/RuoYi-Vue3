@@ -19,6 +19,8 @@ import com.truntao.system.mapper.*;
 import com.truntao.system.service.ISysConfigService;
 import com.truntao.system.service.ISysDeptService;
 import com.truntao.system.service.ISysUserService;
+import jakarta.annotation.Resource;
+import jakarta.validation.Validator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -27,8 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
-import javax.validation.Validator;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

@@ -1,11 +1,10 @@
 package com.truntao.web.controller.system;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import com.truntao.common.config.TruntaoConfig;
+import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.truntao.common.config.TruntaoConfig;
-
-import javax.annotation.Resource;
 
 /**
  * 首页

@@ -1,14 +1,22 @@
 package com.truntao.framework.aspectj;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Objects;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.alibaba.fastjson2.JSON;
+import com.truntao.common.annotation.Log;
 import com.truntao.common.core.domain.dto.SysUserDTO;
+import com.truntao.common.core.domain.model.LoginUser;
 import com.truntao.common.core.text.Convert;
+import com.truntao.common.enums.BusinessStatus;
+import com.truntao.common.enums.HttpMethod;
+import com.truntao.common.filter.PropertyPreExcludeFilter;
 import com.truntao.common.utils.ExceptionUtil;
+import com.truntao.common.utils.SecurityUtils;
+import com.truntao.common.utils.ServletUtils;
+import com.truntao.common.utils.ip.IpUtils;
+import com.truntao.framework.manager.AsyncManager;
+import com.truntao.framework.manager.factory.AsyncFactory;
+import com.truntao.system.domain.po.SysOperLog;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.JoinPoint;
@@ -23,18 +31,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
-import com.alibaba.fastjson2.JSON;
-import com.truntao.common.annotation.Log;
-import com.truntao.common.core.domain.model.LoginUser;
-import com.truntao.common.enums.BusinessStatus;
-import com.truntao.common.enums.HttpMethod;
-import com.truntao.common.filter.PropertyPreExcludeFilter;
-import com.truntao.common.utils.SecurityUtils;
-import com.truntao.common.utils.ServletUtils;
-import com.truntao.common.utils.ip.IpUtils;
-import com.truntao.framework.manager.AsyncManager;
-import com.truntao.framework.manager.factory.AsyncFactory;
-import com.truntao.system.domain.po.SysOperLog;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * 操作日志记录处理

@@ -1,18 +1,17 @@
 package com.truntao.system.domain.ro;
 
-import java.util.Date;
-import java.util.Map;
-
+import com.truntao.common.core.domain.entity.SysUser;
 import com.truntao.common.core.page.PageDomain;
 import com.truntao.common.xss.Xss;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
-import com.truntao.common.core.domain.entity.SysUser;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import java.util.Date;
+import java.util.Map;
 
 /**
  * 用户信息对象 sys_user

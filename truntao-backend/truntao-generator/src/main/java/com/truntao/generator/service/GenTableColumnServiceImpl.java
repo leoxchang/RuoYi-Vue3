@@ -1,14 +1,13 @@
 package com.truntao.generator.service;
 
-import java.util.List;
-
-import com.truntao.generator.domain.dto.GenTableColumnDTO;
-import org.springframework.stereotype.Service;
 import com.truntao.common.core.text.Convert;
+import com.truntao.generator.domain.dto.GenTableColumnDTO;
 import com.truntao.generator.domain.po.GenTableColumn;
 import com.truntao.generator.mapper.GenTableColumnMapper;
+import jakarta.annotation.Resource;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * 业务字段 服务层实现

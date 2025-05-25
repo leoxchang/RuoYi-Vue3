@@ -1,22 +1,17 @@
 package com.truntao.web.controller.monitor;
 
-import java.util.*;
-
+import com.truntao.common.constant.CacheConstants;
 import com.truntao.common.core.domain.R;
+import com.truntao.system.domain.dto.SysCache;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.connection.RedisServerCommands;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.truntao.common.constant.CacheConstants;
-import com.truntao.system.domain.dto.SysCache;
+import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * 缓存监控

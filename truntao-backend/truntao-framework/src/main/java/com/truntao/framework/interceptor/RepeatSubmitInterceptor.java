@@ -1,16 +1,16 @@
 package com.truntao.framework.interceptor;
 
-import java.lang.reflect.Method;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.alibaba.fastjson2.JSON;
+import com.truntao.common.annotation.RepeatSubmit;
 import com.truntao.common.core.domain.R;
+import com.truntao.common.utils.ServletUtils;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
-import com.alibaba.fastjson2.JSON;
-import com.truntao.common.annotation.RepeatSubmit;
-import com.truntao.common.utils.ServletUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * 防止重复提交拦截器

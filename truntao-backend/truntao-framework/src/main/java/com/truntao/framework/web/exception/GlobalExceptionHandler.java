@@ -1,10 +1,12 @@
 package com.truntao.framework.web.exception;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.truntao.common.constant.HttpStatus;
 import com.truntao.common.core.domain.R;
 import com.truntao.common.core.text.Convert;
+import com.truntao.common.exception.DemoModeException;
+import com.truntao.common.exception.ServiceException;
 import com.truntao.common.utils.html.EscapeUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +18,6 @@ import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-import com.truntao.common.constant.HttpStatus;
-import com.truntao.common.exception.DemoModeException;
-import com.truntao.common.exception.ServiceException;
 
 import java.util.Objects;
 

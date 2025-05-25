@@ -1,27 +1,19 @@
 package com.truntao.web.controller.system;
 
 import com.github.pagehelper.Page;
+import com.truntao.common.annotation.Log;
+import com.truntao.common.core.controller.BaseController;
 import com.truntao.common.core.domain.R;
 import com.truntao.common.core.page.PageDTO;
+import com.truntao.common.enums.BusinessType;
 import com.truntao.system.domain.dto.SysNoticeDTO;
 import com.truntao.system.domain.ro.SysNoticeParam;
 import com.truntao.system.domain.ro.SysNoticeUpdateParam;
+import com.truntao.system.service.ISysNoticeService;
+import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import com.truntao.common.annotation.Log;
-import com.truntao.common.core.controller.BaseController;
-import com.truntao.common.enums.BusinessType;
-import com.truntao.system.service.ISysNoticeService;
-
-import javax.annotation.Resource;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 公告 信息操作处理

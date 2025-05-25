@@ -1,8 +1,7 @@
 package com.truntao.system.domain.ro;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * @author zhangxinlei

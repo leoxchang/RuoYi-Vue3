@@ -1,12 +1,11 @@
 package com.truntao.system.domain.ro;
 
-import lombok.Data;
 import com.truntao.common.core.domain.entity.SysMenu;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Data;
 import lombok.ToString;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 /**
  * 菜单权限对象 sys_menu

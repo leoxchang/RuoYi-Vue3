@@ -1,25 +1,20 @@
 package com.truntao.web.controller.monitor;
 
-import java.util.*;
-
-import com.truntao.common.core.domain.R;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.truntao.common.annotation.Log;
 import com.truntao.common.constant.CacheConstants;
 import com.truntao.common.core.controller.BaseController;
+import com.truntao.common.core.domain.R;
 import com.truntao.common.core.domain.model.LoginUser;
 import com.truntao.common.core.redis.RedisCache;
 import com.truntao.common.enums.BusinessType;
 import com.truntao.system.domain.dto.SysUserOnline;
 import com.truntao.system.service.ISysUserOnlineService;
+import jakarta.annotation.Resource;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import java.util.*;
 
 /**
  * 在线用户监控

@@ -19,6 +19,7 @@ import com.truntao.generator.mapper.GenTableMapper;
 import com.truntao.generator.util.GenUtils;
 import com.truntao.generator.util.VelocityInitializer;
 import com.truntao.generator.util.VelocityUtils;
+import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -31,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
