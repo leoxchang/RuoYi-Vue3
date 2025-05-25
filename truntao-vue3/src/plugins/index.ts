@@ -1,10 +1,11 @@
+import { App } from 'vue'
 import tab from './tab'
 import auth from './auth'
 import cache from './cache'
 import modal from './modal'
 import download from './download'
 
-export default function installPlugins(app){
+export default function installPlugins(app: App<Element>): void {
   // 页签操作
   app.config.globalProperties.$tab = tab
   // 认证对象

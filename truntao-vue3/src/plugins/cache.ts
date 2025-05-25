@@ -1,5 +1,20 @@
-const sessionCache = {
-  set (key, value) {
+// 定义缓存接口
+interface CacheInterface {
+  set(key: string, value: string): void;
+  get(key: string): string | null;
+  setJSON(key: string, jsonValue: any): void;
+  getJSON(key: string): any;
+  remove(key: string): void;
+}
+
+// 定义缓存插件接口
+interface CachePlugin {
+  session: CacheInterface;
+  local: CacheInterface;
+}
+
+const sessionCache: CacheInterface = {
+  set(key: string, value: string): void {
     if (!sessionStorage) {
       return
     }
@@ -7,7 +22,7 @@ const sessionCache = {
       sessionStorage.setItem(key, value)
     }
   },
-  get (key) {
+  get(key: string): string | null {
     if (!sessionStorage) {
       return null
     }
@@ -16,24 +31,25 @@ const sessionCache = {
     }
     return sessionStorage.getItem(key)
   },
-  setJSON (key, jsonValue) {
+  setJSON(key: string, jsonValue: any): void {
     if (jsonValue != null) {
       this.set(key, JSON.stringify(jsonValue))
     }
   },
-  getJSON (key) {
-    const value = this.get(key)
+  getJSON(key: string): any {
+    const value: string | null = this.get(key)
     if (value != null) {
       return JSON.parse(value)
     }
     return null
   },
-  remove (key) {
+  remove(key: string): void {
     sessionStorage.removeItem(key);
   }
 }
-const localCache = {
-  set (key, value) {
+
+const localCache: CacheInterface = {
+  set(key: string, value: string): void {
     if (!localStorage) {
       return
     }
@@ -41,7 +57,7 @@ const localCache = {
       localStorage.setItem(key, value)
     }
   },
-  get (key) {
+  get(key: string): string | null {
     if (!localStorage) {
       return null
     }
@@ -50,24 +66,24 @@ const localCache = {
     }
     return localStorage.getItem(key)
   },
-  setJSON (key, jsonValue) {
+  setJSON(key: string, jsonValue: any): void {
     if (jsonValue != null) {
       this.set(key, JSON.stringify(jsonValue))
     }
   },
-  getJSON (key) {
-    const value = this.get(key)
+  getJSON(key: string): any {
+    const value: string | null = this.get(key)
     if (value != null) {
       return JSON.parse(value)
     }
     return null
   },
-  remove (key) {
+  remove(key: string): void {
     localStorage.removeItem(key);
   }
 }
 
-export default {
+const cachePlugin: CachePlugin = {
   /**
    * 会话级缓存
    */
@@ -77,3 +93,5 @@ export default {
    */
   local: localCache
 }
+
+export default cachePlugin;

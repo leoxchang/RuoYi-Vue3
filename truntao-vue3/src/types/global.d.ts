@@ -1,17 +1,35 @@
 // 扩展 ComponentPublicInstance 类型
-import {ElMessageBoxShortcutMethod} from "element-plus/es/components/message-box/src/message-box.type";
+import {
+  ElMessageBoxShortcutMethod,
+  type MessageBoxData
+} from "element-plus/es/components/message-box/src/message-box.type";
 
 declare module 'vue' {
   interface ComponentCustomProperties {
     $modal: {
+      msg(content: string): void;
       loading(message: string): unknown;
       msgSuccess: (message: string) => void;
-      msgError: (message: string) => void;
+      msgError(message: string): void
       msgWarning: (message: string) => void;
-      msgInfo: (message: string) => void;
-      confirm: (message: string) => Promise<void>;
+      confirm(content: string): Promise<MessageBoxData>;
       alert: (message: string, title: string, options?: any) => void;
       closeLoading: () => void;
+      // 错误提示
+      alertError(content: string): Promise<MessageBoxData>;
+      // 成功提示
+      alertSuccess(content: string): Promise<MessageBoxData>;
+      // 警告提示
+      alertWarning(content: string): Promise<MessageBoxData>;
+      // 通知提示
+      notify(content: string): void;
+      // 错误通知
+      notifyError(content: string): void;
+      // 成功通知
+      notifySuccess(content: string): void;
+      // 警告通知
+      notifyWarning(content: string): void;
+      prompt(content: string): Promise<MessageBoxData>;
     };
     $refs: {
       [key: string]: any;
@@ -22,7 +40,7 @@ declare module 'vue' {
     download: (url: string, params?: any, filename?: string) => void;
     resetForm: (formRef: string) => void;
     handleTree: (data: any[], id: string, parentId?: string, children?: string) => any[];
-    useDict: (...args: string[]) => Map<string,DictData>;
+    useDict: (...args: string[]) => Map<string, DictData>;
     $tab: {
       closeOpenPage: (obj: { path: string }) => void;
     };

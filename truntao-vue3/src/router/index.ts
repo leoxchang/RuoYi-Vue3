@@ -1,7 +1,36 @@
-import { createWebHistory, createRouter } from 'vue-router'
+import { createWebHistory, createRouter, Router, RouteLocationNormalized } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
+
 /* Layout */
-import Layout from '@/layout'
-import {stringifyQuery,parseQuery} from './query'
+import Layout from '@/layout/index.vue'
+import { stringifyQuery, parseQuery } from './query'
+
+// 定义路由元信息接口
+interface RouteMeta {
+  title?: string
+  icon?: string
+  noCache?: boolean
+  breadcrumb?: boolean
+  activeMenu?: string
+  affix?: boolean
+}
+
+// 定义扩展的路由记录接口
+export type ExtendedRouteRecordRaw = RouteRecordRaw & {
+  hidden?: boolean
+  alwaysShow?: boolean
+  query?: string
+  roles?: string[]
+  permissions?: string[]
+  meta?: RouteMeta
+  children?: ExtendedRouteRecordRaw[]
+}
+
+// 定义滚动位置接口
+interface ScrollPosition {
+  left?: number
+  top?: number
+}
 
 /**
  * Note: 路由配置项
@@ -26,7 +55,7 @@ import {stringifyQuery,parseQuery} from './query'
  */
 
 // 公共路由
-export const constantRoutes = [
+export const constantRoutes: ExtendedRouteRecordRaw[] = [
   {
     path: '/redirect',
     component: Layout,
@@ -40,22 +69,22 @@ export const constantRoutes = [
   },
   {
     path: '/login',
-    component: () => import('@/views/login'),
+    component: () => import('@/views/login.vue'),
     hidden: true
   },
   {
     path: '/register',
-    component: () => import('@/views/register'),
+    component: () => import('@/views/register.vue'),
     hidden: true
   },
   {
     path: "/:pathMatch(.*)*",
-    component: () => import('@/views/error/404'),
+    component: () => import('@/views/error/404.vue'),
     hidden: true
   },
   {
     path: '/401',
-    component: () => import('@/views/error/401'),
+    component: () => import('@/views/error/401.vue'),
     hidden: true
   },
   {
@@ -65,7 +94,7 @@ export const constantRoutes = [
     children: [
       {
         path: '/index',
-        component: () => import('@/views/index'),
+        component: () => import('@/views/index.vue'),
         name: 'Index',
         meta: { title: '首页', icon: 'dashboard', affix: true }
       }
@@ -79,7 +108,7 @@ export const constantRoutes = [
     children: [
       {
         path: 'profile',
-        component: () => import('@/views/system/user/profile/index'),
+        component: () => import('@/views/system/user/profile/index.vue'),
         name: 'Profile',
         meta: { title: '个人中心', icon: 'user' }
       }
@@ -88,7 +117,7 @@ export const constantRoutes = [
 ]
 
 // 动态路由，基于用户权限动态去加载
-export const dynamicRoutes = [
+export const dynamicRoutes: ExtendedRouteRecordRaw[] = [
   {
     path: '/system/user-auth',
     component: Layout,
@@ -97,7 +126,7 @@ export const dynamicRoutes = [
     children: [
       {
         path: 'role/:userId(\\d+)',
-        component: () => import('@/views/system/user/authRole'),
+        component: () => import('@/views/system/user/authRole.vue'),
         name: 'AuthRole',
         meta: { title: '分配角色', activeMenu: '/system/user' }
       }
@@ -111,7 +140,7 @@ export const dynamicRoutes = [
     children: [
       {
         path: 'user/:roleId(\\d+)',
-        component: () => import('@/views/system/role/authUser'),
+        component: () => import('@/views/system/role/authUser.vue'),
         name: 'AuthUser',
         meta: { title: '分配用户', activeMenu: '/system/role' }
       }
@@ -125,7 +154,7 @@ export const dynamicRoutes = [
     children: [
       {
         path: 'index/:dictId(\\d+)',
-        component: () => import('@/views/system/dict/data'),
+        component: () => import('@/views/system/dict/data.vue'),
         name: 'Data',
         meta: { title: '字典数据', activeMenu: '/system/dict' }
       }
@@ -139,7 +168,7 @@ export const dynamicRoutes = [
     children: [
       {
         path: 'index/:jobId(\\d+)',
-        component: () => import('@/views/monitor/job/log'),
+        component: () => import('@/views/monitor/job/log.vue'),
         name: 'JobLog',
         meta: { title: '调度日志', activeMenu: '/monitor/job' }
       }
@@ -153,7 +182,7 @@ export const dynamicRoutes = [
     children: [
       {
         path: 'index/:tableId(\\d+)',
-        component: () => import('@/views/tool/gen/editTable'),
+        component: () => import('@/views/tool/gen/editTable.vue'),
         name: 'GenEdit',
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
@@ -161,12 +190,16 @@ export const dynamicRoutes = [
   }
 ]
 
-const router = createRouter({
+const router: Router = createRouter({
   history: createWebHistory(),
   routes: constantRoutes,
   stringifyQuery: stringifyQuery, // 序列化query参数
   parseQuery: parseQuery, // 反序列化query参数
-  scrollBehavior(to, from, savedPosition) {
+  scrollBehavior(
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    savedPosition: ScrollPosition | null
+  ): ScrollPosition {
     if (savedPosition) {
       return savedPosition
     }
