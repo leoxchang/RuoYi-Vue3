@@ -1,11 +1,12 @@
 package com.truntao.system.mapper;
 
-import java.util.List;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.github.pagehelper.Page;
 import com.truntao.common.core.domain.entity.SysDictType;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 字典表 数据层
@@ -35,7 +36,7 @@ public interface SysDictTypeMapper extends BaseMapper<SysDictType> {
      * @param dictId 字典类型ID
      * @return 字典类型
      */
-    SysDictType selectDictTypeById(Long dictId);
+    SysDictType selectDictTypeById(@Param("dictId") Long dictId);
 
     /**
      * 根据字典类型查询信息
@@ -43,7 +44,7 @@ public interface SysDictTypeMapper extends BaseMapper<SysDictType> {
      * @param dictType 字典类型
      * @return 字典类型
      */
-    SysDictType selectDictTypeByType(String dictType);
+    SysDictType selectDictTypeByType(@Param("dictType") String dictType);
 
     /**
      * 通过字典ID删除字典信息
@@ -51,7 +52,7 @@ public interface SysDictTypeMapper extends BaseMapper<SysDictType> {
      * @param dictId 字典ID
      * @return 结果
      */
-    int deleteDictTypeById(Long dictId);
+    int deleteDictTypeById(@Param("dictId")Long dictId);
 
     /**
      * 批量删除字典类型信息
@@ -67,5 +68,5 @@ public interface SysDictTypeMapper extends BaseMapper<SysDictType> {
      * @param dictType 字典类型
      * @return 结果
      */
-    SysDictType checkDictTypeUnique(String dictType);
+    SysDictType checkDictTypeUnique(@Param("dictType") String dictType);
 }

@@ -52,7 +52,7 @@ public class SysDictTypeController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('system:dict:query')")
     @GetMapping(value = "/{dictId}")
-    public R<SysDictTypeDTO> getInfo(@PathVariable Long dictId) {
+    public R<SysDictTypeDTO> getInfo(@PathVariable("dictId") Long dictId) {
         return R.ok(dictTypeService.selectDictTypeById(dictId));
     }
 
