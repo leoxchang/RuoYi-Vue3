@@ -58,7 +58,7 @@ public class SysUserOnlineController extends BaseController {
     @PreAuthorize("@ss.hasPermission('monitor:online:forceLogout')")
     @Log(title = "在线用户", businessType = BusinessType.FORCE)
     @DeleteMapping("/{tokenId}")
-    public R<Void> forceLogout(@PathVariable String tokenId) {
+    public R<Void> forceLogout(@PathVariable("tokenId") String tokenId) {
         redisCache.deleteObject(CacheConstants.LOGIN_TOKEN_KEY + tokenId);
         return R.ok();
     }

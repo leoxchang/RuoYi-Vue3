@@ -63,7 +63,7 @@ public class GenController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('tool:gen:query')")
     @GetMapping(value = "/{tableId}")
-    public R<GenTableAllDTO> getInfo(@PathVariable Long tableId) {
+    public R<GenTableAllDTO> getInfo(@PathVariable("tableId") Long tableId) {
         GenTableDTO table = genTableService.selectGenTableById(tableId);
         List<GenTableDTO> tables = genTableService.selectGenTableAll();
         List<GenTableColumnDTO> list = genTableColumnService.selectGenTableColumnListByTableId(tableId);
@@ -127,7 +127,7 @@ public class GenController extends BaseController {
     @PreAuthorize("@ss.hasPermission('tool:gen:remove')")
     @Log(title = "代码生成", businessType = BusinessType.DELETE)
     @DeleteMapping("/{tableIds}")
-    public R<Void> remove(@PathVariable Long[] tableIds) {
+    public R<Void> remove(@PathVariable("tableIds") Long[] tableIds) {
         genTableService.deleteGenTableByIds(tableIds);
         return R.ok();
     }

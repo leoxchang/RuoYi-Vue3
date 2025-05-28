@@ -88,7 +88,7 @@ public class SysDictTypeController extends BaseController {
     @PreAuthorize("@ss.hasPermission('system:dict:remove')")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictIds}")
-    public R<Void> remove(@PathVariable Long[] dictIds) {
+    public R<Void> remove(@PathVariable("dictIds") Long[] dictIds) {
         dictTypeService.deleteDictTypeByIds(dictIds);
         return R.ok();
     }

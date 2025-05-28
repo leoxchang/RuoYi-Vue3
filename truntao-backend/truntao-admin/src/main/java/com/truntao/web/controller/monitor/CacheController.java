@@ -4,6 +4,7 @@ import com.truntao.common.constant.CacheConstants;
 import com.truntao.common.core.domain.R;
 import com.truntao.system.domain.dto.SysCache;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.connection.RedisServerCommands;
 import org.springframework.data.redis.core.RedisCallback;
@@ -71,14 +72,14 @@ public class CacheController {
 
     @PreAuthorize("@ss.hasPermission('monitor:cache:list')")
     @GetMapping("/getKeys/{cacheName}")
-    public R<Set<String>> getCacheKeys(@PathVariable String cacheName) {
+    public R<Set<String>> getCacheKeys(@PathVariable("cacheName") String cacheName) {
         Set<String> cacheKeys = redisTemplate.keys(cacheName + "*");
         return R.ok(new TreeSet<>(cacheKeys));
     }
 
     @PreAuthorize("@ss.hasPermission('monitor:cache:list')")
     @GetMapping("/getValue/{cacheName}/{cacheKey}")
-    public R<SysCache> getCacheValue(@PathVariable String cacheName, @PathVariable String cacheKey) {
+    public R<SysCache> getCacheValue(@PathVariable("cacheName") String cacheName, @PathVariable("cacheKey") String cacheKey) {
         String cacheValue = redisTemplate.opsForValue().get(cacheKey);
         SysCache sysCache = new SysCache(cacheName, cacheKey, cacheValue);
         return R.ok(sysCache);
@@ -86,9 +87,9 @@ public class CacheController {
 
     @PreAuthorize("@ss.hasPermission('monitor:cache:list')")
     @DeleteMapping("/clearCacheName/{cacheName}")
-    public R<Void> clearCacheName(@PathVariable String cacheName) {
+    public R<Void> clearCacheName(@PathVariable("cacheName") String cacheName) {
         Collection<String> cacheKeys = redisTemplate.keys(cacheName + "*");
-        if(Objects.nonNull(cacheKeys)) {
+        if(CollectionUtils.isNotEmpty(cacheKeys)) {
             redisTemplate.delete(cacheKeys);
         }
         return R.ok();
@@ -96,7 +97,7 @@ public class CacheController {
 
     @PreAuthorize("@ss.hasPermission('monitor:cache:list')")
     @DeleteMapping("/clearCacheKey/{cacheKey}")
-    public R<Void> clearCacheKey(@PathVariable String cacheKey) {
+    public R<Void> clearCacheKey(@PathVariable("cacheKey") String cacheKey) {
         redisTemplate.delete(cacheKey);
         return R.ok();
     }
@@ -105,7 +106,7 @@ public class CacheController {
     @DeleteMapping("/clearCacheAll")
     public R<Void> clearCacheAll() {
         Collection<String> cacheKeys = redisTemplate.keys("*");
-        if(Objects.nonNull(cacheKeys)) {
+        if(CollectionUtils.isNotEmpty(cacheKeys)) {
             redisTemplate.delete(cacheKeys);
         }
         return R.ok();

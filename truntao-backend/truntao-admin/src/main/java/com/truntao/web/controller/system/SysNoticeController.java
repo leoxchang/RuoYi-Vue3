@@ -42,7 +42,7 @@ public class SysNoticeController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('system:notice:query')")
     @GetMapping(value = "/{noticeId}")
-    public R<SysNoticeDTO> getInfo(@PathVariable Long noticeId) {
+    public R<SysNoticeDTO> getInfo(@PathVariable("noticeId") Long noticeId) {
         return R.ok(noticeService.selectNoticeById(noticeId));
     }
 
@@ -72,7 +72,7 @@ public class SysNoticeController extends BaseController {
     @PreAuthorize("@ss.hasPermission('system:notice:remove')")
     @Log(title = "通知公告", businessType = BusinessType.DELETE)
     @DeleteMapping("/{noticeIds}")
-    public R<Integer> remove(@PathVariable Long[] noticeIds) {
+    public R<Integer> remove(@PathVariable("noticeIds") Long[] noticeIds) {
         return R.ok(noticeService.deleteNoticeByIds(noticeIds));
     }
 }

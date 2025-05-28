@@ -46,7 +46,7 @@ public class SysMenuController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('system:menu:query')")
     @GetMapping(value = "/{menuId}")
-    public R<SysMenuDTO> getInfo(@PathVariable Long menuId) {
+    public R<SysMenuDTO> getInfo(@PathVariable("menuId") Long menuId) {
         return R.ok(menuService.selectMenuById(menuId));
     }
 

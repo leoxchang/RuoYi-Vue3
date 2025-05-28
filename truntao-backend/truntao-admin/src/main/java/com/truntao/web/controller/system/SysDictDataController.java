@@ -58,7 +58,7 @@ public class SysDictDataController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('system:dict:query')")
     @GetMapping(value = "/{dictCode}")
-    public R<SysDictDataDTO> getInfo(@PathVariable Long dictCode) {
+    public R<SysDictDataDTO> getInfo(@PathVariable("dictCode") Long dictCode) {
         return R.ok(dictDataService.selectDictDataById(dictCode));
     }
 
@@ -66,7 +66,7 @@ public class SysDictDataController extends BaseController {
      * 根据字典类型查询字典数据信息
      */
     @GetMapping(value = "/type/{dictType}")
-    public R<List<SysDictDataDTO>> dictType(@PathVariable String dictType) {
+    public R<List<SysDictDataDTO>> dictType(@PathVariable("dictType") String dictType) {
         List<SysDictDataDTO> data = dictTypeService.selectDictDataByType(dictType);
         if (Objects.isNull(data)) {
             data = new ArrayList<>();
@@ -100,7 +100,7 @@ public class SysDictDataController extends BaseController {
     @PreAuthorize("@ss.hasPermission('system:dict:remove')")
     @Log(title = "字典类型", businessType = BusinessType.DELETE)
     @DeleteMapping("/{dictCodes}")
-    public R<Void> remove(@PathVariable Long[] dictCodes) {
+    public R<Void> remove(@PathVariable("dictCodes") Long[] dictCodes) {
         dictDataService.deleteDictDataByIds(dictCodes);
         return R.ok();
     }

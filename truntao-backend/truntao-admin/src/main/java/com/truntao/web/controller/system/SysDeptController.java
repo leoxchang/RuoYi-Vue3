@@ -54,7 +54,7 @@ public class SysDeptController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('system:dept:query')")
     @GetMapping(value = "/{deptId}")
-    public R<SysDeptDTO> getInfo(@PathVariable Long deptId) {
+    public R<SysDeptDTO> getInfo(@PathVariable("deptId") Long deptId) {
         deptService.checkDeptDataScope(deptId);
         return R.ok(deptService.selectDeptById(deptId));
     }
@@ -97,7 +97,7 @@ public class SysDeptController extends BaseController {
     @PreAuthorize("@ss.hasPermission('system:dept:remove')")
     @Log(title = "部门管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{deptId}")
-    public R<Integer> remove(@PathVariable Long deptId) {
+    public R<Integer> remove(@PathVariable("deptId") Long deptId) {
         if (deptService.hasChildByDeptId(deptId)) {
             return R.fail("存在下级部门,不允许删除");
         }

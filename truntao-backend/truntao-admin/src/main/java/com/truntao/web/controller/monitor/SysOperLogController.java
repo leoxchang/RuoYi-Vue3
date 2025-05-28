@@ -48,7 +48,7 @@ public class SysOperLogController extends BaseController {
     @Log(title = "操作日志", businessType = BusinessType.DELETE)
     @PreAuthorize("@ss.hasPermission('monitor:operlog:remove')")
     @DeleteMapping("/{operIds}")
-    public R<Integer> remove(@PathVariable Long[] operIds) {
+    public R<Integer> remove(@PathVariable("operIds") Long[] operIds) {
         return R.ok(operLogService.deleteOperLogByIds(operIds));
     }
 

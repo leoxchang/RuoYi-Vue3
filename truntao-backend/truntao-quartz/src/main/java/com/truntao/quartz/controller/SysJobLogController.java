@@ -57,7 +57,7 @@ public class SysJobLogController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('monitor:job:query')")
     @GetMapping(value = "/{jobLogId}")
-    public R<SysJobLogDTO> getInfo(@PathVariable Long jobLogId) {
+    public R<SysJobLogDTO> getInfo(@PathVariable("jobLogId") Long jobLogId) {
         return R.ok(jobLogService.selectJobLogById(jobLogId));
     }
 
@@ -68,7 +68,7 @@ public class SysJobLogController extends BaseController {
     @PreAuthorize("@ss.hasPermission('monitor:job:remove')")
     @Log(title = "定时任务调度日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{jobLogIds}")
-    public R<Integer> remove(@PathVariable Long[] jobLogIds) {
+    public R<Integer> remove(@PathVariable("jobLodIds") Long[] jobLogIds) {
         return R.ok(jobLogService.deleteJobLogByIds(jobLogIds));
     }
 

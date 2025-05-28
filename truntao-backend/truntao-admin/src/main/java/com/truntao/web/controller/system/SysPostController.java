@@ -55,7 +55,7 @@ public class SysPostController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('system:post:query')")
     @GetMapping(value = "/{postId}")
-    public R<SysPostDTO> getInfo(@PathVariable Long postId) {
+    public R<SysPostDTO> getInfo(@PathVariable("postId") Long postId) {
         return R.ok(postService.selectPostById(postId));
     }
 
@@ -95,7 +95,7 @@ public class SysPostController extends BaseController {
     @PreAuthorize("@ss.hasPermission('system:post:remove')")
     @Log(title = "岗位管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{postIds}")
-    public R<Integer> remove(@PathVariable Long[] postIds) {
+    public R<Integer> remove(@PathVariable("postIds") Long[] postIds) {
         return R.ok(postService.deletePostByIds(postIds));
     }
 

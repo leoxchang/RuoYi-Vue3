@@ -53,7 +53,7 @@ public class SysConfigController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('system:config:query')")
     @GetMapping(value = "/{configId}")
-    public R<SysConfigDTO> getInfo(@PathVariable Long configId) {
+    public R<SysConfigDTO> getInfo(@PathVariable("configId") Long configId) {
         return R.ok(configService.selectConfigById(configId));
     }
 
@@ -61,7 +61,7 @@ public class SysConfigController extends BaseController {
      * 根据参数键名查询参数值
      */
     @GetMapping(value = "/configKey/{configKey}")
-    public R<String> getConfigKey(@PathVariable String configKey) {
+    public R<String> getConfigKey(@PathVariable("configKey") String configKey) {
         return R.ok(configService.selectConfigByKey(configKey));
     }
 
@@ -97,7 +97,7 @@ public class SysConfigController extends BaseController {
     @PreAuthorize("@ss.hasPermission('system:config:remove')")
     @Log(title = "参数管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{configIds}")
-    public R<Void> remove(@PathVariable Long[] configIds) {
+    public R<Void> remove(@PathVariable("configIds") Long[] configIds) {
         configService.deleteConfigByIds(configIds);
         return R.ok();
     }

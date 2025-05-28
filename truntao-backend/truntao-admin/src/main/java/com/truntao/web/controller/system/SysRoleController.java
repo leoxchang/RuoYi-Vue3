@@ -75,7 +75,7 @@ public class SysRoleController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermission('system:role:query')")
     @GetMapping(value = "/{roleId}")
-    public R<SysRoleDTO> getInfo(@PathVariable Long roleId) {
+    public R<SysRoleDTO> getInfo(@PathVariable("roleId") Long roleId) {
         roleService.checkRoleDataScope(roleId);
         return R.ok(roleService.selectRoleById(roleId));
     }
@@ -155,7 +155,7 @@ public class SysRoleController extends BaseController {
     @PreAuthorize("@ss.hasPermission('system:role:remove')")
     @Log(title = "角色管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{roleIds}")
-    public R<Integer> remove(@PathVariable Long[] roleIds) {
+    public R<Integer> remove(@PathVariable("roleIds") Long[] roleIds) {
         return R.ok(roleService.deleteRoleByIds(roleIds));
     }
 

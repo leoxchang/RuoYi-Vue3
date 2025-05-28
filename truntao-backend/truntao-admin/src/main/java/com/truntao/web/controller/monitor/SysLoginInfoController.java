@@ -52,7 +52,7 @@ public class SysLoginInfoController extends BaseController {
     @PreAuthorize("@ss.hasPermission('monitor:loginInfo:remove')")
     @Log(title = "登录日志", businessType = BusinessType.DELETE)
     @DeleteMapping("/{infoIds}")
-    public R<Integer> remove(@PathVariable Long[] infoIds) {
+    public R<Integer> remove(@PathVariable("infoIds") Long[] infoIds) {
         return R.ok(loginInfoService.deleteLoginInfoByIds(infoIds));
     }
 

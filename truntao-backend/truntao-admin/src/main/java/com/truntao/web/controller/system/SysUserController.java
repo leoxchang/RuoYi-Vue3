@@ -165,7 +165,7 @@ public class SysUserController extends BaseController {
     @PreAuthorize("@ss.hasPermission('system:user:remove')")
     @Log(title = "用户管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{userIds}")
-    public R<Integer> remove(@PathVariable Long[] userIds) {
+    public R<Integer> remove(@PathVariable("userIds") Long[] userIds) {
         if (ArrayUtils.contains(userIds, getUserId())) {
             return R.fail("当前用户不能删除");
         }
