@@ -36,7 +36,9 @@ export function parseTime(time: any, pattern?: string): string | null {
   const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
     let value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
+    if (key === 'a') {
+      return ['日', '一', '二', '三', '四', '五', '六'][value]
+    }
     if (result.length > 0 && value < 10) {
       value = '0' + value
     }
@@ -54,6 +56,7 @@ export function resetForm(this: any, refName: string): void {
 
 interface SearchParams {
   params?: Record<string, any>;
+
   [key: string]: any;
 }
 
@@ -73,7 +76,7 @@ export function addDateRange(params: SearchParams, dateRange: any[], propName?: 
 }
 
 // 回显数据字典
-export function selectDictLabel(datas: Map<string,DictData>, value: any): string {
+export function selectDictLabel(datas: Map<string, DictData>, value: any): string | undefined {
   if (value === undefined) {
     return "";
   }
@@ -201,9 +204,9 @@ export function handleTree(data: any[], id?: string, parentId?: string, children
 }
 
 /**
-* 参数处理
-* @param {*} params  参数
-*/
+ * 参数处理
+ * @param {*} params  参数
+ */
 export function tansParams(params: Record<string, any>): string {
   let result = ''
   for (const propName of Object.keys(params)) {
@@ -230,7 +233,8 @@ export function tansParams(params: Record<string, any>): string {
 export function getNormalPath(p: string): string {
   if (p.length === 0 || !p || p == 'undefined') {
     return p
-  };
+  }
+  ;
   let res = p.replace('//', '/')
   if (res[res.length - 1] === '/') {
     return res.slice(0, res.length - 1)

@@ -3,6 +3,7 @@ import {
   ElMessageBoxShortcutMethod,
   type MessageBoxData
 } from "element-plus/es/components/message-box/src/message-box.type";
+import type {DictData} from "@/utils/dict";
 
 declare module 'vue' {
   interface ComponentCustomProperties {
@@ -40,14 +41,14 @@ declare module 'vue' {
     download: (url: string, params?: any, filename?: string) => void;
     resetForm: (formRef: string) => void;
     handleTree: (data: any[], id: string, parentId?: string, children?: string) => any[];
-    useDict: (...args: string[]) => Map<string, DictData>;
+    useDict: (...args: string[]) =>  Ref<DictData[]>;
     $tab: {
       closeOpenPage: (obj: { path: string }) => void;
     };
     $alert: ElMessageBoxShortcutMethod;
     $prompt: ElMessageBoxShortcutMethod;
     parseTime: (time?: object | string | number | null, pattern?: string) => string | null;
-    selectDictLabel: (value: string, dictType: string | undefined) => string | undefined;
+    selectDictLabel: (datas: Map<string, DictData>, value: any) => string | undefined;
     addDateRange: (params: any, dateRange: string[]) => any;
   }
 }

@@ -3,8 +3,8 @@ import request from '@/utils/request'
 export interface LoginData {
   username: string;
   password: string;
-  code: string;
-  uuid: string;
+  code?: string;
+  uuid?: string;
 }
 
 export interface RegisterData {
@@ -47,7 +47,7 @@ export function register(data: RegisterData): Promise<any> {
 }
 
 // 获取用户详细信息
-export function getInfo(): Promise {
+export function getInfo(): Promise<any> {
   return request({
     url: '/getInfo',
     method: 'get'

@@ -1,8 +1,14 @@
 import compression from 'vite-plugin-compression'
+import type { PluginOption } from 'vite'
 
-export default function createCompression(env) {
+interface Env {
+    VITE_BUILD_COMPRESS?: string
+    [key: string]: any
+}
+
+export default function createCompression(env: Env): PluginOption[] {
     const { VITE_BUILD_COMPRESS } = env
-    const plugin = []
+    const plugin: PluginOption[] = []
     if (VITE_BUILD_COMPRESS) {
         const compressList = VITE_BUILD_COMPRESS.split(',')
         if (compressList.includes('gzip')) {
@@ -24,4 +30,4 @@ export default function createCompression(env) {
         }
     }
     return plugin
-}
+} 
