@@ -1,11 +1,22 @@
- /**
+/**
  * v-hasPermi 操作权限处理
  */
 
 import useUserStore from '@/store/modules/user'
 
+// 定义指令绑定参数接口
+interface DirectiveBinding {
+  value: string[];
+  [key: string]: any;
+}
+
+// 定义虚拟节点接口
+interface VNode {
+  [key: string]: any;
+}
+
 export default {
-  mounted(el, binding, vnode) {
+  mounted(el: HTMLElement, binding: DirectiveBinding, vnode: VNode) {
     const { value } = binding
     const all_permission = "*:*:*";
     const permissions = useUserStore().permissions
