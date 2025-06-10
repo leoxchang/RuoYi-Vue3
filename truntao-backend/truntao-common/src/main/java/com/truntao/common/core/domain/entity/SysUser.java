@@ -1,14 +1,14 @@
 package com.truntao.common.core.domain.entity;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableLogic;
+import com.truntao.common.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import com.truntao.common.core.domain.BaseEntity;
+
+import java.util.Date;
 
 /**
  * 用户对象 sys_user
@@ -93,6 +93,9 @@ public class SysUser extends BaseEntity {
      */
     @TableField
     private String remark;
+    /** 密码最后更新时间 */
+    @TableField
+    private Date pwdUpdateDate;
 
 
     public SysUser() {

@@ -1,17 +1,15 @@
 package com.truntao.common.core.domain.dto;
 
-import java.util.Date;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.truntao.common.annotation.Excel;
 import com.truntao.common.annotation.Excels;
 import com.truntao.common.core.domain.entity.SysUser;
 import lombok.Data;
+import lombok.ToString;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-
-import com.truntao.common.annotation.Excel;
-import lombok.ToString;
 
 /**
  * 用户信息对象 sys_user
@@ -46,6 +44,7 @@ public class SysUserDTO {
             setUpdateBy(sysUser.getUpdateBy());
             setUpdateTime(sysUser.getUpdateTime());
             setRemark(sysUser.getRemark());
+            setPwdUpdateDate(sysUser.getPwdUpdateDate());
         }
     }
 
@@ -147,6 +146,9 @@ public class SysUserDTO {
      */
     @Excel(name = "备注")
     private String remark;
+
+    /** 密码最后更新时间 */
+    private Date pwdUpdateDate;
 
     /**
      * 部门对象

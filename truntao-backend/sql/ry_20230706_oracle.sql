@@ -69,6 +69,7 @@ create table sys_user (
   del_flag          char(1)         default '0',
   login_ip          varchar2(128)   default '',
   login_date        date,
+  pwd_update_date        date,
   create_by         varchar2(64),
   create_time 	    date,
   update_by         varchar2(64)    default '',
@@ -93,6 +94,7 @@ comment on column sys_user.status       is '帐号状态（0正常 1停用）';
 comment on column sys_user.del_flag     is '删除标志（0代表存在 2代表删除）';
 comment on column sys_user.login_ip     is '最后登录IP';
 comment on column sys_user.login_date   is '最后登录时间';
+comment on column sys_user.pwd_update_date   is '密码最后修改时间';
 comment on column sys_user.create_by    is '创建者';
 comment on column sys_user.create_time  is '创建时间';
 comment on column sys_user.update_by    is '更新者';
@@ -102,8 +104,8 @@ comment on column sys_user.remark       is '备注';
 -- ----------------------------
 -- 初始化-用户信息表数据
 -- ----------------------------
-insert into sys_user values(1,  103, 'admin', '若依', '00', 'ry@163.com', '15888888888', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate, 'admin', sysdate, '', null, '管理员');
-insert into sys_user values(2,  105, 'ry',    '若依', '00', 'ry@qq.com',  '15666666666', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate, 'admin', sysdate, '', null, '测试员');
+insert into sys_user values(1,  103, 'admin', '若依', '00', 'ry@163.com', '15888888888', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate,sysdate, 'admin', sysdate, '', null, '管理员');
+insert into sys_user values(2,  105, 'ry',    '若依', '00', 'ry@qq.com',  '15666666666', '1', '', '$2a$10$7JB720yubVSZvUI0rEqK/.VqGOZTH.ulu33dHOiBE8ByOhJIrdAu2', '0', '0', '127.0.0.1', sysdate,sysdate, 'admin', sysdate, '', null, '测试员');
 
 
 -- ----------------------------
@@ -711,6 +713,7 @@ insert into sys_config values(3, '主框架页-侧边栏主题',           'sys.
 insert into sys_config values(4, '账号自助-验证码开关',           'sys.account.captchaEnabled',    'true',          'Y', 'admin', sysdate, '', null, '是否开启登录验证码功能（true开启，false关闭）');
 insert into sys_config values(5, '账号自助-是否开启用户注册功能', 'sys.account.registerUser',      'false',         'Y', 'admin', sysdate, '', null, '是否开启注册用户功能（true开启，false关闭）');
 insert into sys_config values(6, '用户登录-黑名单列表',           'sys.login.blackIPList',         '',              'Y', 'admin', sysdate, '', null, '设置登录IP黑名单限制，多个匹配项以;分隔，支持匹配（*通配、网段）');
+insert into sys_config values(7, '用户管理-初始密码修改策略',     'sys.account.initPasswordModify',  '1',             'Y', 'admin', sysdate(), '', null, '0：初始密码修改策略关闭，没有任何提示，1：提醒用户，如果未修改初始密码，则在登录时就会提醒修改密码对话框');
 
 
 -- ----------------------------
