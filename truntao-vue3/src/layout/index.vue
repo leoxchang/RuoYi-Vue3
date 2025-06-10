@@ -63,11 +63,11 @@ function setLayout() {
 </script>
 
 <style lang="scss" scoped>
-  @import "@/assets/styles/mixin.scss";
-  @import "@/assets/styles/variables.module.scss";
+@use "@/assets/styles/mixin.scss" as mix;
+@use "@/assets/styles/variables.module.scss" as vars;
 
 .app-wrapper {
-  @include clearfix;
+  @include mix.clearfix;
   position: relative;
   height: 100%;
   width: 100%;
@@ -93,7 +93,7 @@ function setLayout() {
   top: 0;
   right: 0;
   z-index: 9;
-  width: calc(100% - #{$base-sidebar-width});
+  width: calc(100% - #{vars.$base-sidebar-width});
   transition: width 0.28s;
 }
 
