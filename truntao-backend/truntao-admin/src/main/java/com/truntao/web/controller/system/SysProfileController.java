@@ -6,6 +6,7 @@ import com.truntao.common.core.domain.R;
 import com.truntao.common.core.domain.dto.SysUserDTO;
 import com.truntao.common.exception.file.InvalidExtensionException;
 import com.truntao.common.utils.DateUtils;
+import com.truntao.common.utils.file.FileUtils;
 import com.truntao.system.domain.dto.AvatarDTO;
 import com.truntao.system.domain.dto.ProfileDTO;
 import com.truntao.system.domain.ro.SysPasswordParam;
@@ -102,7 +103,7 @@ public class SysProfileController extends BaseController {
         String oldPassword = sysPasswordParam.getOldPassword();
         String newPassword = sysPasswordParam.getNewPassword();
         LoginUser loginUser = getLoginUser();
-        String userName = loginUser.getUsername();
+        Long userId = loginUser.getUserId();
         String password = loginUser.getPassword();
         if (!SecurityUtils.matchesPassword(oldPassword, password)) {
             return R.fail("修改密码失败，旧密码错误");
@@ -111,7 +112,7 @@ public class SysProfileController extends BaseController {
             return R.fail("新密码不能与旧密码相同");
         }
         newPassword = SecurityUtils.encryptPassword(newPassword);
-        if (userService.resetUserPwd(userName, newPassword) > 0) {
+        if (userService.resetUserPwd(userId, newPassword) > 0) {
             // 更新缓存用户密码
             loginUser.getUser().setPwdUpdateDate(DateUtils.getNowDate());
             loginUser.getUser().setPassword(newPassword);
@@ -129,8 +130,14 @@ public class SysProfileController extends BaseController {
     public R<AvatarDTO> avatar(@RequestParam("avatarFile") MultipartFile file) throws IOException, InvalidExtensionException {
         if (!file.isEmpty()) {
             LoginUser loginUser = getLoginUser();
-            String avatar = FileUploadUtils.upload(TruntaoConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
-            if (userService.updateUserAvatar(loginUser.getUsername(), avatar)) {
+            String avatar = FileUploadUtils.upload(TruntaoConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION, true);
+            if (userService.updateUserAvatar(loginUser.getUserId(), avatar))
+            {
+                String oldAvatar = loginUser.getUser().getAvatar();
+                if (StringUtils.isNotEmpty(oldAvatar))
+                {
+                    FileUtils.deleteFile(TruntaoConfig.getProfile() + FileUtils.stripPrefix(oldAvatar));
+                }
                 AvatarDTO avatarDTO = new AvatarDTO();
                 // 更新缓存用户头像
                 File avatarFile =

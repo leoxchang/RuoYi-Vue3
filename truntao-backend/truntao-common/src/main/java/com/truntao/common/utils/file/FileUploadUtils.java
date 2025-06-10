@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 
 import cn.hutool.core.text.CharSequenceUtil;
+import com.truntao.common.utils.uuid.IdUtils;
 import lombok.Getter;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -93,6 +94,12 @@ public class FileUploadUtils {
     public static String upload(String baseDir, MultipartFile file, String[] allowedExtension)
             throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
             InvalidExtensionException {
+        return upload(baseDir, file, allowedExtension, false);
+    }
+
+    public static String upload(String baseDir, MultipartFile file, String[] allowedExtension, boolean useCustomNaming)
+            throws FileSizeLimitExceededException, IOException, FileNameLengthLimitExceededException,
+            InvalidExtensionException {
         int fileNameLength = Objects.requireNonNull(file.getOriginalFilename()).length();
         if (fileNameLength > FileUploadUtils.DEFAULT_FILE_NAME_LENGTH) {
             throw new FileNameLengthLimitExceededException(FileUploadUtils.DEFAULT_FILE_NAME_LENGTH);
@@ -100,7 +107,7 @@ public class FileUploadUtils {
 
         assertAllowed(file, allowedExtension);
 
-        String fileName = extractFilename(file);
+        String fileName = useCustomNaming ? uuidFilename(file) : extractFilename(file);
 
         String absPath = getAbsoluteFile(baseDir, fileName).getAbsolutePath();
         file.transferTo(Paths.get(absPath));
@@ -114,6 +121,10 @@ public class FileUploadUtils {
         return CharSequenceUtil.format("{}/{}_{}.{}", DateUtils.datePath(),
                 FilenameUtils.getBaseName(file.getOriginalFilename()), Seq.getId(Seq.UPLOAD_SEQ_TYPE),
                 getExtension(file));
+    }
+
+    public static  String uuidFilename(MultipartFile file) {
+        return CharSequenceUtil.format("{}/{}.{}", DateUtils.datePath(), IdUtils.fastSimpleUUID(), getExtension(file));
     }
 
     public static File getAbsoluteFile(String fileName) {

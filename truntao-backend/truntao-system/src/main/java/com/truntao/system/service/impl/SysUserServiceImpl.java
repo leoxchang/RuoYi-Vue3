@@ -322,13 +322,13 @@ public class SysUserServiceImpl implements ISysUserService {
     /**
      * 修改用户头像
      *
-     * @param userName 用户名
+     * @param userId 用户ID
      * @param avatar   头像地址
      * @return 结果
      */
     @Override
-    public boolean updateUserAvatar(String userName, String avatar) {
-        return userMapper.updateUserAvatar(userName, avatar) > 0;
+    public boolean updateUserAvatar(Long userId, String avatar) {
+        return userMapper.updateUserAvatar(userId, avatar) > 0;
     }
 
     /**
@@ -349,13 +349,13 @@ public class SysUserServiceImpl implements ISysUserService {
     /**
      * 重置用户密码
      *
-     * @param userName 用户名
+     * @param userId 用户ID
      * @param password 密码
      * @return 结果
      */
     @Override
-    public int resetUserPwd(String userName, String password) {
-        return userMapper.resetUserPwd(userName, password);
+    public int resetUserPwd(Long userId, String password) {
+        return userMapper.resetUserPwd(userId, password);
     }
 
     /**

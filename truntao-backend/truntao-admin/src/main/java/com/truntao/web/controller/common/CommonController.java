@@ -126,7 +126,7 @@ public class CommonController {
      * 本地资源通用下载
      */
     @GetMapping("/download/resource")
-    public void resourceDownload(String resource, HttpServletRequest request, HttpServletResponse response) {
+    public void resourceDownload(String resource,  HttpServletResponse response) {
         try {
             if (!FileUtils.checkAllowDownload(resource)) {
                 throw new ServiceException(CharSequenceUtil.format("资源文件({})非法，不允许下载。 ", resource));
@@ -134,7 +134,7 @@ public class CommonController {
             // 本地资源路径
             String localPath = TruntaoConfig.getProfile();
             // 数据库资源地址
-            String downloadPath = localPath + StringUtils.substringAfter(resource, Constants.RESOURCE_PREFIX);
+            String downloadPath = localPath + FileUtils.stripPrefix(resource);
             // 下载名称
             String downloadName = StringUtils.substringAfterLast(downloadPath, "/");
             response.setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE);

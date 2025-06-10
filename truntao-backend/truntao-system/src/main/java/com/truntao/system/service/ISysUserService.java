@@ -154,11 +154,11 @@ public interface ISysUserService {
     /**
      * 修改用户头像
      *
-     * @param userName 用户名
+     * @param userId 用户ID
      * @param avatar   头像地址
      * @return 结果
      */
-    boolean updateUserAvatar(String userName, String avatar);
+    boolean updateUserAvatar(Long userId, String avatar);
 
     /**
      * 重置用户密码
@@ -171,11 +171,11 @@ public interface ISysUserService {
     /**
      * 重置用户密码
      *
-     * @param userName 用户名
+     * @param userId 用户ID
      * @param password 密码
      * @return 结果
      */
-    int resetUserPwd(String userName, String password);
+    int resetUserPwd(Long userId, String password);
 
     /**
      * 通过用户ID删除用户
