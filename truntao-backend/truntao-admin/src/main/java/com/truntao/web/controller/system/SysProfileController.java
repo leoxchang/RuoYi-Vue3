@@ -9,6 +9,8 @@ import com.truntao.common.core.domain.R;
 import com.truntao.common.core.domain.dto.SysUserDTO;
 import com.truntao.common.core.domain.model.LoginUser;
 import com.truntao.common.enums.BusinessType;
+import com.truntao.common.exception.file.InvalidExtensionException;
+import com.truntao.common.utils.DateUtils;
 import com.truntao.common.utils.SecurityUtils;
 import com.truntao.common.utils.file.FileUploadUtils;
 import com.truntao.common.utils.file.MimeTypeUtils;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 
 /**
  * 个人信息 业务处理
@@ -104,6 +107,7 @@ public class SysProfileController extends BaseController {
         newPassword = SecurityUtils.encryptPassword(newPassword);
         if (userService.resetUserPwd(userName, newPassword) > 0) {
             // 更新缓存用户密码
+            loginUser.getUser().setPwdUpdateDate(DateUtils.getNowDate());
             loginUser.getUser().setPassword(newPassword);
             tokenService.setLoginUser(loginUser);
             return R.ok();
@@ -116,7 +120,7 @@ public class SysProfileController extends BaseController {
      */
     @Log(title = "用户头像", businessType = BusinessType.UPDATE)
     @PostMapping("/avatar")
-    public R<AvatarDTO> avatar(@RequestParam("avatarFile") MultipartFile file) throws Exception {
+    public R<AvatarDTO> avatar(@RequestParam("avatarFile") MultipartFile file) throws IOException, InvalidExtensionException {
         if (!file.isEmpty()) {
             LoginUser loginUser = getLoginUser();
             String avatar = FileUploadUtils.upload(TruntaoConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
