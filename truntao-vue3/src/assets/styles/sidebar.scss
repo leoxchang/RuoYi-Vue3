@@ -1,9 +1,10 @@
+@use './variables.module.scss' as vars;
 #app {
 
   .main-container {
     height: 100%;
     transition: margin-left .28s;
-    margin-left: $base-sidebar-width;
+    margin-left: vars.$base-sidebar-width;
     position: relative;
   }
 
@@ -14,7 +15,7 @@
   .sidebar-container {
     -webkit-transition: width .28s;
     transition: width 0.28s;
-    width: $base-sidebar-width !important;
+    width: vars.$base-sidebar-width !important;
     background-color: $base-menu-background;
     height: 100%;
     position: fixed;
@@ -89,12 +90,12 @@
     }
 
     & .theme-dark .is-active > .el-sub-menu__title {
-      color: $base-menu-color-active !important;
+      color: vars.$base-menu-color-active !important;
     }
 
     & .nest-menu .el-sub-menu>.el-sub-menu__title,
     & .el-sub-menu .el-menu-item {
-      min-width: $base-sidebar-width !important;
+      min-width: vars.$base-sidebar-width !important;
 
       &:hover {
         background-color: rgba(0, 0, 0, 0.06) !important;
@@ -103,10 +104,10 @@
 
     & .theme-dark .nest-menu .el-sub-menu>.el-sub-menu__title,
     & .theme-dark .el-sub-menu .el-menu-item {
-      background-color: $base-sub-menu-background !important;
+      background-color: vars.$base-sub-menu-background !important;
 
       &:hover {
-        background-color: $base-sub-menu-hover !important;
+        background-color: vars.$base-sub-menu-hover !important;
       }
     }
   }
@@ -169,7 +170,7 @@
   }
 
   .el-menu--collapse .el-menu .el-sub-menu {
-    min-width: $base-sidebar-width !important;
+    min-width: vars.$base-sidebar-width !important;
   }
 
   // mobile responsive
@@ -180,14 +181,14 @@
 
     .sidebar-container {
       transition: transform .28s;
-      width: $base-sidebar-width !important;
+      width: vars.$base-sidebar-width !important;
     }
 
     &.hideSidebar {
       .sidebar-container {
         pointer-events: none;
         transition-duration: 0.3s;
-        transform: translate3d(-$base-sidebar-width, 0, 0);
+        transform: translate3d(-(vars.$base-sidebar-width), 0, 0);
       }
     }
   }
