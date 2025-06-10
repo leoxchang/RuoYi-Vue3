@@ -8,6 +8,7 @@ import com.truntao.common.core.domain.dto.SysUserDTO;
 import com.truntao.common.core.domain.model.LoginBody;
 import com.truntao.common.core.domain.model.LoginUser;
 import com.truntao.common.core.text.Convert;
+import com.truntao.common.utils.DateUtils;
 import com.truntao.common.utils.SecurityUtils;
 import com.truntao.common.utils.file.FileUploadUtils;
 import com.truntao.framework.web.service.SysLoginService;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -91,8 +93,7 @@ public class SysLoginController {
         Set<String> roles = permissionService.getRolePermission(user);
         // 权限集合
         Set<String> permissions = permissionService.getMenuPermission(user);
-        if (!loginUser.getPermissions().equals(permissions))
-        {
+        if (!loginUser.getPermissions().equals(permissions)) {
             loginUser.setPermissions(permissions);
             tokenService.refreshToken(loginUser);
         }
@@ -101,13 +102,29 @@ public class SysLoginController {
         loginUserInfoDTO.setRoles(roles);
         loginUserInfoDTO.setPermissions(permissions);
         loginUserInfoDTO.setDefaultModifyPwd(initPasswordIsModify(user.getPwdUpdateDate()));
+        loginUserInfoDTO.setPasswordExpired(passwordIsExpiration(user.getPwdUpdateDate()));
         return R.ok(loginUserInfoDTO);
     }
 
     // 检查初始密码是否提醒修改
-    private  boolean initPasswordIsModify(Date pwdUpdateDate) {
+    private boolean initPasswordIsModify(Date pwdUpdateDate) {
         Integer initPasswordModify = Convert.toInt(configService.selectConfigByKey("sys.account.initPasswordModify"));
         return initPasswordModify != null && initPasswordModify == 1 && pwdUpdateDate == null;
+    }
+
+    // 检查密码是否过期
+    private boolean passwordIsExpiration(Date pwdUpdateDate) {
+        Integer passwordValidateDays = Convert.toInt(configService.selectConfigByKey("sys.account" +
+                ".passwordValidateDays"));
+        if (passwordValidateDays != null && passwordValidateDays > 0) {
+            if (Objects.isNull(pwdUpdateDate)) {
+                // 如果从未修改过初始密码，直接提醒过期
+                return true;
+            }
+            Date nowDate = DateUtils.getNowDate();
+            return DateUtils.differentDaysByMillisecond(nowDate, pwdUpdateDate) > passwordValidateDays;
+        }
+        return false;
     }
 
     /**

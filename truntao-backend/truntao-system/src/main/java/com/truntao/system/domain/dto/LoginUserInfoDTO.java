@@ -19,4 +19,5 @@ public class LoginUserInfoDTO {
     private SysUserDTO user;
 
     private boolean isDefaultModifyPwd;
+    private boolean isPasswordExpired;
 }
