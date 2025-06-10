@@ -48,7 +48,7 @@
                    <span>基本资料</span>
                  </div>
                </template>
-               <el-tabs v-model="activeTab">
+               <el-tabs v-model="selectedTab">
                   <el-tab-pane label="基本资料" name="userinfo">
                      <userInfo :user="state.user" />
                   </el-tab-pane>
@@ -91,7 +91,8 @@ interface DialogContainer {
   value?: HTMLElement;
 }
 
-const activeTab = ref("userinfo");
+const route = useRoute()
+const selectedTab = ref("userinfo")
 const state = reactive<UserState>({
   user: {},
   roleGroup: "",
@@ -106,5 +107,11 @@ function getUser() {
     state.postGroup = response.data.postGroup;
   });
 }
-getUser();
+onMounted(() => {
+  const activeTab = route.params && route.params.activeTab
+  if (activeTab) {
+    selectedTab.value = activeTab
+  }
+  getUser()
+})
 </script>
