@@ -1,6 +1,7 @@
 package com.truntao.web.controller.system;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -9,11 +10,13 @@ import com.truntao.common.core.domain.R;
 import com.truntao.common.core.domain.dto.SysMenuDTO;
 import com.truntao.common.core.domain.dto.SysUserDTO;
 import com.truntao.common.core.domain.model.LoginUser;
+import com.truntao.common.core.text.Convert;
 import com.truntao.common.utils.file.FileUploadUtils;
 import com.truntao.framework.web.service.TokenService;
 import com.truntao.system.domain.dto.LoginDTO;
 import com.truntao.system.domain.dto.LoginUserInfoDTO;
 import com.truntao.system.domain.vo.RouterVo;
+import com.truntao.system.service.ISysConfigService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,6 +49,9 @@ public class SysLoginController {
 
     @Resource
     private TokenService tokenService;
+
+    @Resource
+    private ISysConfigService configService;
 
     /**
      * 登录方法
@@ -94,7 +100,14 @@ public class SysLoginController {
         loginUserInfoDTO.setUser(user);
         loginUserInfoDTO.setRoles(roles);
         loginUserInfoDTO.setPermissions(permissions);
+        loginUserInfoDTO.setDefaultModifyPwd(initPasswordIsModify(user.getPwdUpdateDate()));
         return R.ok(loginUserInfoDTO);
+    }
+
+    // 检查初始密码是否提醒修改
+    private  boolean initPasswordIsModify(Date pwdUpdateDate) {
+        Integer initPasswordModify = Convert.toInt(configService.selectConfigByKey("sys.account.initPasswordModify"));
+        return initPasswordModify != null && initPasswordModify == 1 && pwdUpdateDate == null;
     }
 
     /**

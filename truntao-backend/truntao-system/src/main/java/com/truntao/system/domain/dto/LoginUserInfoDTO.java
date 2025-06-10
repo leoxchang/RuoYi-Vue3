@@ -17,4 +17,6 @@ public class LoginUserInfoDTO {
     private Set<String> roles;
 
     private SysUserDTO user;
+
+    private boolean isDefaultModifyPwd;
 }

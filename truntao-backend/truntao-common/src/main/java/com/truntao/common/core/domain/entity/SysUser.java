@@ -93,6 +93,9 @@ public class SysUser extends BaseEntity {
      */
     @TableField
     private String remark;
+    /** 密码最后更新时间 */
+    @TableField
+    private Date pwdUpdateDate;
 
 
     public SysUser() {

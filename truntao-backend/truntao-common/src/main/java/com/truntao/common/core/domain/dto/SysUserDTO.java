@@ -46,6 +46,7 @@ public class SysUserDTO {
             setUpdateBy(sysUser.getUpdateBy());
             setUpdateTime(sysUser.getUpdateTime());
             setRemark(sysUser.getRemark());
+            setPwdUpdateDate(sysUser.getPwdUpdateDate());
         }
     }
 
@@ -147,6 +148,9 @@ public class SysUserDTO {
      */
     @Excel(name = "备注")
     private String remark;
+
+    /** 密码最后更新时间 */
+    private Date pwdUpdateDate;
 
     /**
      * 部门对象
