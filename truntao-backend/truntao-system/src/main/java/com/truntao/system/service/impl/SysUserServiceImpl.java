@@ -246,6 +246,7 @@ public class SysUserServiceImpl implements ISysUserService {
         user.setCreateBy(SecurityUtils.getUsername());
         user.setCreateTime(new Date());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
+        user.setPwdUpdateDate(new Date());
         // 新增用户信息
         int rows = userMapper.insert(user);
         // 新增用户岗位关联
