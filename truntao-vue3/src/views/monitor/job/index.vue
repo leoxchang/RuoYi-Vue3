@@ -287,6 +287,7 @@
 <script setup name="Job">
 import { listJob, getJob, delJob, addJob, updateJob, runJob, changeJobStatus } from "@/api/monitor/job";
 import Crontab from '@/components/Crontab'
+
 const router = useRouter();
 const { proxy } = getCurrentInstance();
 const { sys_job_group, sys_job_status } = proxy.useDict("sys_job_group", "sys_job_status");
