@@ -1,6 +1,10 @@
 import defaultSettings, {Settings} from '@/settings'
+import { useDark, useToggle } from '@vueuse/core'
 import { useDynamicTitle } from '@/utils/dynamicTitle'
 import { defineStore } from 'pinia'
+
+const isDark = useDark()
+const toggleDark = useToggle(isDark)
 
 const { sideTheme, showSettings, topNav, tagsView, tagsIcon, fixedHeader, sidebarLogo, dynamicTitle, footerVisible, footerContent } = defaultSettings
 const storageSetting = JSON.parse(localStorage.getItem('layout-setting') || '{}')
@@ -19,6 +23,7 @@ const useSettingsStore = defineStore('settings', {
     dynamicTitle: storageSetting.dynamicTitle === undefined ? dynamicTitle : storageSetting.dynamicTitle,
     footerVisible: storageSetting.footerVisible === undefined ? footerVisible : storageSetting.footerVisible,
     footerContent: footerContent,
+    isDark: isDark.value
   }),
   actions: {
     // 修改布局设置
@@ -32,6 +37,11 @@ const useSettingsStore = defineStore('settings', {
     setTitle(title: string) {
       this.title = title
       useDynamicTitle();
+    },
+    // 切换暗黑模式
+    toggleTheme() {
+      this.isDark = !this.isDark
+      toggleDark()
     }
   }
 })

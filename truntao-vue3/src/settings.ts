@@ -11,6 +11,7 @@ export interface Settings {
   dynamicTitle: boolean;
   footerVisible: boolean;
   footerContent: string;
+  isDark: boolean;
 }
 
 const settings: Settings = {
@@ -64,7 +65,8 @@ const settings: Settings = {
   /**
    * 底部版权文本内容
    */
-  footerContent: 'Copyright © 2018-2025 Truntao. All Rights Reserved.'
+  footerContent: 'Copyright © 2018-2025 Truntao. All Rights Reserved.',
+  isDark: false
 }
 
 export default settings;
