@@ -182,12 +182,12 @@ aside {
   border: 1px solid #e4e7ed;
   padding: 10px;
   margin-bottom: 15px;
-  background: #fff;
+  background:var(--el-bg-color, #FFFFFF) none;
 }
 
 .table-container {
   border: 1px solid #e4e7ed;
   padding: 10px 10px 20px;
   margin-top: 15px;
-  background: #fff;
+  background: var(--el-bg-color, #FFFFFF) none;
 }

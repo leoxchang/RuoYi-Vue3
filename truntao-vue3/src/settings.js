@@ -49,7 +49,7 @@ export default {
    */
   footerVisible: false,
 
-  /**Add commentMore actions
+  /**
    * 底部版权文本内容
    */
   footerContent: 'Copyright © 2018-2025. All Rights Reserved.'

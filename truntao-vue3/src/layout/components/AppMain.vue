@@ -42,7 +42,7 @@ function addIframe() {
   width: 100%;
   position: relative;
   overflow: hidden;
-  background-color: #f5f7f9
+  background-color: var(--el-bg-color, #f5f7f9) none;
 }
 
 .app-main:has(.copyright) {

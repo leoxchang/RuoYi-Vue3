@@ -103,7 +103,7 @@
                       </td>
                       <td>
                         <span v-if="crontabValueObj.year.length < 10">{{crontabValueObj.year}}</span>
-                        <el-tooltip v-else :content="crontabValueObj.year" placement="top"><span>{{crontabValueObj.year}}</span></el-tooltip>Add commentMore actions
+                        <el-tooltip v-else :content="crontabValueObj.year" placement="top"><span>{{crontabValueObj.year}}</span></el-tooltip>
                       </td>
                       <td class="result">
                         <span v-if="crontabValueString.length < 90">{{crontabValueString}}</span>
@@ -255,7 +255,6 @@ onMounted(() => {
 .popup-main {
     position: relative;
     margin: 10px auto;
-    background: #fff;
     border-radius: 5px;
     font-size: 12px;
     overflow: hidden;

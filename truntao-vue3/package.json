@@ -34,7 +34,8 @@
     "vue-form-craft": "4.6.6",
     "clipboard": "2.0.11",
     "js-beautify": "1.14.11",
-    "vuedraggable": "4.1.0"
+    "vuedraggable": "4.1.0",
+    "sortablejs": "1.15.6"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "5.2.4",
