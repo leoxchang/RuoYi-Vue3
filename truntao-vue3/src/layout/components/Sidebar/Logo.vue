@@ -95,4 +95,3 @@ const getLogoTextColor = computed(() => {
   }
 }
 </style>
-
