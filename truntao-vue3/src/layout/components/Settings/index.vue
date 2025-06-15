@@ -66,7 +66,7 @@
     <div class="drawer-item">
       <span>动态标题</span>
       <span class="comp-style">
-        <el-switch v-model="settingsStore.dynamicTitle" class="drawer-switch" />
+        <el-switch v-model="settingsStore.dynamicTitle" @change="dynamicTitleChange" class="drawer-switch" />
       </span>
     </div>
 
@@ -100,6 +100,11 @@ function topNavChange(val) {
     appStore.toggleSideBarHide(false);
     permissionStore.setSidebarRouters(permissionStore.defaultRoutes);
   }
+}
+
+/** 是否需要dynamicTitle */
+function dynamicTitleChange() {
+  useSettingsStore().setTitle(useSettingsStore().title)
 }
 
 function themeChange(val) {
