@@ -41,7 +41,7 @@ build_frame_ui:
     - apk add --no-cache git
     - node -v
     - git --version
-    - pk add --no-cache docker-compose
+    - apk add --no-cache docker-compose
 #   - chmod 755 dingding.sh && export job_name="job_start" && ./dingding.sh
   script:
     - pwd
