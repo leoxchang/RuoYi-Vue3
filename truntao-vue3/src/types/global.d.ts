@@ -4,6 +4,8 @@ import {
   type MessageBoxData
 } from "element-plus/es/components/message-box/src/message-box.type";
 import type {DictData} from "@/utils/dict";
+import request from "@/utils/request";
+import {Config} from "@/types/system/config";
 
 declare module 'vue' {
   interface ComponentCustomProperties {
@@ -42,6 +44,7 @@ declare module 'vue' {
     resetForm: (formRef: string) => void;
     handleTree: (data: any[], id: string, parentId?: string, children?: string) => any[];
     useDict: (...args: string[]) =>  Ref<DictData[]>;
+    getConfigKey: (key: string) => request<any, Result<Config>>;
     $tab: {
       closeOpenPage: (obj: { path: string }) => void;
     };

@@ -343,7 +343,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, watch, toRefs, getCurrentInstance } from 'vue';
+import { ref, reactive, watch, toRefs, getCurrentInstance, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getToken } from "@/utils/auth";
 import useAppStore from '@/store/modules/app';
@@ -679,6 +679,11 @@ function submitForm() {
   });
 }
 
-getDeptTree();
-getList();
+onMounted(() => {
+  getDeptTree()
+  getList()
+  proxy?.getConfigKey("sys.user.initPassword").then(response => {
+    initPassword.value = response.msg
+  })
+})
 </script>
