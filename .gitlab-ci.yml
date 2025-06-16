@@ -37,7 +37,10 @@ build_backend:
 build_frame_ui:
   stage: build
   image: node:18-alpine
-#  before_script:
+  before_script:
+    - apk add --no-cache git
+    - node -v
+    - git --version
 #   - chmod 755 dingding.sh && export job_name="job_start" && ./dingding.sh
   script:
     - chmod 755 build.sh && export module_name="frame-ui" && ./build.sh
