@@ -43,6 +43,7 @@ build_frame_ui:
     - git --version
 #   - chmod 755 dingding.sh && export job_name="job_start" && ./dingding.sh
   script:
+    - pwd
     - chmod 755 build.sh && export module_name="frame-ui" && ./build.sh
 #  after_script:
 #    - chmod 755 dingding.sh && export job_name="job_end" && ./dingding.sh
