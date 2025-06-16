@@ -1,38 +1,26 @@
-import defaultSettings from '@/settings'
+import defaultSettings, {Settings} from '@/settings'
 import { useDynamicTitle } from '@/utils/dynamicTitle'
 import { defineStore } from 'pinia'
 
-interface SettingsState {
-  title: string;
-  theme: string;
-  sideTheme: string;
-  showSettings: boolean;
-  topNav: boolean;
-  tagsView: boolean;
-  fixedHeader: boolean;
-  sidebarLogo: boolean;
-  dynamicTitle: boolean;
-}
-
-const { sideTheme, showSettings, topNav, tagsView, fixedHeader, sidebarLogo, dynamicTitle } = defaultSettings
-
+const { sideTheme, showSettings, topNav, tagsView, tagsIcon, fixedHeader, sidebarLogo, dynamicTitle } = defaultSettings
 const storageSetting = JSON.parse(localStorage.getItem('layout-setting') || '{}')
 
 const useSettingsStore = defineStore('settings', {
-  state: (): SettingsState => ({
+  state: (): Settings => ({
     title: '',
     theme: storageSetting.theme || '#409EFF',
     sideTheme: storageSetting.sideTheme || sideTheme,
     showSettings: showSettings,
     topNav: storageSetting.topNav === undefined ? topNav : storageSetting.topNav,
     tagsView: storageSetting.tagsView === undefined ? tagsView : storageSetting.tagsView,
+    tagsIcon: storageSetting.tagsIcon === undefined ? tagsIcon : storageSetting.tagsIcon,
     fixedHeader: storageSetting.fixedHeader === undefined ? fixedHeader : storageSetting.fixedHeader,
     sidebarLogo: storageSetting.sidebarLogo === undefined ? sidebarLogo : storageSetting.sidebarLogo,
     dynamicTitle: storageSetting.dynamicTitle === undefined ? dynamicTitle : storageSetting.dynamicTitle
   }),
   actions: {
     // 修改布局设置
-    changeSetting(data: { key: keyof SettingsState; value: any }) {
+    changeSetting(data: { key: keyof Settings; value: any }) {
       const { key, value } = data
       if (Object.prototype.hasOwnProperty.call(this, key)) {
         (this as any)[key] = value
@@ -46,4 +34,4 @@ const useSettingsStore = defineStore('settings', {
   }
 })
 
-export default useSettingsStore 
+export default useSettingsStore
