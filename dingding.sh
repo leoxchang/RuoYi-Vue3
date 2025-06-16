@@ -35,7 +35,7 @@ function sendJobEnd() {
 
 echo $job_name
 if [ "$job_name" = "job_start" ]; then
-    sendJobStart
+    #sendJobStart
 elif [ "$job_name" = "job_end" ]; then
-    sendJobEnd
+    #sendJobEnd
 fi
