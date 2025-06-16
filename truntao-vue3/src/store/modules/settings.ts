@@ -2,7 +2,7 @@ import defaultSettings, {Settings} from '@/settings'
 import { useDynamicTitle } from '@/utils/dynamicTitle'
 import { defineStore } from 'pinia'
 
-const { sideTheme, showSettings, topNav, tagsView, tagsIcon, fixedHeader, sidebarLogo, dynamicTitle } = defaultSettings
+const { sideTheme, showSettings, topNav, tagsView, tagsIcon, fixedHeader, sidebarLogo, dynamicTitle, footerVisible, footerContent } = defaultSettings
 const storageSetting = JSON.parse(localStorage.getItem('layout-setting') || '{}')
 
 const useSettingsStore = defineStore('settings', {
@@ -16,7 +16,9 @@ const useSettingsStore = defineStore('settings', {
     tagsIcon: storageSetting.tagsIcon === undefined ? tagsIcon : storageSetting.tagsIcon,
     fixedHeader: storageSetting.fixedHeader === undefined ? fixedHeader : storageSetting.fixedHeader,
     sidebarLogo: storageSetting.sidebarLogo === undefined ? sidebarLogo : storageSetting.sidebarLogo,
-    dynamicTitle: storageSetting.dynamicTitle === undefined ? dynamicTitle : storageSetting.dynamicTitle
+    dynamicTitle: storageSetting.dynamicTitle === undefined ? dynamicTitle : storageSetting.dynamicTitle,
+    footerVisible: storageSetting.footerVisible === undefined ? footerVisible : storageSetting.footerVisible,
+    footerContent: footerContent,
   }),
   actions: {
     // 修改布局设置

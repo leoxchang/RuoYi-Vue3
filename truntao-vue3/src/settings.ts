@@ -9,6 +9,8 @@ export interface Settings {
   fixedHeader: boolean;
   sidebarLogo: boolean;
   dynamicTitle: boolean;
+  footerVisible: boolean;
+  footerContent: string;
 }
 
 const settings: Settings = {
@@ -54,6 +56,15 @@ const settings: Settings = {
    * 是否显示动态标题
    */
   dynamicTitle: false,
+  /**Add commentMore actions
+   * 是否显示底部版权
+   */
+  footerVisible: false,
+
+  /**
+   * 底部版权文本内容
+   */
+  footerContent: 'Copyright © 2018-2025 Truntao. All Rights Reserved.'
 }
 
 export default settings;
