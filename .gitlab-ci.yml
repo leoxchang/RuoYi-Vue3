@@ -41,6 +41,8 @@ build_frame_ui:
     - apk add --no-cache git
     - node -v
     - git --version
+    - apk add --no-cache docker-cli py3-pip python3
+    - pip3 install docker-compose
 #   - chmod 755 dingding.sh && export job_name="job_start" && ./dingding.sh
   script:
     - pwd
