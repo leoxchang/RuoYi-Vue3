@@ -45,7 +45,7 @@ build_frame_ui:
   script:
     - pwd
     - ls
-    - chmod 755 build.sh && export module_name="frame-ui" && bash build.sh
+    - chmod 755 build.sh && export module_name="frame-ui" && sh build.sh
 #  after_script:
 #    - chmod 755 dingding.sh && export job_name="job_end" && ./dingding.sh
   rules:
