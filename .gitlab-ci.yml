@@ -24,12 +24,13 @@ stages:          # List of stages for jobs, and their order of execution
 
 build_backend:
   stage: build
-  before_script:
-    - chmod 755 dingding.sh && export job_name="job_start" && ./dingding.sh
+  image: 192.168.88.4:5000/gitlab-maven-3.9.8:latest
+#  before_script:
+#    - chmod 755 dingding.sh && export job_name="job_start" && ./dingding.sh
   script:
-    - chmod 755 build.sh && export module_name="frame-backend" && ./build.sh
-  after_script:
-    - chmod 755 dingding.sh && export job_name="job_end" && ./dingding.sh
+    - chmod 755 build.sh && export module_name="frame-backend" && sh build.sh
+ # after_script:
+ #   - chmod 755 dingding.sh && export job_name="job_end" && ./dingding.sh
   rules:
     - changes:
         - truntao-backend/**/*
