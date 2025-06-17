@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-row :gutter="20">
-      <splitpanes :horizontal="appStore.device === 'mobile'" class="default-theme" style="background: white">
+      <splitpanes :horizontal="appStore.device === 'mobile'" class="default-theme" style="background: var(--el-bg-color, #FFFFFF) none">
         <pane size="16">
           <!--部门数据-->
           <el-col>
@@ -25,7 +25,7 @@
         </pane>
         <!--用户数据-->
         <pane size="84">
-          <el-col style="background: #f5f7f9;">
+          <el-col style="background: var(--el-bg-color, #f5f7f9) none;">
             <div class="query-container">
               <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
                 <el-form-item label="用户名称" prop="userName">
