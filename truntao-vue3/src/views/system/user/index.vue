@@ -316,6 +316,8 @@
           :disabled="upload.isUploading"
           :on-progress="handleFileUploadProgress"
           :on-success="handleFileSuccess"
+          :on-change="handleFileChange"
+          :on-remove="handleFileRemove"
           :auto-upload="false"
           drag
       >
@@ -580,6 +582,7 @@ function handleSelectionChange(selection) {
 function handleImport() {
   upload.title = "用户导入";
   upload.open = true;
+  upload.selectedFile = null
 }
 
 /** 下载模板操作 */
@@ -592,6 +595,16 @@ const handleFileUploadProgress = (event, file, fileList) => {
   upload.isUploading = true;
 };
 
+/** 文件选择处理 */
+const handleFileChange = (file, fileList) => {
+  upload.selectedFile = file
+}
+
+/** 文件删除处理 */
+const handleFileRemove = (file, fileList) => {
+  upload.selectedFile = null
+}
+
 /** 文件上传成功处理 */
 const handleFileSuccess = (response, file, fileList) => {
   upload.open = false;
@@ -603,6 +616,11 @@ const handleFileSuccess = (response, file, fileList) => {
 
 /** 提交上传文件 */
 function submitFileForm() {
+  const file = upload.selectedFile
+  if (!file || file.length === 0 || !file.name.toLowerCase().endsWith('.xls') && !file.name.toLowerCase().endsWith('.xlsx')) {
+    proxy.$modal.msgError("请选择后缀为 “xls”或“xlsx”的文件。")
+    return
+  }
   proxy.$refs["uploadRef"].submit();
 }
 
