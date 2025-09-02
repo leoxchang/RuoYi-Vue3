@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.DispatcherType;
 
+import com.truntao.common.constant.Constants;
+import com.truntao.common.filter.RefererFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -26,11 +28,13 @@ public class FilterConfig {
     @Value("${xss.urlPatterns}")
     private String urlPatterns;
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Value("${referer.allowed-domains}")
+    private String allowedDomains;
+
     @Bean
     @ConditionalOnProperty(value = "xss.enabled", havingValue = "true")
-    public FilterRegistrationBean xssFilterRegistration() {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
+    public FilterRegistrationBean<XssFilter> xssFilterRegistration() {
+        FilterRegistrationBean<XssFilter> registration = new FilterRegistrationBean<>();
         registration.setDispatcherTypes(DispatcherType.REQUEST);
         registration.setFilter(new XssFilter());
         registration.addUrlPatterns(StringUtils.split(urlPatterns, ","));
@@ -42,10 +46,24 @@ public class FilterConfig {
         return registration;
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     @Bean
-    public FilterRegistrationBean someFilterRegistration() {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
+    @ConditionalOnProperty(value = "referer.enabled", havingValue = "true")
+    public FilterRegistrationBean<RefererFilter> refererFilterRegistration() {
+        FilterRegistrationBean<RefererFilter> registration = new FilterRegistrationBean<>();
+        registration.setDispatcherTypes(DispatcherType.REQUEST);
+        registration.setFilter(new RefererFilter());
+        registration.addUrlPatterns(Constants.RESOURCE_PREFIX + "/*");
+        registration.setName("refererFilter");
+        registration.setOrder(FilterRegistrationBean.HIGHEST_PRECEDENCE);
+        Map<String, String> initParameters = new HashMap<>();
+        initParameters.put("allowedDomains", allowedDomains);
+        registration.setInitParameters(initParameters);
+        return registration;
+    }
+
+    @Bean
+    public FilterRegistrationBean<RepeatableFilter> someFilterRegistration() {
+        FilterRegistrationBean<RepeatableFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(new RepeatableFilter());
         registration.addUrlPatterns("/*");
         registration.setName("repeatableFilter");
