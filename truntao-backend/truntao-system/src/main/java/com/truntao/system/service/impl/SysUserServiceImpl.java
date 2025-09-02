@@ -493,4 +493,9 @@ public class SysUserServiceImpl implements ISysUserService {
         }
         return successMsg.toString();
     }
+
+    @Override
+    public int updateUserStatus(SysUser user) {
+        return userMapper.updateUserStatus(user.getUserId(), user.getStatus());
+    }
 }

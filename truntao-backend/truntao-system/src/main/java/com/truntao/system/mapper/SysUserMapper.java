@@ -113,4 +113,13 @@ public interface SysUserMapper extends BaseMapper<SysUser> {
      * @return 结果
      */
     SysUser checkEmailUnique(String email);
+
+    /**
+     * 修改用户状态
+     *
+     * @param userId 用户ID
+     * @param status 状态
+     * @return 结果
+     */
+    int updateUserStatus(@Param("userId") Long userId, @Param("status") String status);
 }
