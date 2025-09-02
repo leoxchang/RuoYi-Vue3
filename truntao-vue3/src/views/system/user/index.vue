@@ -205,6 +205,7 @@
                   value-key="id"
                   placeholder="请选择归属部门"
                   check-strictly
+                  clearable
               />
             </el-form-item>
           </el-col>
